@@ -2,13 +2,11 @@ package src.advent2023.day4;
 
 import src.PuzzleSolver;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -64,42 +62,25 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String solvePartTwo(Stream<String> lines) {
-        Map<Integer, List<Integer>> cardWinnings = new TreeMap<>();
-
-        lines.forEach(line -> {
+        Map<Integer, Integer> cardWinnings = new HashMap<>();
+        return lines.mapToInt(line -> {
             StringTokenizer tokens = new StringTokenizer(line, " ");
             tokens.nextToken();
             int cardNumber = Integer.parseInt(tokens.nextToken().replaceFirst(":", ""));
+            int cardAmount = cardWinnings.merge(cardNumber, 1, Integer::sum);
             Set<Integer> winningNumbers = new HashSet<>();
-            while (tokens.hasMoreTokens()) {
-                String number = tokens.nextToken();
-                if ("|".equals(number)) {
-                    break;
-                }
-                winningNumbers.add(Integer.parseInt(number));
+            for (String token = tokens.nextToken(); tokens.hasMoreTokens() && !"|".equals(token); token = tokens.nextToken()) {
+                winningNumbers.add(Integer.parseInt(token));
             }
             int copiesWon = 0;
             while (tokens.hasMoreTokens()) {
                 String number = tokens.nextToken();
                 if (winningNumbers.contains(Integer.parseInt(number))) {
                     ++copiesWon;
+                    cardWinnings.merge(cardNumber + copiesWon, cardAmount, Integer::sum);
                 }
             }
-            List<Integer> winnings = new ArrayList<>(copiesWon);
-            for (int i = 1; i <= copiesWon; i++) {
-                winnings.add(cardNumber + i);
-            }
-            cardWinnings.put(cardNumber, winnings);
-        });
-
-        return cardWinnings.keySet().parallelStream()
-                .mapToInt(cardNumber -> countCopies(cardWinnings, cardNumber))
-                .sum() + "";
-    }
-
-    private int countCopies(Map<Integer, List<Integer>> cardWinnings, int cardNumber) {
-        return 1 + cardWinnings.get(cardNumber).stream()
-                .mapToInt(cardCopyNumber -> countCopies(cardWinnings, cardCopyNumber))
-                .sum();
+            return cardAmount;
+        }).sum() + "";
     }
 }
