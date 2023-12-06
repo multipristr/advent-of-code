@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -49,9 +47,12 @@ public class Solution extends PuzzleSolver {
         for (int i = 0; i < times.size(); i++) {
             int time = times.get(i);
             int record = Integer.parseInt(tokens.nextToken());
-            waysOfBeatingRecord[i] = (int) IntStream.range(1, time).parallel()
-                    .filter(millisecondsHoldingButton -> millisecondsHoldingButton * (time - millisecondsHoldingButton) > record)
-                    .count();
+            for (int millisecondsHoldingButton = 1; millisecondsHoldingButton < time; millisecondsHoldingButton++) {
+                if (millisecondsHoldingButton * (time - millisecondsHoldingButton) > record) {
+                    waysOfBeatingRecord[i] = 1 + time - 2 * millisecondsHoldingButton;
+                    break;
+                }
+            }
         }
 
         return Arrays.stream(waysOfBeatingRecord).reduce(1, (a, b) -> a * b) + "";
@@ -63,8 +64,11 @@ public class Solution extends PuzzleSolver {
         int time = Integer.parseInt(linesArray[0].replaceFirst("Time:", "").replaceAll("\\s", ""));
         long distance = Long.parseLong(linesArray[1].replaceFirst("Distance:", "").replaceAll("\\s", ""));
 
-        return LongStream.range(1, time).parallel()
-                .filter(millisecondsHoldingButton -> millisecondsHoldingButton * (time - millisecondsHoldingButton) > distance)
-                .count() + "";
+        for (long millisecondsHoldingButton = 1; millisecondsHoldingButton < time; millisecondsHoldingButton++) {
+            if (millisecondsHoldingButton * (time - millisecondsHoldingButton) > distance) {
+                return 1 + time - 2 * millisecondsHoldingButton + "";
+            }
+        }
+        return "0";
     }
 }
