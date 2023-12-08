@@ -12,24 +12,34 @@ import java.util.stream.Stream;
 
 public abstract class PuzzleSolver {
     public void run() {
-        String example1Solution = solvePartOne(getExampleInput1().lines());
-        if (!Objects.equals(example1Solution, getExampleOutput1())) {
+        ExecutorService thread = Executors.newSingleThreadExecutor();
+        try {
+          String example1Solution = thread.submit(() -> solvePartOne(getExampleInput1().lines())).get(1, TimeUnit.MINUTES);
+          if (!Objects.equals(example1Solution, getExampleOutput1())) {
             throw new IllegalStateException("Part One: Expected '" + getExampleOutput1() + "' got '" + example1Solution + "'");
+          }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          throw new IllegalStateException("Part One", e);
         }
         Instant start = Instant.now();
         String solution1 = solvePartOne(getInput1());
         Instant end = Instant.now();
         System.out.println("'" + solution1 + "' - took " + Duration.between(start, end).toMillis() + " milliseconds");
         if (getExampleOutput2() != null) {
-            String example2Solution = solvePartTwo(getExampleInput2().lines());
+          try {
+            String example2Solution = thread.submit(() -> solvePartTwo(getExampleInput2().lines())).get(1, TimeUnit.MINUTES);
             if (!Objects.equals(example2Solution, getExampleOutput2())) {
-                throw new IllegalStateException("Part Two: Expected '" + getExampleOutput2() + "' got '" + example2Solution + "'");
+              throw new IllegalStateException("Part Two: Expected '" + getExampleOutput2() + "' got '" + example2Solution + "'");
             }
-            start = Instant.now();
-            String solution2 = solvePartTwo(getInput2());
-            end = Instant.now();
-            System.out.println("'" + solution2 + "' - took " + Duration.between(start, end).toMillis() + " milliseconds");
+          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new IllegalStateException("Part Two", e);
+          }
+          start = Instant.now();
+          String solution2 = solvePartTwo(getInput2());
+          end = Instant.now();
+          System.out.println("'" + solution2 + "' - took " + Duration.between(start, end).toMillis() + " milliseconds");
         }
+        thread.shutdownNow();
     }
 
     public abstract String getExampleInput1();
