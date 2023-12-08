@@ -1,5 +1,13 @@
 package src.advent2023.day8;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import src.PuzzleSolver;
 
 import java.util.stream.Stream;
@@ -12,26 +20,114 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String getExampleInput1() {
-        return "";
+        return "RL\n"
+            + "\n"
+            + "AAA = (BBB, CCC)\n"
+            + "BBB = (DDD, EEE)\n"
+            + "CCC = (ZZZ, GGG)\n"
+            + "DDD = (DDD, DDD)\n"
+            + "EEE = (EEE, EEE)\n"
+            + "GGG = (GGG, GGG)\n"
+            + "ZZZ = (ZZZ, ZZZ)";
     }
 
     @Override
     public String getExampleOutput1() {
-        return "";
+        return "2";
     }
 
-    @Override
+  @Override
+  public String getExampleInput2() {
+    return "LR\n"
+        + "\n"
+        + "11A = (11B, XXX)\n"
+        + "11B = (XXX, 11Z)\n"
+        + "11Z = (11B, XXX)\n"
+        + "22A = (22B, XXX)\n"
+        + "22B = (22C, 22C)\n"
+        + "22C = (22Z, 22Z)\n"
+        + "22Z = (22B, 22B)\n"
+        + "XXX = (XXX, XXX)";
+  }
+
+  @Override
     public String getExampleOutput2() {
-        return null;
+        return "6";
     }
 
     @Override
     public String solvePartOne(Stream<String> lines) {
-        return "";
+        String[] linesArray = lines.toArray(String[]::new);
+        char[] instructions = linesArray[0].toCharArray();
+
+        Map<String, Entry<String, String>> network = new HashMap<>(linesArray.length - 2);
+        for (int i = 2; i < linesArray.length; i++) {
+            var tokens = new StringTokenizer(linesArray[i], " ");
+            String node = tokens.nextToken();
+            tokens.nextToken();
+            String left = tokens.nextToken().replace("(", "").replace(",", "");
+            String right = tokens.nextToken().replace(")", "");
+            network.put(node, new SimpleImmutableEntry<>(left, right));
+        }
+
+        String curNode = "AAA";
+        int steps = 0;
+        int instruction = -1;
+        while (!"ZZZ".equals(curNode)) {
+          ++steps;
+          char step = instructions[++instruction % instructions.length];
+          if (step == 'L') {
+            curNode = network.get(curNode).getKey();
+          } else {
+            curNode = network.get(curNode).getValue();
+          }
+        }
+
+        return steps + "";
     }
 
     @Override
     public String solvePartTwo(Stream<String> lines) {
-        return "";
+      String[] linesArray = lines.toArray(String[]::new);
+      char[] instructions = linesArray[0].toCharArray();
+
+      Map<String, Entry<String, String>> network = new HashMap<>(linesArray.length - 2);
+      for (int i = 2; i < linesArray.length; i++) {
+        var tokens = new StringTokenizer(linesArray[i], " ");
+        String node = tokens.nextToken();
+        tokens.nextToken();
+        String left = tokens.nextToken().replace("(", "").replace(",", "");
+        String right = tokens.nextToken().replace(")", "");
+        network.put(node, new SimpleImmutableEntry<>(left, right));
+      }
+
+      var oneNodeDistances = network.keySet().parallelStream()
+          .filter(node -> node.endsWith("A"))
+          .mapToLong(startNode -> {
+            var curNode = startNode;
+            long steps = 0;
+            while (!curNode.endsWith("Z")) {
+              char step = instructions[(int) (steps % instructions.length)];
+              ++steps;
+              if (step == 'L') {
+                curNode = network.get(curNode).getKey();
+              } else {
+                curNode = network.get(curNode).getValue();
+              }
+            }
+            return steps;
+          });
+
+      return lcm(oneNodeDistances) + "";
     }
+
+  static long lcm(LongStream oneNodeDistances) {
+    return oneNodeDistances.reduce(1L, (x, y) -> (x * y) / gcd(x, y));
+  }
+
+  static long gcd(long a, long b) {
+    if (b == 0)
+      return a;
+    return gcd(b, a % b);
+  }
 }
