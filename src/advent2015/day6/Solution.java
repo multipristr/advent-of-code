@@ -3,6 +3,7 @@ package src.advent2015.day6;
 import src.PuzzleSolver;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -12,20 +13,20 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "turn on 0,0 through 999,999\n" +
+    public List<String> getExampleInput1() {
+        return List.of("turn on 0,0 through 999,999\n" +
                 "toggle 0,0 through 999,0\n" +
-                "turn off 499,499 through 500,500";
+                "turn off 499,499 through 500,500");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "998996";
+    public List<String> getExampleOutput1() {
+        return List.of("998996");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "1001996";
+    public List<String> getExampleOutput2() {
+        return List.of("1001996");
     }
 
     @Override

@@ -1,4 +1,4 @@
-package src.advent2023.day9;
+package src.advent2023.day22;
 
 import src.PuzzleSolver;
 
@@ -13,28 +13,27 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("0 3 6 9 12 15\n" +
-                "1 3 6 10 15 21\n" +
-                "10 13 16 21 30 45");
+        return List.of("");
     }
 
     @Override
     public List<String> getExampleOutput1() {
-        return List.of("114");
+        return List.of("");
     }
 
     @Override
     public List<String> getExampleOutput2() {
-        return List.of("2");
+        return List.of();
     }
 
     @Override
     public String solvePartOne(Stream<String> lines) {
-        return "1798691765";
+        return "";
     }
 
     @Override
     public String solvePartTwo(Stream<String> lines) {
-        return "1104";
+        return "";
     }
+
 }

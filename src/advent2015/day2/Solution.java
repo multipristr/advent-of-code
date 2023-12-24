@@ -13,23 +13,23 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "1x1x10";
+    public List<String> getExampleInput1() {
+        return List.of("1x1x10");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "43";
+    public List<String> getExampleOutput1() {
+        return List.of("43");
     }
 
     @Override
-    public String getExampleInput2() {
-        return "2x3x4";
+    public List<String> getExampleInput2() {
+        return List.of("2x3x4");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "34";
+    public List<String> getExampleOutput2() {
+        return List.of("34");
     }
 
     @Override

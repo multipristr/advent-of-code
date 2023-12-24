@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -17,18 +18,18 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "pqrstuv";
+    public List<String> getExampleInput1() {
+        return List.of("pqrstuv");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "1048970";
+    public List<String> getExampleOutput1() {
+        return List.of("1048970");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "5714438";
+    public List<String> getExampleOutput2() {
+        return List.of("5714438");
     }
 
     @Override

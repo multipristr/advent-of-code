@@ -2,11 +2,7 @@ package src.advent2023.day5;
 
 import src.PuzzleSolver;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,8 +14,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "seeds: 79 14 55 13\n" +
+    public List<String> getExampleInput1() {
+        return List.of("seeds: 79 14 55 13\n" +
                 "\n" +
                 "seed-to-soil map:\n" +
                 "50 98 2\n" +
@@ -51,17 +47,17 @@ public class Solution extends PuzzleSolver {
                 "\n" +
                 "humidity-to-location map:\n" +
                 "60 56 37\n" +
-                "56 93 4";
+                "56 93 4");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "35";
+    public List<String> getExampleOutput1() {
+        return List.of("35");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "46";
+    public List<String> getExampleOutput2() {
+        return List.of("46");
     }
 
     @Override

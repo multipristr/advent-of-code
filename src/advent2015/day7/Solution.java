@@ -3,6 +3,7 @@ package src.advent2015.day7;
 import src.PuzzleSolver;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -14,26 +15,26 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "123 -> x\n" +
+    public List<String> getExampleInput1() {
+        return List.of("123 -> x\n" +
                 "456 -> y\n" +
                 "x AND y -> d\n" +
                 "x OR y -> e\n" +
                 "x LSHIFT 2 -> f\n" +
                 "y RSHIFT 2 -> g\n" +
                 "NOT x -> a\n" +
-                "NOT y -> i";
+                "NOT y -> i");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "65412";
+    public List<String> getExampleOutput1() {
+        return List.of("65412");
     }
 
 
     @Override
-    public String getExampleOutput2() {
-        return "65412";
+    public List<String> getExampleOutput2() {
+        return List.of("65412");
     }
 
     @Override
