@@ -3,6 +3,8 @@ package src.advent2023.day20;
 import src.PuzzleSolver;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -38,50 +40,52 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String solvePartOne(Stream<String> lines) {
-        Map<String, Module> modules = new LinkedHashMap<>();
-        Map<String, List<Module>> inputModules = new HashMap<>();
+        Map<String, Module> modules = new HashMap<>();
+        Map<String, List<String>> inputModules = new HashMap<>();
         lines.map(line -> line.split(" -> "))
                 .forEach(parts -> {
                     Module inputModule;
+                    String inputModuleName;
                     if (parts[0].startsWith("%")) {
                         inputModule = new FlipFlopModule(parts[1]);
-                        modules.put(parts[0].substring(1), inputModule);
+                        inputModuleName = parts[0].substring(1);
+                        modules.put(inputModuleName, inputModule);
                     } else if (parts[0].startsWith("&")) {
                         inputModule = new ConjunctionModule(parts[1]);
-                        modules.put(parts[0].substring(1), inputModule);
+                        inputModuleName = parts[0].substring(1);
+                        modules.put(inputModuleName, inputModule);
                     } else {
                         inputModule = new UntypedModule(parts[1]);
-                        modules.put(parts[0], inputModule);
+                        inputModuleName = parts[0];
+                        modules.put(inputModuleName, inputModule);
                     }
                     inputModule.getDestinationModules()
-                            .stream()
-                            .forEach(destinationModule -> inputModules.computeIfAbsent(destinationModule, k -> new ArrayList<>()).add(inputModule));
+                            .forEach(destinationModule -> inputModules.computeIfAbsent(destinationModule, k -> new ArrayList<>()).add(inputModuleName));
                 });
+        modules.forEach((k, v) -> v.setInputModules(inputModules.get(k)));
 
         Map<Pulses, Long> pulses = new EnumMap<>(Pulses.class);
         pulses.put(Pulses.LOW, 1_000L);
         Deque<String> open = new ArrayDeque<>();
         Set<String> closed = new HashSet<>();
-        for (long i = 0; i < 1000; ++i) {
+        for (long i = 0; i < 4; ++i) {
             open.addFirst("broadcaster");
             closed.add("broadcaster");
             while (!open.isEmpty()) {
                 var moduleName = open.poll();
                 closed.remove(moduleName);
-                //System.out.println(moduleName);
                 var module = modules.get(moduleName);
-                var inModules = inputModules.get(moduleName);
-                var output = module.getOutput(inModules);
+                var output = module.getOutput();
                 output.ifPresent(pulse -> {
                     for (var destinationModule : module.getDestinationModules()) {
+                        pulses.merge(pulse, 1L, Long::sum);
+                        System.out.println(moduleName + " " + pulse + " " + destinationModule);
                         var destination = modules.get(destinationModule);
                         if (destination != null) {
-                            destination.setLastPulse(pulse);
-                        }
-                        pulses.merge(pulse, 1L, Long::sum);
-                        //System.out.println(moduleName + " " + pulse + " " + destinationModule);
-                        if (closed.add(destinationModule)) {
-                            open.addLast(destinationModule);
+                            destination.setLastPulse(moduleName, pulse);
+                            if (closed.add(destinationModule)) {
+                                open.addLast(destinationModule);
+                            }
                         }
                     }
                 });
@@ -111,15 +115,18 @@ public class Solution extends PuzzleSolver {
             return lastPulse;
         }
 
-        void setLastPulse(Pulses pulse) {
-            lastPulse = pulse;
-        }
-
         List<String> getDestinationModules() {
             return destinationModules;
         }
 
-        abstract Optional<Pulses> getOutput(List<Module> inputModules);
+        void setLastPulse(String fromModule, Pulses pulse) {
+            lastPulse = pulse;
+        }
+
+        void setInputModules(Collection<String> inputModules) {
+        }
+
+        abstract Optional<Pulses> getOutput();
 
         @Override
         public String toString() {
@@ -133,7 +140,7 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        Optional<Pulses> getOutput(List<Module> inputModules) {
+        Optional<Pulses> getOutput() {
             return Optional.of(getLastPulse());
         }
     }
@@ -146,15 +153,15 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        void setLastPulse(Pulses pulse) {
+        void setLastPulse(String fromModule, Pulses pulse) {
             if (pulse == Pulses.LOW) {
                 on = !on;
             }
-            super.setLastPulse(pulse);
+            super.setLastPulse(fromModule, pulse);
         }
 
         @Override
-        Optional<Pulses> getOutput(List<Module> inputModules) {
+        Optional<Pulses> getOutput() {
             if (on) {
                 return Optional.of(Pulses.HIGH);
             } else {
@@ -164,14 +171,28 @@ public class Solution extends PuzzleSolver {
     }
 
     private static class ConjunctionModule extends Module {
+        private Map<String, Pulses> inputModules;
+
         ConjunctionModule(String commaSeparatedDestinationModules) {
             super(commaSeparatedDestinationModules);
         }
 
         @Override
-        Optional<Pulses> getOutput(List<Module> inputModules) {
-            return inputModules.stream()
-                    .map(Module::getLastPulse)
+        void setInputModules(Collection<String> inputModules) {
+            this.inputModules = inputModules
+                    .stream()
+                    .collect(Collectors.toMap(Function.identity(), v -> Pulses.LOW));
+        }
+
+        @Override
+        void setLastPulse(String fromModule, Pulses pulse) {
+            inputModules.put(fromModule, pulse);
+            super.setLastPulse(fromModule, pulse);
+        }
+
+        @Override
+        Optional<Pulses> getOutput() {
+            return inputModules.values().stream()
                     .allMatch(pulse -> pulse == Pulses.HIGH) ? Optional.of(Pulses.LOW) : Optional.of(Pulses.HIGH);
         }
     }
