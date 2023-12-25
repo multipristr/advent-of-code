@@ -64,34 +64,35 @@ public class Solution extends PuzzleSolver {
                 });
         modules.forEach((k, v) -> v.setInputModules(inputModules.get(k)));
 
-        Map<Pulses, Long> pulses = new EnumMap<>(Pulses.class);
-        pulses.put(Pulses.LOW, 1_000L);
-        Deque<String> open = new ArrayDeque<>();
-        Set<String> closed = new HashSet<>();
-        for (long i = 0; i < 4; ++i) {
-            open.addFirst("broadcaster");
-            closed.add("broadcaster");
-            while (!open.isEmpty()) {
-                var moduleName = open.poll();
-                closed.remove(moduleName);
+        Map<Pulse, Long> pulseCounts = new EnumMap<>(Pulse.class);
+        pulseCounts.put(Pulse.LOW, 1_000L);
+        Deque<String> waitingForProcessing = new ArrayDeque<>();
+        Set<String> alreadyInQueue = new HashSet<>();
+        for (long i = 0; i < 1_000L; ++i) {
+            waitingForProcessing.addFirst("broadcaster");
+            alreadyInQueue.add("broadcaster");
+            while (!waitingForProcessing.isEmpty()) {
+                var moduleName = waitingForProcessing.pollFirst();
+                alreadyInQueue.remove(moduleName);
                 var module = modules.get(moduleName);
                 var output = module.getOutput();
                 output.ifPresent(pulse -> {
-                    for (var destinationModule : module.getDestinationModules()) {
-                        pulses.merge(pulse, 1L, Long::sum);
-                        System.out.println(moduleName + " " + pulse + " " + destinationModule);
-                        var destination = modules.get(destinationModule);
+                    for (var destinationModuleName : module.getDestinationModules()) {
+                        pulseCounts.merge(pulse, 1L, Long::sum);
+                        //System.out.println(moduleName + " " + pulse + " " + destinationModule);
+                        var destination = modules.get(destinationModuleName);
                         if (destination != null) {
-                            destination.setLastPulse(moduleName, pulse);
-                            if (closed.add(destinationModule)) {
-                                open.addLast(destinationModule);
+                            if (alreadyInQueue.add(destinationModuleName)) {
+                                destination.setLastPulse(moduleName, pulse);
+                                waitingForProcessing.addLast(destinationModuleName);
                             }
                         }
                     }
                 });
             }
+            //System.out.println("-");
         }
-        return (pulses.get(Pulses.LOW) * pulses.get(Pulses.HIGH)) + "";
+        return (pulseCounts.get(Pulse.LOW) * pulseCounts.get(Pulse.HIGH)) + "";
     }
 
     @Override
@@ -99,19 +100,19 @@ public class Solution extends PuzzleSolver {
         return "";
     }
 
-    private enum Pulses {
+    private enum Pulse {
         LOW, HIGH;
     }
 
     private static abstract class Module {
         private final List<String> destinationModules;
-        private Pulses lastPulse = Pulses.LOW;
+        private Pulse lastPulse = Pulse.LOW;
 
         Module(String commaSeparatedDestinationModules) {
             this.destinationModules = Arrays.asList(commaSeparatedDestinationModules.split(", "));
         }
 
-        Pulses getLastPulse() {
+        Pulse getLastPulse() {
             return lastPulse;
         }
 
@@ -119,14 +120,14 @@ public class Solution extends PuzzleSolver {
             return destinationModules;
         }
 
-        void setLastPulse(String fromModule, Pulses pulse) {
+        void setLastPulse(String fromModule, Pulse pulse) {
             lastPulse = pulse;
         }
 
         void setInputModules(Collection<String> inputModules) {
         }
 
-        abstract Optional<Pulses> getOutput();
+        abstract Optional<Pulse> getOutput();
 
         @Override
         public String toString() {
@@ -140,7 +141,7 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        Optional<Pulses> getOutput() {
+        Optional<Pulse> getOutput() {
             return Optional.of(getLastPulse());
         }
     }
@@ -153,25 +154,25 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        void setLastPulse(String fromModule, Pulses pulse) {
-            if (pulse == Pulses.LOW) {
+        void setLastPulse(String fromModule, Pulse pulse) {
+            if (pulse == Pulse.LOW) {
                 on = !on;
             }
             super.setLastPulse(fromModule, pulse);
         }
 
         @Override
-        Optional<Pulses> getOutput() {
-            if (on) {
-                return Optional.of(Pulses.HIGH);
+        Optional<Pulse> getOutput() {
+            if (getLastPulse() == Pulse.LOW) {
+                return on ? Optional.of(Pulse.HIGH) : Optional.of(Pulse.LOW);
             } else {
-                return getLastPulse() == Pulses.LOW ? Optional.of(Pulses.LOW) : Optional.empty();
+                return Optional.empty();
             }
         }
     }
 
     private static class ConjunctionModule extends Module {
-        private Map<String, Pulses> inputModules;
+        private Map<String, Pulse> inputModules;
 
         ConjunctionModule(String commaSeparatedDestinationModules) {
             super(commaSeparatedDestinationModules);
@@ -181,19 +182,19 @@ public class Solution extends PuzzleSolver {
         void setInputModules(Collection<String> inputModules) {
             this.inputModules = inputModules
                     .stream()
-                    .collect(Collectors.toMap(Function.identity(), v -> Pulses.LOW));
+                    .collect(Collectors.toMap(Function.identity(), v -> Pulse.LOW));
         }
 
         @Override
-        void setLastPulse(String fromModule, Pulses pulse) {
+        void setLastPulse(String fromModule, Pulse pulse) {
             inputModules.put(fromModule, pulse);
             super.setLastPulse(fromModule, pulse);
         }
 
         @Override
-        Optional<Pulses> getOutput() {
+        Optional<Pulse> getOutput() {
             return inputModules.values().stream()
-                    .allMatch(pulse -> pulse == Pulses.HIGH) ? Optional.of(Pulses.LOW) : Optional.of(Pulses.HIGH);
+                    .allMatch(pulse -> pulse == Pulse.HIGH) ? Optional.of(Pulse.LOW) : Optional.of(Pulse.HIGH);
         }
     }
 }
