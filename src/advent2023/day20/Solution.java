@@ -49,16 +49,14 @@ public class Solution extends PuzzleSolver {
                     if (parts[0].startsWith("%")) {
                         inputModule = new FlipFlopModule(parts[1]);
                         inputModuleName = parts[0].substring(1);
-                        modules.put(inputModuleName, inputModule);
                     } else if (parts[0].startsWith("&")) {
                         inputModule = new ConjunctionModule(parts[1]);
                         inputModuleName = parts[0].substring(1);
-                        modules.put(inputModuleName, inputModule);
                     } else {
                         inputModule = new UntypedModule(parts[1]);
                         inputModuleName = parts[0];
-                        modules.put(inputModuleName, inputModule);
                     }
+                    modules.put(inputModuleName, inputModule);
                     inputModule.getDestinationModules()
                             .forEach(destinationModule -> inputModules.computeIfAbsent(destinationModule, k -> new ArrayList<>()).add(inputModuleName));
                 });
@@ -66,31 +64,30 @@ public class Solution extends PuzzleSolver {
 
         Map<Pulse, Long> pulseCounts = new EnumMap<>(Pulse.class);
         pulseCounts.put(Pulse.LOW, 1_000L);
-        Deque<String> waitingForProcessing = new ArrayDeque<>();
+        Deque<Signal> waitingForProcessing = new ArrayDeque<>();
         Set<String> alreadyInQueue = new HashSet<>();
         for (long i = 0; i < 1_000L; ++i) {
-            waitingForProcessing.addFirst("broadcaster");
+            waitingForProcessing.addFirst(new Signal("button", "broadcaster", Pulse.LOW));
             alreadyInQueue.add("broadcaster");
             while (!waitingForProcessing.isEmpty()) {
-                var moduleName = waitingForProcessing.pollFirst();
-                alreadyInQueue.remove(moduleName);
-                var module = modules.get(moduleName);
-                var output = module.getOutput();
+                var signal = waitingForProcessing.pollFirst();
+                alreadyInQueue.remove(signal.getToModule());
+                var module = modules.get(signal.getToModule());
+                var output = module.getOutput(signal.getPulse(), signal.getFromModule());
                 output.ifPresent(pulse -> {
                     for (var destinationModuleName : module.getDestinationModules()) {
                         pulseCounts.merge(pulse, 1L, Long::sum);
-                        //System.out.println(moduleName + " " + pulse + " " + destinationModule);
-                        var destination = modules.get(destinationModuleName);
-                        if (destination != null) {
+                        //System.out.println(signal.getToModule() + " -" + pulse + "-> " + destinationModuleName);
+                        var destinationModule = modules.get(destinationModuleName);
+                        if (destinationModule != null) {
                             if (alreadyInQueue.add(destinationModuleName)) {
-                                destination.setLastPulse(moduleName, pulse);
-                                waitingForProcessing.addLast(destinationModuleName);
+                                waitingForProcessing.addLast(new Signal(signal.getToModule(), destinationModuleName, pulse));
                             }
                         }
                     }
                 });
             }
-            //System.out.println("-");
+            //System.out.println();
         }
         return (pulseCounts.get(Pulse.LOW) * pulseCounts.get(Pulse.HIGH)) + "";
     }
@@ -104,34 +101,56 @@ public class Solution extends PuzzleSolver {
         LOW, HIGH;
     }
 
+    private static class Signal {
+        private final String fromModule;
+        private final String toModule;
+        private final Pulse pulse;
+
+        Signal(String fromModule, String toModule, Pulse pulse) {
+            this.fromModule = fromModule;
+            this.toModule = toModule;
+            this.pulse = pulse;
+        }
+
+        String getToModule() {
+            return toModule;
+        }
+
+        String getFromModule() {
+            return fromModule;
+        }
+
+        Pulse getPulse() {
+            return pulse;
+        }
+
+        @Override
+        public String toString() {
+            return fromModule + " -" + pulse + "-> " + toModule;
+        }
+    }
+
     private static abstract class Module {
         private final List<String> destinationModules;
-        private Pulse lastPulse = Pulse.LOW;
 
         Module(String commaSeparatedDestinationModules) {
             this.destinationModules = Arrays.asList(commaSeparatedDestinationModules.split(", "));
-        }
-
-        Pulse getLastPulse() {
-            return lastPulse;
         }
 
         List<String> getDestinationModules() {
             return destinationModules;
         }
 
-        void setLastPulse(String fromModule, Pulse pulse) {
-            lastPulse = pulse;
-        }
-
         void setInputModules(Collection<String> inputModules) {
         }
 
-        abstract Optional<Pulse> getOutput();
+        abstract Optional<Pulse> getOutput(Pulse lastPulse, String fromModule);
 
         @Override
         public String toString() {
-            return destinationModules.toString();
+            return "Module{" +
+                    "destinationModules=" + destinationModules +
+                    '}';
         }
     }
 
@@ -141,8 +160,8 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        Optional<Pulse> getOutput() {
-            return Optional.of(getLastPulse());
+        Optional<Pulse> getOutput(Pulse lastPulse, String fromModule) {
+            return Optional.empty();
         }
     }
 
@@ -154,20 +173,20 @@ public class Solution extends PuzzleSolver {
         }
 
         @Override
-        void setLastPulse(String fromModule, Pulse pulse) {
-            if (pulse == Pulse.LOW) {
+        Optional<Pulse> getOutput(Pulse lastPulse, String fromModule) {
+            if (lastPulse == Pulse.LOW) {
                 on = !on;
-            }
-            super.setLastPulse(fromModule, pulse);
-        }
-
-        @Override
-        Optional<Pulse> getOutput() {
-            if (getLastPulse() == Pulse.LOW) {
                 return on ? Optional.of(Pulse.HIGH) : Optional.of(Pulse.LOW);
             } else {
                 return Optional.empty();
             }
+        }
+
+        @Override
+        public String toString() {
+            return "FlipFlopModule{" +
+                    "on=" + on +
+                    "} " + super.toString();
         }
     }
 
@@ -180,21 +199,24 @@ public class Solution extends PuzzleSolver {
 
         @Override
         void setInputModules(Collection<String> inputModules) {
-            this.inputModules = inputModules
-                    .stream()
+            this.inputModules = inputModules.stream()
                     .collect(Collectors.toMap(Function.identity(), v -> Pulse.LOW));
         }
 
         @Override
-        void setLastPulse(String fromModule, Pulse pulse) {
-            inputModules.put(fromModule, pulse);
-            super.setLastPulse(fromModule, pulse);
+        Optional<Pulse> getOutput(Pulse lastPulse, String fromModule) {
+            if (inputModules.put(fromModule, lastPulse) == null) {
+                throw new IllegalArgumentException("Pulse " + lastPulse + " from not an input " + fromModule + " to " + this);
+            }
+            return inputModules.values().stream()
+                    .allMatch(pulse -> pulse == Pulse.HIGH) ? Optional.of(Pulse.LOW) : Optional.of(Pulse.HIGH);
         }
 
         @Override
-        Optional<Pulse> getOutput() {
-            return inputModules.values().stream()
-                    .allMatch(pulse -> pulse == Pulse.HIGH) ? Optional.of(Pulse.LOW) : Optional.of(Pulse.HIGH);
+        public String toString() {
+            return "ConjunctionModule{" +
+                    "inputModules=" + inputModules +
+                    "} " + super.toString();
         }
     }
 }
