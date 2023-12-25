@@ -65,29 +65,22 @@ public class Solution extends PuzzleSolver {
         Map<Pulse, Long> pulseCounts = new EnumMap<>(Pulse.class);
         pulseCounts.put(Pulse.LOW, 1_000L);
         Deque<Signal> waitingForProcessing = new ArrayDeque<>();
-        Set<String> alreadyInQueue = new HashSet<>();
         for (long i = 0; i < 1_000L; ++i) {
             waitingForProcessing.addFirst(new Signal("button", "broadcaster", Pulse.LOW));
-            alreadyInQueue.add("broadcaster");
             while (!waitingForProcessing.isEmpty()) {
                 var signal = waitingForProcessing.pollFirst();
-                alreadyInQueue.remove(signal.getToModule());
                 var module = modules.get(signal.getToModule());
                 var output = module.getOutput(signal.getPulse(), signal.getFromModule());
                 output.ifPresent(pulse -> {
                     for (var destinationModuleName : module.getDestinationModules()) {
                         pulseCounts.merge(pulse, 1L, Long::sum);
-                        //System.out.println(signal.getToModule() + " -" + pulse + "-> " + destinationModuleName);
                         var destinationModule = modules.get(destinationModuleName);
                         if (destinationModule != null) {
-                            if (alreadyInQueue.add(destinationModuleName)) {
-                                waitingForProcessing.addLast(new Signal(signal.getToModule(), destinationModuleName, pulse));
-                            }
+                            waitingForProcessing.addLast(new Signal(signal.getToModule(), destinationModuleName, pulse));
                         }
                     }
                 });
             }
-            //System.out.println();
         }
         return (pulseCounts.get(Pulse.LOW) * pulseCounts.get(Pulse.HIGH)) + "";
     }
