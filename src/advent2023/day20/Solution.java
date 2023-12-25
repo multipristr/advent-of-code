@@ -161,7 +161,7 @@ public class Solution extends PuzzleSolver {
 
         @Override
         Optional<Pulse> getOutput(Pulse lastPulse, String fromModule) {
-            return Optional.empty();
+            return Optional.of(lastPulse);
         }
     }
 
