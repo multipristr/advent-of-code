@@ -34,6 +34,11 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
+    public List<String> getExampleInput2() {
+        return List.of();
+    }
+
+    @Override
     public List<String> getExampleOutput2() {
         return List.of();
     }
@@ -87,7 +92,51 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String solvePartTwo(Stream<String> lines) {
-        return "";
+        Map<String, Module> modules = new HashMap<>();
+        Map<String, List<String>> inputModules = new HashMap<>();
+        lines.map(line -> line.split(" -> "))
+                .forEach(parts -> {
+                    Module inputModule;
+                    String inputModuleName;
+                    if (parts[0].startsWith("%")) {
+                        inputModule = new FlipFlopModule(parts[1]);
+                        inputModuleName = parts[0].substring(1);
+                    } else if (parts[0].startsWith("&")) {
+                        inputModule = new ConjunctionModule(parts[1]);
+                        inputModuleName = parts[0].substring(1);
+                    } else {
+                        inputModule = new UntypedModule(parts[1]);
+                        inputModuleName = parts[0];
+                    }
+                    modules.put(inputModuleName, inputModule);
+                    inputModule.getDestinationModules()
+                            .forEach(destinationModule -> inputModules.computeIfAbsent(destinationModule, k -> new ArrayList<>()).add(inputModuleName));
+                });
+        modules.forEach((k, v) -> v.setInputModules(inputModules.get(k)));
+
+        long buttonPresses = 0;
+        Deque<Signal> waitingForProcessing = new ArrayDeque<>();
+        while (true) {
+            ++buttonPresses;
+            waitingForProcessing.addFirst(new Signal("button", "broadcaster", Pulse.LOW));
+            while (!waitingForProcessing.isEmpty()) {
+                var signal = waitingForProcessing.pollFirst();
+                var module = modules.get(signal.getToModule());
+                var output = module.getOutput(signal.getPulse(), signal.getFromModule());
+                if (output.isPresent()) {
+                    Pulse pulse = output.get();
+                    for (var destinationModuleName : module.getDestinationModules()) {
+                        if ("rx".equals(destinationModuleName) && pulse == Pulse.LOW) {
+                            return buttonPresses + "";
+                        }
+                        var destinationModule = modules.get(destinationModuleName);
+                        if (destinationModule != null) {
+                            waitingForProcessing.addLast(new Signal(signal.getToModule(), destinationModuleName, pulse));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private enum Pulse {

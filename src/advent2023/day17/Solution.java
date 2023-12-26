@@ -3,8 +3,7 @@ package src.advent2023.day17;
 import src.PuzzleSolver;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -13,33 +12,42 @@ public class Solution extends PuzzleSolver {
         new Solution().run();
     }
 
-    private static int minimaseHeatLoss(Map<Integer, Integer> memory, char[][] map, int row, int column, int rowDirection, int columnDirection, int remainingInDirection) {
+    private static void minimaseHeatLoss(int[][] map, int row, int column, int rowDirection, int remainingInDirection, long[][] visited, long path) {
         if (row < 0 || row >= map.length || column < 0 || column >= map[row].length) {
-            return Integer.MAX_VALUE;
+            return;
         }
 
-        var hash = Objects.hash(row, column, rowDirection, columnDirection);
-        var found = memory.get(hash);
-        if (found != null) {
-            return found;
+        long value = map[row][column];
+        path += value;
+        if (path > visited[row][column]) {
+            return;
         }
-
-        var value = 0;
+        visited[row][column] = path;
         if (row == map.length - 1 && column == map[row].length - 1) {
-            memory.put(hash, value);
-            return value;
+            return;
         }
 
-        var path = Integer.MAX_VALUE;
-
-        if (rowDirection == 0) {
-            for (int i = 1; i <= 3; ++i) {
-                path = Math.min(path, minimaseHeatLoss(memory, map, row - i, column, -1, 0, 3 - i));
+        if (remainingInDirection <= 0) {
+            if (rowDirection == 0) {
+                minimaseHeatLoss(map, row - 1, column, -1, 2, visited, path);
+                minimaseHeatLoss(map, row + 1, column, 1, 2, visited, path);
+            } else {
+                minimaseHeatLoss(map, row, column - 1, 0, 2, visited, path);
+                minimaseHeatLoss(map, row, column + 1, 0, 2, visited, path);
             }
         } else {
-
+            if (rowDirection == 0) {
+                minimaseHeatLoss(map, row - 1, column, -1, 2, visited, path);
+                minimaseHeatLoss(map, row + 1, column, 1, 2, visited, path);
+                minimaseHeatLoss(map, row, column - 1, 0, remainingInDirection - 1, visited, path);
+                minimaseHeatLoss(map, row, column + 1, 0, remainingInDirection - 1, visited, path);
+            } else {
+                minimaseHeatLoss(map, row, column - 1, 0, 2, visited, path);
+                minimaseHeatLoss(map, row, column + 1, 0, 2, visited, path);
+                minimaseHeatLoss(map, row - 1, column, -1, remainingInDirection - 1, visited, path);
+                minimaseHeatLoss(map, row + 1, column, 1, remainingInDirection - 1, visited, path);
+            }
         }
-        return value + path;
     }
 
     @Override
@@ -71,9 +79,18 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String solvePartOne(Stream<String> lines) {
-        char[][] map = lines.map(line -> line.toCharArray())
-                .toArray(char[][]::new);
-        return "";
+        int[][] map = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
+                .toArray(int[][]::new);
+        long[][] visited = LongStream.range(0, map.length)
+                .mapToObj(i -> LongStream.range(0, map[0].length)
+                        .map(j -> Long.MAX_VALUE)
+                        .toArray()
+                )
+                .toArray(long[][]::new);
+        visited[0][0] = 0;
+        minimaseHeatLoss(map, 1, 0, 1, 2, visited, 0);
+        minimaseHeatLoss(map, 0, 1, 0, 2, visited, 0);
+        return visited[visited.length - 1][visited.length - 1] + "";
     }
 
     @Override
