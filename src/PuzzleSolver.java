@@ -104,6 +104,8 @@ public abstract class PuzzleSolver {
         }
     }
 
+    public abstract String solvePartOne(Stream<String> lines) throws InterruptedException;
+
     private class PartOneTask extends Task {
         PartOneTask(Stream<String> input) {
             super(input);
@@ -119,28 +121,8 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        String solve() {
+        String solve() throws Exception {
             return solvePartOne(getInput());
-        }
-    }
-
-    private class PartTwoTask extends Task {
-        PartTwoTask(Stream<String> input) {
-            super(input);
-        }
-
-        PartTwoTask(String input, String output) {
-            super(input, output);
-        }
-
-        @Override
-        String getText() {
-            return "Part Two";
-        }
-
-        @Override
-        String solve() {
-            return solvePartTwo(getInput());
         }
     }
 
@@ -166,7 +148,25 @@ public abstract class PuzzleSolver {
         return getInput1();
     }
 
-    public abstract String solvePartOne(Stream<String> lines);
+    private class PartTwoTask extends Task {
+        PartTwoTask(Stream<String> input) {
+            super(input);
+        }
+
+        PartTwoTask(String input, String output) {
+            super(input, output);
+        }
+
+        @Override
+        String getText() {
+            return "Part Two";
+        }
+
+        @Override
+        String solve() throws Exception {
+            return solvePartTwo(getInput());
+        }
+    }
 
     public abstract String solvePartTwo(Stream<String> lines);
 }
