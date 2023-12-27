@@ -69,8 +69,7 @@ public class Solution extends PuzzleSolver {
 
         int totalLoad = 0;
         Map<Integer, Map.Entry<Long, Integer>> cycles = new HashMap<>();
-        Set<Integer> visited = new HashSet<>();
-        for (long cycle = 0; cycle < 1_000_000_000L; ++cycle) {
+        for (long cycle = 0; cycle < 1_000L; ++cycle) {
             // north
             for (int row = 0; row < platform.length; ++row) {
                 var platformRow = platform[row];
@@ -139,9 +138,7 @@ public class Solution extends PuzzleSolver {
 
             var hash = Arrays.deepHashCode(platform);
             var found = cycles.get(hash);
-            if (found != null) {
-                visited.add(hash);
-            } else {
+            if (found == null) {
                 cycles.put(hash, new AbstractMap.SimpleImmutableEntry<>(cycle, totalLoad));
             }
         }
