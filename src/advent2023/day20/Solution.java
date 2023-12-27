@@ -5,6 +5,7 @@ import src.PuzzleSolver;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -33,14 +34,14 @@ public class Solution extends PuzzleSolver {
         return List.of("32000000", "11687500");
     }
 
-    @Override
-    public List<String> getExampleInput2() {
-        return List.of();
+    static long lcm(LongStream oneNodeDistances) {
+        return oneNodeDistances.reduce(1L, (x, y) -> (x * y) / gcd(x, y));
     }
 
-    @Override
-    public List<String> getExampleOutput2() {
-        return List.of();
+    static long gcd(long a, long b) {
+        if (b == 0)
+            return a;
+        return gcd(b, a % b);
     }
 
     @Override
@@ -91,6 +92,16 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
+    public List<String> getExampleInput2() {
+        return List.of("broadcaster -> rx");
+    }
+
+    @Override
+    public List<String> getExampleOutput2() {
+        return List.of("1");
+    }
+
+    @Override
     public String solvePartTwo(Stream<String> lines) {
         Map<String, Module> modules = new HashMap<>();
         Map<String, List<String>> inputModules = new HashMap<>();
@@ -114,6 +125,9 @@ public class Solution extends PuzzleSolver {
                 });
         modules.forEach((k, v) -> v.setInputModules(inputModules.get(k)));
 
+        String rxInput = inputModules.get("rx").get(0);
+        Map<String, Long> rxInputs = new HashMap<>();
+
         long buttonPresses = 0;
         Deque<Signal> waitingForProcessing = new ArrayDeque<>();
         while (true) {
@@ -128,6 +142,11 @@ public class Solution extends PuzzleSolver {
                     for (var destinationModuleName : module.getDestinationModules()) {
                         if ("rx".equals(destinationModuleName) && pulse == Pulse.LOW) {
                             return buttonPresses + "";
+                        }
+                        if (pulse == Pulse.HIGH && rxInput.equals(destinationModuleName)) {
+                            if (rxInputs.putIfAbsent(signal.getFromModule(), buttonPresses) != null) {
+                                return "" + lcm(rxInputs.values().parallelStream().mapToLong(v -> v));
+                            }
                         }
                         var destinationModule = modules.get(destinationModuleName);
                         if (destinationModule != null) {
