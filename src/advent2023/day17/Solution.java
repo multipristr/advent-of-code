@@ -132,18 +132,12 @@ public class Solution extends PuzzleSolver {
                     if (searchState.getRow() + 1 < map.length) {
                         queue.add(new SearchState(searchState.getRow() + 1, searchState.getColumn(), 1, 0, 2, map, searchState.getPath()));
                     }
-                    if (searchState.getColumn() - 1 >= 0) {
-                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() - 1, 0, -1, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
-                    }
-                    if (searchState.getColumn() + 1 < map[searchState.getRow()].length) {
-                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() + 1, 0, 1, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
+                    if (searchState.getColumn() - 1 >= 0 && searchState.getColumn() + 1 < map[searchState.getRow()].length) {
+                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() + searchState.getColumnDirection(), 0, searchState.getColumnDirection(), searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
                     }
                 } else {
-                    if (searchState.getRow() - 1 >= 0) {
-                        queue.add(new SearchState(searchState.getRow() - 1, searchState.getColumn(), -1, 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
-                    }
-                    if (searchState.getRow() + 1 < map.length) {
-                        queue.add(new SearchState(searchState.getRow() + 1, searchState.getColumn(), 1, 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
+                    if (searchState.getRow() - 1 >= 0 && searchState.getRow() + 1 < map.length) {
+                        queue.add(new SearchState(searchState.getRow() + searchState.getRowDirection(), searchState.getColumn(), searchState.getRowDirection(), 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
                     }
                     if (searchState.getColumn() - 1 >= 0) {
                         queue.add(new SearchState(searchState.getRow(), searchState.getColumn() - 1, 0, -1, 2, map, searchState.getPath()));
@@ -240,18 +234,12 @@ public class Solution extends PuzzleSolver {
                         long skipped = IntStream.range(searchState.getRow() + 1, searchState.getRow() + 4).mapToLong(i -> map[i][searchState.getColumn()]).sum();
                         queue.add(new SearchState(searchState.getRow() + 4, searchState.getColumn(), 1, 0, 6, map, searchState.getPath() + skipped));
                     }
-                    if (searchState.getColumn() - 1 >= 0) {
-                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() - 1, 0, -1, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
-                    }
-                    if (searchState.getColumn() + 1 < map[searchState.getRow()].length) {
-                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() + 1, 0, 1, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
+                    if (searchState.getColumn() - 1 >= 0 && searchState.getColumn() + 1 < map[searchState.getRow()].length) {
+                        queue.add(new SearchState(searchState.getRow(), searchState.getColumn() + searchState.getColumnDirection(), 0, searchState.getColumnDirection(), searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
                     }
                 } else {
-                    if (searchState.getRow() - 1 >= 0) {
-                        queue.add(new SearchState(searchState.getRow() - 1, searchState.getColumn(), -1, 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
-                    }
-                    if (searchState.getRow() + 1 < map.length) {
-                        queue.add(new SearchState(searchState.getRow() + 1, searchState.getColumn(), 1, 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
+                    if (searchState.getRow() - 1 >= 0 && searchState.getRow() + 1 < map.length) {
+                        queue.add(new SearchState(searchState.getRow() + searchState.getRowDirection(), searchState.getColumn(), searchState.getRowDirection(), 0, searchState.getRemainingInDirection() - 1, map, searchState.getPath()));
                     }
                     if (searchState.getColumn() - 4 >= 0) {
                         long skipped = IntStream.range(searchState.getColumn() - 3, searchState.getColumn()).mapToLong(i -> map[searchState.getRow()][i]).sum();
@@ -278,7 +266,6 @@ public class Solution extends PuzzleSolver {
         private final int rowDirection;
         private final int columnDirection;
         private final int remainingInDirection;
-        private final long lowestEndDistance;
         private final long path;
 
         SearchState(int row, int column, int rowDirection, int columnDirection, int remainingInDirection, int[][] map, long path) {
@@ -288,7 +275,6 @@ public class Solution extends PuzzleSolver {
             this.columnDirection = columnDirection;
             this.remainingInDirection = remainingInDirection;
             this.path = path + map[row][column];
-            lowestEndDistance = this.path + Math.abs(row - map.length) + Math.abs(column - map[map.length - 1].length);
         }
 
         int getRow() {
@@ -317,10 +303,7 @@ public class Solution extends PuzzleSolver {
 
         @Override
         public int compareTo(SearchState that) {
-            if (lowestEndDistance != that.lowestEndDistance) {
-                return Long.compare(lowestEndDistance, that.lowestEndDistance);
-            }
-            return remainingInDirection - that.remainingInDirection;
+            return Long.compare(path, that.path);
         }
 
         @Override
@@ -328,12 +311,12 @@ public class Solution extends PuzzleSolver {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             SearchState that = (SearchState) o;
-            return remainingInDirection == that.remainingInDirection && lowestEndDistance == that.lowestEndDistance;
+            return row == that.row && column == that.column && rowDirection == that.rowDirection && columnDirection == that.columnDirection && remainingInDirection == that.remainingInDirection && path == that.path;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(remainingInDirection, lowestEndDistance);
+            return Objects.hash(row, column, rowDirection, columnDirection, remainingInDirection, path);
         }
     }
 }
