@@ -3,11 +3,14 @@ package src.advent2023.day22;
 import src.PuzzleSolver;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class Solution extends PuzzleSolver {
+    private static final char[] ALPHABET = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G'};
 
     public static void main(String[] args) {
         new Solution().run();
@@ -29,69 +32,182 @@ public class Solution extends PuzzleSolver {
         return List.of("5");
     }
 
+    private static long countBricksToFall(Brick lastDisintegratedBrick, Map<Brick, Long> memory) {
+        long disintegratedCount = 0;
+        Set<Brick> disintegrated = new HashSet<>();
+        Deque<Brick> toDisintegrate = new ArrayDeque<>();
+        toDisintegrate.addLast(lastDisintegratedBrick);
+
+        while (!toDisintegrate.isEmpty()) {
+            var brick = toDisintegrate.pollFirst();
+
+            var found = memory.get(lastDisintegratedBrick);
+            if (found != null) {
+                disintegratedCount += found;
+                continue;
+            }
+
+            disintegrated.add(brick);
+            for (Brick supporting : brick.getSupporting()) {
+                if (disintegrated.containsAll(supporting.getSupportedBy())) {
+                    ++disintegratedCount;
+                    toDisintegrate.add(supporting);
+                }
+            }
+        }
+
+        memory.put(lastDisintegratedBrick, disintegratedCount);
+        return disintegratedCount;
+    }
+
     @Override
     public List<String> getExampleOutput2() {
-        return List.of();
+        return List.of("7");
     }
 
     @Override
     public String solvePartOne(Stream<String> lines) {
-        NavigableMap<Long, NavigableMap<Long, Brick>> xBricks = new TreeMap<>();
-        NavigableMap<Long, NavigableMap<Long, Brick>> yBricks = new TreeMap<>();
+        AtomicInteger letterIndex = new AtomicInteger();
         List<Brick> bricks = lines.map(line -> line.split("~"))
                 .map(intervals -> {
                     long[] start = Arrays.stream(intervals[0].split(",")).mapToLong(Long::parseLong).toArray();
                     long[] end = Arrays.stream(intervals[1].split(",")).mapToLong(Long::parseLong).toArray();
-                    Brick brick = new Brick(start[0], end[0], start[1], end[1], start[2], end[2]);
-                    long zMovement = 0;
-                    for (int i = 1; i < brick.getStartZ(); i++) {
-                        var xMap = xBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
-                        var yMap = yBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
-                        var belowX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true);
-                        var belowY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true);
-                        var bricksBelow = new HashSet<>(belowX.values());
-                        bricksBelow.retainAll(belowY.values());
-                        if (!bricksBelow.isEmpty()) {
-                            break;
-                        } else {
-                            ++zMovement;
-                        }
+                    return new Brick(start[0], end[0], start[1], end[1], start[2], end[2], ALPHABET[letterIndex.getAndIncrement() % ALPHABET.length]);
+                })
+                .sorted(Comparator.comparingLong(Brick::getStartZ).thenComparingLong(Brick::getEndZ))
+                .collect(Collectors.toList());
+
+        NavigableMap<Long, NavigableMap<Long, Set<Brick>>> xBricks = new TreeMap<>();
+        NavigableMap<Long, NavigableMap<Long, Set<Brick>>> yBricks = new TreeMap<>();
+        for (Brick brick : bricks) {
+            long zMovement = 0;
+            for (int i = 1; i < brick.getStartZ(); i++) {
+                var xMap = xBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
+                var yMap = yBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
+                var belowX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true)
+                        .values().stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet());
+                var belowY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true)
+                        .values().stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet());
+                var bricksBelow = new HashSet<>(belowX);
+                bricksBelow.retainAll(belowY);
+                if (!bricksBelow.isEmpty()) {
+                    break;
+                } else {
+                    ++zMovement;
+                }
+            }
+            brick.moveDown(zMovement);
+
+            for (long z = brick.getStartZ(); z <= brick.getEndZ(); z++) {
+                var xMap = xBricks.computeIfAbsent(z, k -> new TreeMap<>());
+                var yMap = yBricks.computeIfAbsent(z, k -> new TreeMap<>());
+                for (long x = brick.getStartX(); x <= brick.getEndX(); x++) {
+                    xMap.computeIfAbsent(x, k -> new HashSet<>()).add(brick);
+                    for (long y = brick.getStartY(); y <= brick.getEndY(); y++) {
+                        yMap.computeIfAbsent(y, k -> new HashSet<>()).add(brick);
                     }
-                    brick.moveDown(zMovement);
-                    for (long z = brick.getStartZ(); z <= brick.getEndZ(); z++) {
-                        var xMap = xBricks.computeIfAbsent(z, k -> new TreeMap<>());
-                        var yMap = yBricks.computeIfAbsent(z, k -> new TreeMap<>());
-                        for (long x = brick.getStartX(); x <= brick.getEndX(); x++) {
-                            xMap.put(x, brick);
-                            for (long y = brick.getStartY(); y <= brick.getEndY(); y++) {
-                                yMap.put(y, brick);
-                            }
-                        }
-                    }
-                    return brick;
-                }).collect(Collectors.toList());
+                }
+            }
+        }
 
         for (Brick brick : bricks) {
             var xMap = xBricks.getOrDefault(brick.getEndZ() + 1, Collections.emptyNavigableMap());
             var yMap = yBricks.getOrDefault(brick.getEndZ() + 1, Collections.emptyNavigableMap());
 
-            var aboveX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true);
-            var aboveY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true);
-            var bricksAbove = new HashSet<>(aboveX.values());
-            bricksAbove.retainAll(aboveY.values());
+            var aboveX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true)
+                    .values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            var aboveY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true)
+                    .values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            var bricksAbove = new HashSet<>(aboveX);
+            bricksAbove.retainAll(aboveY);
             brick.getSupporting().addAll(bricksAbove);
             bricksAbove.forEach(brickAbove -> brickAbove.getSupportedBy().add(brick));
         }
 
         return "" + bricks.stream()
                 .filter(brick -> brick.getSupporting().stream().noneMatch(supporting -> supporting.getSupportedBy().size() == 1))
-                //.peek(b -> System.out.println(b))
                 .count();
     }
 
     @Override
     public String solvePartTwo(Stream<String> lines) {
-        return "";
+        AtomicInteger letterIndex = new AtomicInteger();
+        List<Brick> bricks = lines.map(line -> line.split("~"))
+                .map(intervals -> {
+                    long[] start = Arrays.stream(intervals[0].split(",")).mapToLong(Long::parseLong).toArray();
+                    long[] end = Arrays.stream(intervals[1].split(",")).mapToLong(Long::parseLong).toArray();
+                    return new Brick(start[0], end[0], start[1], end[1], start[2], end[2], ALPHABET[letterIndex.getAndIncrement() % ALPHABET.length]);
+                })
+                .sorted(Comparator.comparingLong(Brick::getStartZ).thenComparingLong(Brick::getEndZ))
+                .collect(Collectors.toList());
+
+        NavigableMap<Long, NavigableMap<Long, Set<Brick>>> xBricks = new TreeMap<>();
+        NavigableMap<Long, NavigableMap<Long, Set<Brick>>> yBricks = new TreeMap<>();
+        for (Brick brick : bricks) {
+            long zMovement = 0;
+            for (int i = 1; i < brick.getStartZ(); i++) {
+                var xMap = xBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
+                var yMap = yBricks.getOrDefault(brick.getStartZ() - i, Collections.emptyNavigableMap());
+                var belowX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true)
+                        .values().stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet());
+                var belowY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true)
+                        .values().stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toSet());
+                var bricksBelow = new HashSet<>(belowX);
+                bricksBelow.retainAll(belowY);
+                if (!bricksBelow.isEmpty()) {
+                    break;
+                } else {
+                    ++zMovement;
+                }
+            }
+            brick.moveDown(zMovement);
+
+            for (long z = brick.getStartZ(); z <= brick.getEndZ(); z++) {
+                var xMap = xBricks.computeIfAbsent(z, k -> new TreeMap<>());
+                var yMap = yBricks.computeIfAbsent(z, k -> new TreeMap<>());
+                for (long x = brick.getStartX(); x <= brick.getEndX(); x++) {
+                    xMap.computeIfAbsent(x, k -> new HashSet<>()).add(brick);
+                    for (long y = brick.getStartY(); y <= brick.getEndY(); y++) {
+                        yMap.computeIfAbsent(y, k -> new HashSet<>()).add(brick);
+                    }
+                }
+            }
+        }
+
+        for (Brick brick : bricks) {
+            var xMap = xBricks.getOrDefault(brick.getEndZ() + 1, Collections.emptyNavigableMap());
+            var yMap = yBricks.getOrDefault(brick.getEndZ() + 1, Collections.emptyNavigableMap());
+
+            var aboveX = xMap.subMap(brick.getStartX(), true, brick.getEndX(), true)
+                    .values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            var aboveY = yMap.subMap(brick.getStartY(), true, brick.getEndY(), true)
+                    .values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            var bricksAbove = new HashSet<>(aboveX);
+            bricksAbove.retainAll(aboveY);
+            brick.getSupporting().addAll(bricksAbove);
+            bricksAbove.forEach(brickAbove -> brickAbove.getSupportedBy().add(brick));
+        }
+
+        Map<Brick, Long> memory = new ConcurrentHashMap<>();
+        return "" + bricks.parallelStream()
+                .mapToLong(brick -> countBricksToFall(brick, memory))
+                .sum();
     }
 
     private static class Brick {
@@ -103,14 +219,16 @@ public class Solution extends PuzzleSolver {
         private final Set<Brick> supporting = new HashSet<>();
         private long startZ;
         private long endZ;
+        private char letter;
 
-        Brick(long startX, long endX, long startY, long endY, long startZ, long endZ) {
+        Brick(long startX, long endX, long startY, long endY, long startZ, long endZ, char letter) {
             this.startX = startX;
             this.endX = endX;
             this.startY = startY;
             this.endY = endY;
             this.startZ = startZ;
             this.endZ = endZ;
+            this.letter = letter;
         }
 
         long getStartX() {
@@ -152,7 +270,7 @@ public class Solution extends PuzzleSolver {
 
         @Override
         public String toString() {
-            return startX + "," + startY + "," + startZ + "~" + endX + "," + endY + "," + endZ;
+            return letter + " " + startX + "," + startY + "," + startZ + "~" + endX + "," + endY + "," + endZ;
         }
     }
 }
