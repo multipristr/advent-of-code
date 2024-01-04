@@ -2,12 +2,7 @@ package src.advent2023.day3;
 
 import src.PuzzleSolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -17,8 +12,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "467..114..\n" +
+    public List<String> getExampleInput1() {
+        return List.of("467..114..\n" +
                 "...*......\n" +
                 "..35..633.\n" +
                 "......#...\n" +
@@ -27,17 +22,17 @@ public class Solution extends PuzzleSolver {
                 "..592.....\n" +
                 "......755.\n" +
                 "...$.*....\n" +
-                ".664.598..";
+                ".664.598..");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "4361";
+    public List<String> getExampleOutput1() {
+        return List.of("4361");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "467835";
+    public List<String> getExampleOutput2() {
+        return List.of("467835");
     }
 
     @Override

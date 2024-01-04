@@ -3,6 +3,7 @@ package src.advent2015.day3;
 import src.PuzzleSolver;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -13,18 +14,18 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "^>v<";
+    public List<String> getExampleInput1() {
+        return List.of("^>v<");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "4";
+    public List<String> getExampleOutput1() {
+        return List.of("4");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "3";
+    public List<String> getExampleOutput2() {
+        return List.of("3");
     }
 
     @Override

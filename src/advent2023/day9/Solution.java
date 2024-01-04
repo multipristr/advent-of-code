@@ -2,6 +2,7 @@ package src.advent2023.day9;
 
 import src.PuzzleSolver;
 
+import java.util.List;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -12,20 +13,20 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "0 3 6 9 12 15\n" +
+    public List<String> getExampleInput1() {
+        return List.of("0 3 6 9 12 15\n" +
                 "1 3 6 10 15 21\n" +
-                "10 13 16 21 30 45";
+                "10 13 16 21 30 45");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "114";
+    public List<String> getExampleOutput1() {
+        return List.of("114");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "2";
+    public List<String> getExampleOutput2() {
+        return List.of("2");
     }
 
     @Override

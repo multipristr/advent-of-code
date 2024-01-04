@@ -51,17 +51,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "32T3K 765\n"
+    public List<String> getExampleInput1() {
+        return List.of("32T3K 765\n"
                 + "T55J5 684\n"
                 + "KK677 28\n"
                 + "KTJJT 220\n"
-                + "QQQJA 483\n";
+                + "QQQJA 483\n");
     }
 
     @Override
-    public String getExampleInput2() {
-        return "2345A 2\n"
+    public List<String> getExampleInput2() {
+        return List.of("2345A 2\n"
                 + "2345J 5\n"
                 + "J345A 3\n"
                 + "32T3K 7\n"
@@ -75,17 +75,17 @@ public class Solution extends PuzzleSolver {
                 + "AAAAA 53\n"
                 + "2AAAA 13\n"
                 + "2JJJJ 41\n"
-                + "JJJJ2 31";
+                + "JJJJ2 31");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "6440";
+    public List<String> getExampleOutput1() {
+        return List.of("6440");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "3667";
+    public List<String> getExampleOutput2() {
+        return List.of("3667");
     }
 
     @Override

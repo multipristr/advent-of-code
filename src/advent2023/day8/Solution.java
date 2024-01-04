@@ -4,6 +4,7 @@ import src.PuzzleSolver;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
@@ -27,8 +28,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "RL\n"
+    public List<String> getExampleInput1() {
+        return List.of("RL\n"
                 + "\n"
                 + "AAA = (BBB, CCC)\n"
                 + "BBB = (DDD, EEE)\n"
@@ -36,17 +37,17 @@ public class Solution extends PuzzleSolver {
                 + "DDD = (DDD, DDD)\n"
                 + "EEE = (EEE, EEE)\n"
                 + "GGG = (GGG, GGG)\n"
-                + "ZZZ = (ZZZ, ZZZ)";
+                + "ZZZ = (ZZZ, ZZZ)");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "2";
+    public List<String> getExampleOutput1() {
+        return List.of("2");
     }
 
     @Override
-    public String getExampleInput2() {
-        return "LR\n"
+    public List<String> getExampleInput2() {
+        return List.of("LR\n"
                 + "\n"
                 + "11A = (11B, XXX)\n"
                 + "11B = (XXX, 11Z)\n"
@@ -55,12 +56,12 @@ public class Solution extends PuzzleSolver {
                 + "22B = (22C, 22C)\n"
                 + "22C = (22Z, 22Z)\n"
                 + "22Z = (22B, 22B)\n"
-                + "XXX = (XXX, XXX)";
+                + "XXX = (XXX, XXX)");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "6";
+    public List<String> getExampleOutput2() {
+        return List.of("6");
     }
 
     @Override

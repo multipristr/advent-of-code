@@ -15,19 +15,19 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return "Time:      7  15   30\n" +
-                "Distance:  9  40  200";
+    public List<String> getExampleInput1() {
+        return List.of("Time:      7  15   30\n" +
+                "Distance:  9  40  200");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "288";
+    public List<String> getExampleOutput1() {
+        return List.of("288");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "71503";
+    public List<String> getExampleOutput2() {
+        return List.of("71503");
     }
 
     @Override

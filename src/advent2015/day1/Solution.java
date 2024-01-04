@@ -2,6 +2,7 @@ package src.advent2015.day1;
 
 import src.PuzzleSolver;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -11,23 +12,23 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String getExampleInput1() {
-        return ")())())";
+    public List<String> getExampleInput1() {
+        return List.of(")())())");
     }
 
     @Override
-    public String getExampleOutput1() {
-        return "-3";
+    public List<String> getExampleOutput1() {
+        return List.of("-3");
     }
 
     @Override
-    public String getExampleInput2() {
-        return "()())";
+    public List<String> getExampleInput2() {
+        return List.of("()())");
     }
 
     @Override
-    public String getExampleOutput2() {
-        return "5";
+    public List<String> getExampleOutput2() {
+        return List.of("5");
     }
 
     @Override
