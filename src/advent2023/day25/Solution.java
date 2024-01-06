@@ -2,7 +2,11 @@ package src.advent2023.day25;
 
 import src.PuzzleSolver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -40,6 +44,15 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public String solvePartOne(Stream<String> lines) {
+        Map<String, List<String>> components = new HashMap<>((int) (1539 / .75f + 1));
+        lines.map(line -> line.split(": "))
+                .forEach(parts -> {
+                    var targetComponents = Arrays.asList(parts[1].split(" "));
+                    components.computeIfAbsent(parts[0], k -> new ArrayList<>(9)).addAll(targetComponents);
+                    for (var targetComponent : targetComponents) {
+                        components.computeIfAbsent(targetComponent, k -> new ArrayList<>(9)).add(parts[0]);
+                    }
+                });
         return "";
     }
 
