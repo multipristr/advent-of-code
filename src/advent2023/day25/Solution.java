@@ -2,7 +2,6 @@ package src.advent2023.day25;
 
 import src.PuzzleSolver;
 
-import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -50,51 +51,43 @@ public class Solution extends PuzzleSolver {
     @Override
     public String solvePartOne(Stream<String> lines) {
         Map<String, List<String>> components = new HashMap<>((int) (1539 / .75f + 1));
-        List<Map.Entry<String, String>> wires = new ArrayList<>(3450);
         lines.map(line -> line.split(": "))
                 .forEach(parts -> {
                     var targetComponents = Arrays.asList(parts[1].split(" "));
                     components.computeIfAbsent(parts[0], k -> new ArrayList<>(9)).addAll(targetComponents);
                     for (var targetComponent : targetComponents) {
                         components.computeIfAbsent(targetComponent, k -> new ArrayList<>(9)).add(parts[0]);
-                        wires.add(new AbstractMap.SimpleImmutableEntry<>(parts[0], targetComponent));
                     }
                 });
-        for (int i = 0; i < wires.size(); i++) {
-            Map.Entry<String, String> wire1 = wires.remove(i);
-            components.get(wire1.getKey()).remove(wire1.getValue());
-            components.get(wire1.getValue()).remove(wire1.getKey());
-            for (int j = i; j < wires.size(); j++) {
-                Map.Entry<String, String> wire2 = wires.remove(j);
-                components.get(wire2.getKey()).remove(wire2.getValue());
-                components.get(wire2.getValue()).remove(wire2.getKey());
-                for (int k = j; k < wires.size(); k++) {
-                    Map.Entry<String, String> wire3 = wires.remove(k);
-                    components.get(wire3.getKey()).remove(wire3.getValue());
-                    components.get(wire3.getValue()).remove(wire3.getKey());
 
-                    long componentsInGroup = -1;
-                    for (String component : components.keySet()) {
-                        long connectedComponents = countConnectedEdges(component, components);
-                        if (componentsInGroup != connectedComponents) {
-                            if (componentsInGroup != -1) {
-                                return "" + componentsInGroup * connectedComponents;
-                            }
-                            componentsInGroup = connectedComponents;
-                        }
+        var vtvWires = components.getOrDefault("vtv", List.of());
+        var cmjWires = components.getOrDefault("cmj", List.of());
+        var jllWires = components.getOrDefault("jll", List.of());
+        for (int i = 0; i < vtvWires.size(); i++) {
+            var vtvWire = vtvWires.remove(i);
+            components.get(vtvWire).remove("vtv");
+            for (int j = 0; j < cmjWires.size(); j++) {
+                var cmjWire = cmjWires.remove(j);
+                components.get(cmjWire).remove("cmj");
+                for (int k = 0; k < jllWires.size(); k++) {
+                    var jllWire = jllWires.remove(k);
+                    components.get(jllWire).remove("jll");
+
+                    Map<Long, Long> occurrence = components.keySet().parallelStream()
+                            .map(component -> countConnectedEdges(component, components))
+                            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+                    if (occurrence.size() == 2) {
+                        return "" + occurrence.keySet().stream().reduce(1L, (a, b) -> a * b);
                     }
 
-                    wires.add(k, wire3);
-                    components.get(wire3.getKey()).add(wire3.getValue());
-                    components.get(wire3.getValue()).add(wire3.getKey());
+                    jllWires.add(k, jllWire);
+                    components.get(jllWire).add("jll");
                 }
-                wires.add(j, wire2);
-                components.get(wire2.getKey()).add(wire2.getValue());
-                components.get(wire2.getValue()).add(wire2.getKey());
+                cmjWires.add(j, cmjWire);
+                components.get(cmjWire).add("cmj");
             }
-            wires.add(i, wire1);
-            components.get(wire1.getKey()).add(wire1.getValue());
-            components.get(wire1.getValue()).add(wire1.getKey());
+            vtvWires.add(i, vtvWire);
+            components.get(vtvWire).add("vtv");
         }
         return "";
     }
