@@ -9,10 +9,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -73,11 +72,12 @@ public class Solution extends PuzzleSolver {
                     var jllWire = jllWires.remove(k);
                     components.get(jllWire).remove("jll");
 
-                    Map<Long, Long> occurrence = components.keySet().parallelStream()
-                            .map(component -> countConnectedEdges(component, components))
-                            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-                    if (occurrence.size() == 2) {
-                        return "" + occurrence.keySet().stream().reduce(1L, (a, b) -> a * b);
+                    LongSummaryStatistics occurrence = components.keySet().parallelStream()
+                            .mapToLong(component -> countConnectedEdges(component, components))
+                            .distinct()
+                            .summaryStatistics();
+                    if (occurrence.getCount() == 2) {
+                        return "" + occurrence.getMin() * occurrence.getMax();
                     }
 
                     jllWires.add(k, jllWire);
