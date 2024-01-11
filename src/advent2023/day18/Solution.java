@@ -15,6 +15,25 @@ public class Solution extends PuzzleSolver {
         new Solution().run();
     }
 
+    private static long parseSteps(String color) {
+        return Long.parseLong(color.substring(2, color.length() - 2), 16);
+    }
+
+    // TODO Figure out why the area calculated from the shoelace formula is off by 2
+    private static long shoelace_formula(List<Map.Entry<Long, Long>> coordinates) {
+        long shoelaces = 0;
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            var coordinate = coordinates.get(i);
+            var nextCoordinate = coordinates.get(i + 1);
+            shoelaces += (coordinate.getKey() * nextCoordinate.getValue() - nextCoordinate.getKey() * coordinate.getValue());
+        }
+        return Math.abs(shoelaces >> 1) + 2;
+    }
+
+    private static long picks_theorem_formula(long borderLength, long insideArea) {
+        return insideArea + (borderLength >> 1) - 1;
+    }
+
     @Override
     public List<String> getExampleInput1() {
         return List.of("R 6 (#70c710)\n" +
@@ -41,25 +60,6 @@ public class Solution extends PuzzleSolver {
     @Override
     public List<String> getExampleOutput2() {
         return List.of("952408144115");
-    }
-
-    private static long parseSteps(String color) {
-        return Long.parseLong(color.substring(2, color.length() - 2), 16);
-    }
-
-    // TODO Figure out why the area calculated from the shoelace formula is off by 2
-    private static long shoelace_formula(List<Map.Entry<Long, Long>> coordinates) {
-        long shoelaces = 0;
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            var coordinate = coordinates.get(i);
-            var nextCoordinate = coordinates.get(i + 1);
-            shoelaces += (coordinate.getKey() * nextCoordinate.getValue() - nextCoordinate.getKey() * coordinate.getValue());
-        }
-        return Math.abs(shoelaces >> 1) + 2;
-    }
-
-    private static long picks_theorem_formula(long borderLength, long insideArea) {
-        return insideArea + (borderLength >> 1) - 1;
     }
 
     @Override

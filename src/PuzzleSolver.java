@@ -59,6 +59,32 @@ public abstract class PuzzleSolver {
         }
     }
 
+    public abstract String solvePartOne(Stream<String> lines) throws InterruptedException;
+
+    public abstract List<String> getExampleInput1();
+
+    public abstract List<String> getExampleOutput1();
+
+    public List<String> getExampleInput2() {
+        return getExampleInput1();
+    }
+
+    public abstract List<String> getExampleOutput2();
+
+    public Stream<String> getInput1() {
+        try {
+            return Files.lines(Paths.get(".").toAbsolutePath().resolve(getClass().getPackageName().replaceAll("\\.", "/")).resolve("input.txt"), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public Stream<String> getInput2() {
+        return getInput1();
+    }
+
+    public abstract String solvePartTwo(Stream<String> lines);
+
     private static abstract class Task implements Callable<String> {
         private final Stream<String> input;
         private final Optional<String> output;
@@ -104,8 +130,6 @@ public abstract class PuzzleSolver {
         }
     }
 
-    public abstract String solvePartOne(Stream<String> lines) throws InterruptedException;
-
     private class PartOneTask extends Task {
         PartOneTask(Stream<String> input) {
             super(input);
@@ -124,28 +148,6 @@ public abstract class PuzzleSolver {
         String solve() throws Exception {
             return solvePartOne(getInput());
         }
-    }
-
-    public abstract List<String> getExampleInput1();
-
-    public abstract List<String> getExampleOutput1();
-
-    public List<String> getExampleInput2() {
-        return getExampleInput1();
-    }
-
-    public abstract List<String> getExampleOutput2();
-
-    public Stream<String> getInput1() {
-        try {
-            return Files.lines(Paths.get(".").toAbsolutePath().resolve(getClass().getPackageName().replaceAll("\\.", "/")).resolve("input.txt"), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public Stream<String> getInput2() {
-        return getInput1();
     }
 
     private class PartTwoTask extends Task {
@@ -167,6 +169,4 @@ public abstract class PuzzleSolver {
             return solvePartTwo(getInput());
         }
     }
-
-    public abstract String solvePartTwo(Stream<String> lines);
 }

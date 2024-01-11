@@ -2,7 +2,14 @@ package src.advent2023.day17;
 
 import src.PuzzleSolver;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.TreeMap;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -303,7 +310,7 @@ public class Solution extends PuzzleSolver {
 
         @Override
         public int compareTo(SearchState that) {
-            return Long.compare(path, that.path);
+            return path != that.path ? Long.compare(path, that.path) : Long.compare(that.remainingInDirection, remainingInDirection);
         }
 
         @Override

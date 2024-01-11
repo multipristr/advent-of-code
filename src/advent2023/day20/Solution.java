@@ -2,7 +2,16 @@ package src.advent2023.day20;
 
 import src.PuzzleSolver;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -12,6 +21,16 @@ public class Solution extends PuzzleSolver {
 
     public static void main(String[] args) {
         new Solution().run();
+    }
+
+    static long lcm(LongStream oneNodeDistances) {
+        return oneNodeDistances.reduce(1L, (x, y) -> (x * y) / gcd(x, y));
+    }
+
+    static long gcd(long a, long b) {
+        if (b == 0)
+            return a;
+        return gcd(b, a % b);
     }
 
     @Override
@@ -32,16 +51,6 @@ public class Solution extends PuzzleSolver {
     @Override
     public List<String> getExampleOutput1() {
         return List.of("32000000", "11687500");
-    }
-
-    static long lcm(LongStream oneNodeDistances) {
-        return oneNodeDistances.reduce(1L, (x, y) -> (x * y) / gcd(x, y));
-    }
-
-    static long gcd(long a, long b) {
-        if (b == 0)
-            return a;
-        return gcd(b, a % b);
     }
 
     @Override

@@ -2,7 +2,12 @@ package src.advent2023.day3;
 
 import src.PuzzleSolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {

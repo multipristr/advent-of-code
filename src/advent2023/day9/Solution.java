@@ -2,8 +2,8 @@ package src.advent2023.day9;
 
 import src.PuzzleSolver;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
