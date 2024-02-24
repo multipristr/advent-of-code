@@ -67,17 +67,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("5");
+    public List<Long> getExampleOutput1() {
+        return List.of(5L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("7");
+    public List<Long> getExampleOutput2() {
+        return List.of(7L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         AtomicInteger letterIndex = new AtomicInteger();
         List<Brick> bricks = lines.map(line -> line.split("~"))
                 .map(intervals -> {
@@ -143,13 +143,13 @@ public class Solution extends PuzzleSolver {
             bricksAbove.forEach(brickAbove -> brickAbove.getSupportedBy().add(brick));
         }
 
-        return "" + bricks.stream()
+        return bricks.stream()
                 .filter(brick -> brick.getSupporting().stream().noneMatch(supporting -> supporting.getSupportedBy().size() == 1))
                 .count();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         AtomicInteger letterIndex = new AtomicInteger();
         List<Brick> bricks = lines.map(line -> line.split("~"))
                 .map(intervals -> {
@@ -216,7 +216,7 @@ public class Solution extends PuzzleSolver {
         }
 
         Map<Brick, Long> memory = new ConcurrentHashMap<>();
-        return "" + bricks.parallelStream()
+        return bricks.parallelStream()
                 .mapToLong(brick -> countBricksToFall(brick, memory))
                 .sum();
     }

@@ -27,17 +27,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("13");
+    public List<Long> getExampleOutput1() {
+        return List.of(13L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("30");
+    public List<Long> getExampleOutput2() {
+        return List.of(30L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.mapToInt(line -> {
                     StringTokenizer tokens = new StringTokenizer(line, " ");
                     tokens.nextToken();
@@ -58,11 +58,11 @@ public class Solution extends PuzzleSolver {
                     myNumbers.retainAll(winningNumbers);
                     return myNumbers.isEmpty() ? 0 : (int) Math.pow(2, myNumbers.size() - 1);
                 })
-                .sum() + "";
+                .sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         Map<Integer, Integer> cardWinnings = new HashMap<>();
         return lines.mapToInt(line -> {
             StringTokenizer tokens = new StringTokenizer(line, " ");
@@ -82,6 +82,6 @@ public class Solution extends PuzzleSolver {
                 }
             }
             return cardAmount;
-        }).sum() + "";
+        }).sum();
     }
 }

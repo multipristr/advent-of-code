@@ -20,17 +20,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("998996");
+    public List<Long> getExampleOutput1() {
+        return List.of(998996L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("1001996");
+    public List<Long> getExampleOutput2() {
+        return List.of(1001996L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         boolean[][] lights = new boolean[1_000][1_000];
 
         lines.forEach(line -> {
@@ -74,11 +74,11 @@ public class Solution extends PuzzleSolver {
                 }
             }
         }
-        return lit + "";
+        return lit;
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         int[][] lights = new int[1_000][1_000];
 
         lines.forEach(line -> {
@@ -116,6 +116,6 @@ public class Solution extends PuzzleSolver {
 
         return Arrays.stream(lights)
                 .flatMapToInt(Arrays::stream)
-                .sum() + "";
+                .sum();
     }
 }

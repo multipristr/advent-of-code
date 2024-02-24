@@ -20,22 +20,22 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("114");
+    public List<Long> getExampleOutput1() {
+        return List.of(114L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("2");
+    public List<Long> getExampleOutput2() {
+        return List.of(2L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.parallel()
                 .map(line -> line.split("\\s"))
                 .map(parts -> Arrays.stream(parts).mapToInt(Integer::parseInt).toArray())
                 .mapToInt(this::calculatePrediction)
-                .sum() + "";
+                .sum();
     }
 
     private int calculatePrediction(int[] history) {
@@ -53,12 +53,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.parallel()
                 .map(line -> line.split("\\s"))
                 .map(parts -> Arrays.stream(parts).mapToInt(Integer::parseInt).toArray())
                 .mapToInt(this::calculatePredictionBackwards)
-                .sum() + "";
+                .sum();
     }
 
     private int calculatePredictionBackwards(int[] history) {

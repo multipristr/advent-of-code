@@ -17,8 +17,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("-3");
+    public List<Long> getExampleOutput1() {
+        return List.of(-3L);
     }
 
     @Override
@@ -27,12 +27,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("5");
+    public List<Long> getExampleOutput2() {
+        return List.of(5L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.mapToInt(line -> {
             int sum = 0;
             for (char symbol : line.toCharArray()) {
@@ -43,11 +43,11 @@ public class Solution extends PuzzleSolver {
                 }
             }
             return sum;
-        }).sum() + "";
+        }).sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.mapToInt(line -> {
             int sum = 0;
             char[] chars = line.toCharArray();
@@ -63,6 +63,6 @@ public class Solution extends PuzzleSolver {
                 }
             }
             return 0;
-        }).sum() + "";
+        }).sum();
     }
 }

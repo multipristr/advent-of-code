@@ -49,12 +49,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("32000000", "11687500");
+    public List<Long> getExampleOutput1() {
+        return List.of(32000000L, 11687500L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         Map<String, Module> modules = new HashMap<>();
         Map<String, List<String>> inputModules = new HashMap<>();
         lines.map(line -> line.split(" -> "))
@@ -97,7 +97,7 @@ public class Solution extends PuzzleSolver {
                 });
             }
         }
-        return (pulseCounts.get(Pulse.LOW) * pulseCounts.get(Pulse.HIGH)) + "";
+        return (pulseCounts.get(Pulse.LOW) * pulseCounts.get(Pulse.HIGH));
     }
 
     @Override
@@ -106,12 +106,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("1");
+    public List<Long> getExampleOutput2() {
+        return List.of(1L);
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         Map<String, Module> modules = new HashMap<>();
         Map<String, List<String>> inputModules = new HashMap<>();
         lines.map(line -> line.split(" -> "))
@@ -150,11 +150,11 @@ public class Solution extends PuzzleSolver {
                     Pulse pulse = output.get();
                     for (var destinationModuleName : module.getDestinationModules()) {
                         if ("rx".equals(destinationModuleName) && pulse == Pulse.LOW) {
-                            return buttonPresses + "";
+                            return buttonPresses;
                         }
                         if (pulse == Pulse.HIGH && rxInput.equals(destinationModuleName)) {
                             if (rxInputs.putIfAbsent(signal.getFromModule(), buttonPresses) != null) {
-                                return "" + lcm(rxInputs.values().parallelStream().mapToLong(v -> v));
+                                return lcm(rxInputs.values().parallelStream().mapToLong(v -> v));
                             }
                         }
                         var destinationModule = modules.get(destinationModuleName);

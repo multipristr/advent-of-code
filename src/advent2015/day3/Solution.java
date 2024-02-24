@@ -19,17 +19,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("4");
+    public List<Long> getExampleOutput1() {
+        return List.of(4L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("3");
+    public List<Long> getExampleOutput2() {
+        return List.of(3L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.mapToInt(line -> {
             Set<String> visited = new HashSet<>();
             int x = 0;
@@ -54,11 +54,11 @@ public class Solution extends PuzzleSolver {
                 visited.add(x + "," + y);
             }
             return visited.size();
-        }).sum() + "";
+        }).sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.mapToInt(line -> {
             Set<String> visited = new HashSet<>();
             char[] chars = line.toCharArray();
@@ -103,6 +103,6 @@ public class Solution extends PuzzleSolver {
                 visited.add(x + "," + y);
             }
             return visited.size();
-        }).sum() + "";
+        }).sum();
     }
 }

@@ -21,17 +21,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("288");
+    public List<Long> getExampleOutput1() {
+        return List.of(288L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("71503");
+    public List<Long> getExampleOutput2() {
+        return List.of(71503L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
 
         StringTokenizer tokens = new StringTokenizer(linesArray[0], " ");
@@ -55,11 +55,11 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return Arrays.stream(waysOfBeatingRecord).reduce(1, (a, b) -> a * b) + "";
+        return Arrays.stream(waysOfBeatingRecord).reduce(1, (a, b) -> a * b);
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         int time = Integer.parseInt(linesArray[0].replaceFirst("Time:", "").replaceAll("\\s", ""));
         long distance = Long.parseLong(linesArray[1].replaceFirst("Distance:", "").replaceAll("\\s", ""));
@@ -68,14 +68,15 @@ public class Solution extends PuzzleSolver {
         var sqrt = Math.sqrt(Math.pow(time, 2) - 4 * distance);
         var start = Math.floor((time - sqrt) / 2 + 1);
         var end = Math.ceil((time + sqrt) / 2 - 1);
-        return (long) (end - start + 1) + "";
+        return (long) (end - start + 1) ;
          */
 
         for (long millisecondsHoldingButton = 1; millisecondsHoldingButton < time; millisecondsHoldingButton++) {
             if (millisecondsHoldingButton * (time - millisecondsHoldingButton) > distance) {
-                return 1 + time - 2 * millisecondsHoldingButton + "";
+                return 1 + time - 2 * millisecondsHoldingButton;
             }
         }
-        return "0";
+
+        throw new IllegalStateException("No result");
     }
 }

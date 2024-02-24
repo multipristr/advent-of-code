@@ -30,17 +30,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("136");
+    public List<Long> getExampleOutput1() {
+        return List.of(136L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("64");
+    public List<Long> getExampleOutput2() {
+        return List.of(64L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         char[][] platform = lines.map(line -> line.toCharArray())
                 .toArray(char[][]::new);
         int totalLoad = 0;
@@ -63,11 +63,11 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return totalLoad + "";
+        return totalLoad;
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         char[][] platform = lines.map(line -> line.toCharArray())
                 .toArray(char[][]::new);
 
@@ -147,6 +147,6 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return totalLoad + "";
+        return totalLoad;
     }
 }

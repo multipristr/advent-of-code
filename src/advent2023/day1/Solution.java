@@ -21,8 +21,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("142");
+    public List<Long> getExampleOutput1() {
+        return List.of(142L);
     }
 
     @Override
@@ -37,12 +37,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("281");
+    public List<Long> getExampleOutput2() {
+        return List.of(281L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.mapToInt(line -> {
                     String firstDigit = null;
                     String lastDigit = null;
@@ -64,11 +64,11 @@ public class Solution extends PuzzleSolver {
 
                     return Integer.parseInt(firstDigit + lastDigit);
                 })
-                .sum() + "";
+                .sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.mapToInt(line -> {
                     String firstDigit = null;
                     String lastDigit = null;
@@ -102,6 +102,6 @@ public class Solution extends PuzzleSolver {
 
                     return Integer.parseInt(firstDigit + lastDigit);
                 })
-                .sum() + "";
+                .sum();
     }
 }

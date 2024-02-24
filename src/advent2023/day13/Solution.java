@@ -31,23 +31,23 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("405");
+    public List<Long> getExampleOutput1() {
+        return List.of(405L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of();
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
-        return "";
+    public long solvePartOne(Stream<String> lines) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
-        return "";
+    public long solvePartTwo(Stream<String> lines) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

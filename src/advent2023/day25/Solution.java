@@ -38,17 +38,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("54");
+    public List<Long> getExampleOutput1() {
+        return List.of(54L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of();
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         Map<String, List<String>> components = new HashMap<>((int) (1539 / .75f + 1));
         lines.map(line -> line.split(": "))
                 .forEach(parts -> {
@@ -77,7 +77,7 @@ public class Solution extends PuzzleSolver {
                             .distinct()
                             .summaryStatistics();
                     if (occurrence.getCount() == 2) {
-                        return "" + occurrence.getMin() * occurrence.getMax();
+                        return occurrence.getMin() * occurrence.getMax();
                     }
 
                     jllWires.add(k, jllWire);
@@ -89,12 +89,13 @@ public class Solution extends PuzzleSolver {
             vtvWires.add(i, vtvWire);
             components.get(vtvWire).add("vtv");
         }
-        return "";
+
+        throw new IllegalStateException("No result");
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
-        return "";
+    public long solvePartTwo(Stream<String> lines) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     private long countConnectedEdges(String node, Map<String, List<String>> edges) {

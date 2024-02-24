@@ -86,17 +86,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("21");
+    public List<Long> getExampleOutput1() {
+        return List.of(21L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("525152");
+    public List<Long> getExampleOutput2() {
+        return List.of(525152L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.parallel()
                 .map(line -> line.split("\\s"))
                 .mapToLong(parts -> {
@@ -107,11 +107,11 @@ public class Solution extends PuzzleSolver {
                     //System.out.println(arrangements);
                     return arrangements;
                 })
-                .sum() + "";
+                .sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.parallel()
                 .map(line -> line.split("\\s"))
                 .mapToLong(parts -> {
@@ -122,7 +122,7 @@ public class Solution extends PuzzleSolver {
                     //System.out.println(arrangements);
                     return arrangements;
                 })
-                .sum() + "";
+                .sum();
     }
 
 }

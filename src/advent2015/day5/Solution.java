@@ -23,8 +23,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("2");
+    public List<Long> getExampleOutput1() {
+        return List.of(2L);
     }
 
     @Override
@@ -37,12 +37,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("2");
+    public List<Long> getExampleOutput2() {
+        return List.of(2L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines
                 .filter(line -> {
                     Map<Character, Integer> occurence = new HashMap<>();
@@ -69,11 +69,11 @@ public class Solution extends PuzzleSolver {
                 .filter(line -> !line.contains("cd"))
                 .filter(line -> !line.contains("pq"))
                 .filter(line -> !line.contains("xy"))
-                .count() + "";
+                .count();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines
                 .filter(line -> {
                     char[] chars = line.toCharArray();
@@ -94,6 +94,6 @@ public class Solution extends PuzzleSolver {
                     }
                     return false;
                 })
-                .count() + "";
+                .count();
     }
 }

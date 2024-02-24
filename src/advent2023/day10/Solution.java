@@ -160,13 +160,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("4", "8");
+    public List<Long> getExampleOutput1() {
+        return List.of(4L, 8L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("4", "8", "10");
+    public List<Long> getExampleOutput2() {
+        return List.of(4L, 8L, 10L);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);
@@ -233,11 +233,11 @@ public class Solution extends PuzzleSolver {
         distance = Math.max(distance, traverse(sketch, distances, startRow, startColumn, startRow - 1, startColumn));
         distance = Math.max(distance, traverse(sketch, distances, startRow, startColumn, startRow + 1, startColumn));
 
-        return distance + "";
+        return distance;
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);
@@ -275,6 +275,6 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return tiles + "";
+        return tiles;
     }
 }

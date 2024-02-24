@@ -31,17 +31,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("4361");
+    public List<Long> getExampleOutput1() {
+        return List.of(4361L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("467835");
+    public List<Long> getExampleOutput2() {
+        return List.of(467835L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         int partNumberSum = 0;
@@ -78,7 +78,7 @@ public class Solution extends PuzzleSolver {
                 partNumberSum += Integer.parseInt(partNumber.toString());
             }
         }
-        return partNumberSum + "";
+        return partNumberSum;
     }
 
     private boolean isSymbolAt(char[][] schematic, int row, int column) {
@@ -94,7 +94,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         Map<String, List<Integer>> gearAdjacent = new HashMap<>();
@@ -136,7 +136,7 @@ public class Solution extends PuzzleSolver {
         return gearAdjacent.values().stream()
                 .filter(values -> values.size() == 2)
                 .mapToInt(values -> values.get(0) * values.get(1))
-                .sum() + "";
+                .sum();
     }
 
     private void addGearAt(Set<String> adjacentGears, char[][] schematic, int row, int column) {

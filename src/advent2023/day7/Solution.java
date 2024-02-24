@@ -79,26 +79,26 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("6440");
+    public List<Long> getExampleOutput1() {
+        return List.of(6440L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("3667");
+    public List<Long> getExampleOutput2() {
+        return List.of(3667L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
-        return lines.map(CardHand1::new).sorted().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum() + "";
+        return lines.map(CardHand1::new).sorted().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
         List<CardHand2> cards = lines.map(CardHand2::new).sorted().collect(Collectors.toList());
-        return cards.stream().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum() + "";
+        return cards.stream().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();
     }
 
     private static final class CardHand1 implements Comparable<CardHand1> {

@@ -9,8 +9,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,17 +57,17 @@ public abstract class PuzzleSolver {
         }
     }
 
-    public abstract String solvePartOne(Stream<String> lines) throws InterruptedException;
+    public abstract long solvePartOne(Stream<String> lines) throws InterruptedException;
 
     public abstract List<String> getExampleInput1();
 
-    public abstract List<String> getExampleOutput1();
+    public abstract List<Long> getExampleOutput1();
 
     public List<String> getExampleInput2() {
         return getExampleInput1();
     }
 
-    public abstract List<String> getExampleOutput2();
+    public abstract List<Long> getExampleOutput2();
 
     public Stream<String> getInput1() {
         try {
@@ -83,20 +81,20 @@ public abstract class PuzzleSolver {
         return getInput1();
     }
 
-    public abstract String solvePartTwo(Stream<String> lines);
+    public abstract long solvePartTwo(Stream<String> lines);
 
     private static abstract class Task implements Callable<String> {
         private final Stream<String> input;
-        private final Optional<String> output;
+        private final Long output;
 
         Task(Stream<String> input) {
             this.input = input;
-            this.output = Optional.empty();
+            this.output = null;
         }
 
-        Task(String input, String output) {
+        Task(String input, long output) {
             this.input = input.lines();
-            this.output = Optional.ofNullable(output);
+            this.output = output;
         }
 
         Stream<String> getInput() {
@@ -105,7 +103,7 @@ public abstract class PuzzleSolver {
 
         abstract String getText();
 
-        abstract String solve() throws Exception;
+        abstract long solve() throws Exception;
 
         @Override
         public String call() {
@@ -113,19 +111,18 @@ public abstract class PuzzleSolver {
                 Instant start = Instant.now();
                 var solution = solve();
                 var duration = Duration.between(start, Instant.now());
-                if (output.isEmpty()) {
+                if (output == null) {
                     return getText() + " '" + solution + "' " + duration.toMillis() + " ms";
                 } else {
-                    var expected = output.get();
-                    if (!Objects.equals(expected, solution)) {
-                        return getText() + " '" + expected + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
+                    if (output != solution) {
+                        return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
                     } else {
-                        return getText() + " '" + expected + "' ✔ " + duration.toMillis() + " ms";
+                        return getText() + " '" + output + "' ✔ " + duration.toMillis() + " ms";
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return output.map(expected -> getText() + " '" + expected + "' ❌").orElseGet(() -> getText() + " ❌");
+                return output != null ? getText() + " '" + output + "' ❌" : getText() + " ❌";
             }
         }
     }
@@ -135,7 +132,7 @@ public abstract class PuzzleSolver {
             super(input);
         }
 
-        PartOneTask(String input, String output) {
+        PartOneTask(String input, long output) {
             super(input, output);
         }
 
@@ -145,7 +142,7 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        String solve() throws Exception {
+        long solve() throws Exception {
             return solvePartOne(getInput());
         }
     }
@@ -155,7 +152,7 @@ public abstract class PuzzleSolver {
             super(input);
         }
 
-        PartTwoTask(String input, String output) {
+        PartTwoTask(String input, long output) {
             super(input, output);
         }
 
@@ -165,7 +162,7 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        String solve() throws Exception {
+        long solve() throws Exception {
             return solvePartTwo(getInput());
         }
     }

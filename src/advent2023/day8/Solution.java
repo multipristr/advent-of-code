@@ -41,8 +41,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("2");
+    public List<Long> getExampleOutput1() {
+        return List.of(2L);
     }
 
     @Override
@@ -60,12 +60,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("6");
+    public List<Long> getExampleOutput2() {
+        return List.of(6L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         char[] instructions = linesArray[0].toCharArray();
 
@@ -92,11 +92,11 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return steps + "";
+        return steps;
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         char[] instructions = linesArray[0].toCharArray();
 
@@ -127,6 +127,6 @@ public class Solution extends PuzzleSolver {
                     return steps;
                 });
 
-        return lcm(oneNodeDistances) + "";
+        return lcm(oneNodeDistances);
     }
 }

@@ -27,18 +27,18 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("65412");
+    public List<Long> getExampleOutput1() {
+        return List.of(65412L);
     }
 
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("65412");
+    public List<Long> getExampleOutput2() {
+        return List.of(65412L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         Map<String, String> wireSignals = new HashMap<>();
 
         lines.forEach(line -> {
@@ -56,7 +56,7 @@ public class Solution extends PuzzleSolver {
             }
         });
 
-        return Integer.toString(calculateWireValue(wireSignals, "a"));
+        return calculateWireValue(wireSignals, "a");
     }
 
     private char calculateWireValue(Map<String, String> wireSignals, String wire) {
@@ -105,7 +105,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         Map<String, String> wireSignals = new HashMap<>();
 
         lines.forEach(line -> {
@@ -125,6 +125,6 @@ public class Solution extends PuzzleSolver {
 
         wireSignals.put("b", "46065");
 
-        return Integer.toString(calculateWireValue(wireSignals, "a"));
+        return calculateWireValue(wireSignals, "a");
     }
 }

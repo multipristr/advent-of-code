@@ -53,17 +53,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("62");
+    public List<Long> getExampleOutput1() {
+        return List.of(62L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("952408144115");
+    public List<Long> getExampleOutput2() {
+        return List.of(952408144115L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         long row = 0;
         long column = 0;
         long steps = 0;
@@ -84,11 +84,11 @@ public class Solution extends PuzzleSolver {
             coordinates.add(new AbstractMap.SimpleImmutableEntry<>(row, column));
         }
 
-        return "" + picks_theorem_formula(steps, shoelace_formula(coordinates));
+        return picks_theorem_formula(steps, shoelace_formula(coordinates));
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         long row = 0;
         long column = 0;
         long steps = 0;
@@ -110,6 +110,6 @@ public class Solution extends PuzzleSolver {
             coordinates.add(new AbstractMap.SimpleImmutableEntry<>(row, column));
         }
 
-        return "" + picks_theorem_formula(steps, shoelace_formula(coordinates));
+        return picks_theorem_formula(steps, shoelace_formula(coordinates));
     }
 }

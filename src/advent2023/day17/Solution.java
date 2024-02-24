@@ -37,8 +37,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("102");
+    public List<Long> getExampleOutput1() {
+        return List.of(102L);
     }
 
     @Override
@@ -65,12 +65,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("94", "71");
+    public List<Long> getExampleOutput2() {
+        return List.of(94L, 71L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) throws InterruptedException {
+    public long solvePartOne(Stream<String> lines) throws InterruptedException {
         int[][] map = lines.map(line -> line.chars().map(Character::getNumericValue).toArray()).toArray(int[][]::new);
         Map<Integer, Map<Integer, Map<Integer, Map<Integer, NavigableMap<Integer, Long>>>>> searchStates = new HashMap<>(map.length);
         searchStates.computeIfAbsent(0, r -> new HashMap<>(map[0].length))
@@ -156,7 +156,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return "" + searchStates.get(map.length - 1).get(map[0].length - 1).values().stream()
+        return searchStates.get(map.length - 1).get(map[0].length - 1).values().stream()
                 .flatMap(m -> m.values().stream())
                 .flatMap(m -> m.values().stream())
                 .mapToLong(v -> v)
@@ -164,7 +164,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         int[][] map = lines.map(line -> line.chars().map(Character::getNumericValue).toArray()).toArray(int[][]::new);
         Map<Integer, Map<Integer, Map<Integer, Map<Integer, NavigableMap<Integer, Long>>>>> searchStates = new HashMap<>(map.length);
         searchStates.computeIfAbsent(0, r -> new HashMap<>(map[0].length))
@@ -260,7 +260,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        return "" + searchStates.get(map.length - 1).get(map[0].length - 1).values().stream()
+        return searchStates.get(map.length - 1).get(map[0].length - 1).values().stream()
                 .flatMap(m -> m.values().stream())
                 .flatMap(m -> m.values().stream())
                 .mapToLong(v -> v)

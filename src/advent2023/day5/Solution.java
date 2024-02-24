@@ -56,17 +56,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("35");
+    public List<Long> getExampleOutput1() {
+        return List.of(35L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("46");
+    public List<Long> getExampleOutput2() {
+        return List.of(46L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         String[] lineArray = lines.toArray(String[]::new);
         TreeMap<Long, Long> locations = new TreeMap<>();
 
@@ -96,11 +96,11 @@ public class Solution extends PuzzleSolver {
             nextMapStartLine += 2;
         }
 
-        return locations.keySet().stream().min(Comparator.naturalOrder()).get() + "";
+        return locations.keySet().stream().min(Comparator.naturalOrder()).get();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         String[] lineArray = lines.toArray(String[]::new);
         Map<Range, Range> locations = new HashMap<>();
 
@@ -145,7 +145,7 @@ public class Solution extends PuzzleSolver {
             nextMapStartLine += 2;
         }
 
-        return locations.keySet().stream().mapToLong(Range::getStart).min().orElseThrow() + "";
+        return locations.keySet().stream().mapToLong(Range::getStart).min().orElseThrow();
     }
 
     private static final class Range {

@@ -23,13 +23,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("1048970");
+    public List<Long> getExampleOutput1() {
+        return List.of(1048970L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("5714438");
+    public List<Long> getExampleOutput2() {
+        return List.of(5714438L);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)
@@ -58,11 +58,11 @@ public class Solution extends PuzzleSolver {
                     }
                     return false;
                 })
-                .findAny().getAsInt() + "";
+                .findAny().orElseThrow();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)
@@ -82,6 +82,6 @@ public class Solution extends PuzzleSolver {
                     }
                     return false;
                 })
-                .findAny().getAsInt() + "";
+                .findAny().orElseThrow();
     }
 }

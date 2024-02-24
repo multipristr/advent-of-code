@@ -23,17 +23,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("8");
+    public List<Long> getExampleOutput1() {
+        return List.of(8L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("2286");
+    public List<Long> getExampleOutput2() {
+        return List.of(2286L);
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         Map<String, Integer> cubes = new HashMap<>(3);
         cubes.put("red", 12);
         cubes.put("green", 13);
@@ -52,11 +52,11 @@ public class Solution extends PuzzleSolver {
                     }
                     return Integer.parseInt(parts[1]);
                 })
-                .sum() + "";
+                .sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         return lines.map(line -> line.replaceAll(":", ""))
                 .map(line -> line.replaceAll(",", ""))
                 .map(line -> line.replaceAll(";", ""))
@@ -74,6 +74,6 @@ public class Solution extends PuzzleSolver {
                     }
                     return cubes.values().stream().reduce(1, (a, b) -> a * b);
                 })
-                .sum() + "";
+                .sum();
     }
 }

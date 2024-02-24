@@ -31,13 +31,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleOutput1() {
-        return List.of("52", "1320");
+    public List<Long> getExampleOutput1() {
+        return List.of(52L, 1320L);
     }
 
     @Override
-    public List<String> getExampleOutput2() {
-        return List.of("145");
+    public List<Long> getExampleOutput2() {
+        return List.of(145L);
     }
 
     @Override
@@ -46,15 +46,15 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public String solvePartOne(Stream<String> lines) {
+    public long solvePartOne(Stream<String> lines) {
         return lines.parallel()
                 .flatMap(line -> Arrays.stream(line.split(",")))
                 .mapToInt(Solution::hash)
-                .sum() + "";
+                .sum();
     }
 
     @Override
-    public String solvePartTwo(Stream<String> lines) {
+    public long solvePartTwo(Stream<String> lines) {
         Map<Integer, Map<String, Integer>> lenses = new HashMap<>(256);
         lines.flatMap(line -> Arrays.stream(line.split(",")))
                 .forEach(word -> {
@@ -80,6 +80,6 @@ public class Solution extends PuzzleSolver {
                     }
                     return focusingPower;
                 })
-                .sum() + "";
+                .sum();
     }
 }
