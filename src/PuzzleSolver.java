@@ -13,7 +13,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class PuzzleSolver {
@@ -44,9 +43,7 @@ public abstract class PuzzleSolver {
 
         ExecutorService thread = Executors.newFixedThreadPool(tasks.size());
         try {
-            List<Future<String>> futures = tasks.stream()
-                    .map(thread::submit)
-                    .collect(Collectors.toList());
+            List<Future<String>> futures = thread.invokeAll(tasks);
             for (Future<String> future : futures) {
                 System.out.println(future.get());
             }
@@ -57,7 +54,7 @@ public abstract class PuzzleSolver {
         }
     }
 
-    public abstract long solvePartOne(Stream<String> lines) throws InterruptedException;
+    public abstract long solvePartOne(Stream<String> lines) throws Exception;
 
     public abstract List<String> getExampleInput1();
 
@@ -81,7 +78,7 @@ public abstract class PuzzleSolver {
         return getInput1();
     }
 
-    public abstract long solvePartTwo(Stream<String> lines);
+    public abstract long solvePartTwo(Stream<String> lines) throws Exception;
 
     private static abstract class Task implements Callable<String> {
         private final Stream<String> input;
@@ -122,7 +119,7 @@ public abstract class PuzzleSolver {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return output != null ? getText() + " '" + output + "' ❌" : getText() + " ❌";
+                return (output != null ? getText() + " '" + output + "' ❌ " : getText() + " ❌ ") + e;
             }
         }
     }
