@@ -114,7 +114,7 @@ public abstract class PuzzleSolver {
                     if (output != solution) {
                         return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
                     } else {
-                        return getText() + " '" + output + "' ✔ " + duration.toMillis() + " ms";
+                        return getText() + " '" + output + "' ✅ " + duration.toMillis() + " ms";
                     }
                 }
             } catch (Exception e) {
