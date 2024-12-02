@@ -65,39 +65,10 @@ public class Solution extends PuzzleSolver {
     public long solvePartTwo(Stream<String> lines) {
         return lines.map(line -> line.split("\\s+"))
                 .filter(line -> {
-                    byte badLevels = 0;
-                    boolean increasing = false;
-                    boolean decreasing = false;
-                    for (int i = 1; i < line.length; i++) {
-                        long first = Long.parseLong(line[i - 1]);
-                        long second = Long.parseLong(line[i]);
-                        long difference = Math.abs(first - second);
-                        if (difference > 3 || difference == 0) {
-                            ++badLevels;
-                            break;
-                        }
-                        if (second > first) {
-                            if (decreasing) {
-                                ++badLevels;
-                                break;
-                            }
-                            increasing = true;
-                        } else if (second < first) {
-                            if (increasing) {
-                                ++badLevels;
-                                break;
-                            }
-                            decreasing = true;
-                        }
-                    }
-                    if (badLevels < 1) {
-                        return true;
-                    }
-
-                    for (int skipLevel = 0; skipLevel < line.length; skipLevel++) {
-                        boolean passed = true;
-                        increasing = false;
-                        decreasing = false;
+                    outer:
+                    for (int skipLevel = 0; skipLevel <= line.length; skipLevel++) {
+                        boolean increasing = false;
+                        boolean decreasing = false;
                         for (int i = 1; i < line.length; i++) {
                             if (i == skipLevel || i == 1 && skipLevel == 0) {
                                 continue;
@@ -107,26 +78,21 @@ public class Solution extends PuzzleSolver {
                             long second = Long.parseLong(line[i]);
                             long difference = Math.abs(first - second);
                             if (difference > 3 || difference == 0) {
-                                passed = false;
-                                break;
+                                continue outer;
                             }
                             if (second > first) {
                                 if (decreasing) {
-                                    passed = false;
-                                    break;
+                                    continue outer;
                                 }
                                 increasing = true;
                             } else if (second < first) {
                                 if (increasing) {
-                                    passed = false;
-                                    break;
+                                    continue outer;
                                 }
                                 decreasing = true;
                             }
                         }
-                        if (passed) {
-                            return passed;
-                        }
+                        return true;
                     }
                     return false;
                 })
