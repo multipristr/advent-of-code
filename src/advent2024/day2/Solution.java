@@ -28,7 +28,7 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of();
+        return List.of(4L);
     }
 
     @Override
@@ -63,6 +63,74 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return lines.map(line -> line.split("\\s+"))
+                .filter(line -> {
+                    byte badLevels = 0;
+                    boolean increasing = false;
+                    boolean decreasing = false;
+                    for (int i = 1; i < line.length; i++) {
+                        long first = Long.parseLong(line[i - 1]);
+                        long second = Long.parseLong(line[i]);
+                        long difference = Math.abs(first - second);
+                        if (difference > 3 || difference == 0) {
+                            ++badLevels;
+                            break;
+                        }
+                        if (second > first) {
+                            if (decreasing) {
+                                ++badLevels;
+                                break;
+                            }
+                            increasing = true;
+                        } else if (second < first) {
+                            if (increasing) {
+                                ++badLevels;
+                                break;
+                            }
+                            decreasing = true;
+                        }
+                    }
+                    if (badLevels < 1) {
+                        return true;
+                    }
+
+                    for (int skipLevel = 0; skipLevel < line.length; skipLevel++) {
+                        boolean passed = true;
+                        increasing = false;
+                        decreasing = false;
+                        for (int i = 1; i < line.length; i++) {
+                            if (i == skipLevel || i == 1 && skipLevel == 0) {
+                                continue;
+                            }
+                            int index1 = i - 1 == skipLevel ? i - 2 : i - 1;
+                            long first = Long.parseLong(line[index1]);
+                            long second = Long.parseLong(line[i]);
+                            long difference = Math.abs(first - second);
+                            if (difference > 3 || difference == 0) {
+                                passed = false;
+                                break;
+                            }
+                            if (second > first) {
+                                if (decreasing) {
+                                    passed = false;
+                                    break;
+                                }
+                                increasing = true;
+                            } else if (second < first) {
+                                if (increasing) {
+                                    passed = false;
+                                    break;
+                                }
+                                decreasing = true;
+                            }
+                        }
+                        if (passed) {
+                            return passed;
+                        }
+                    }
+                    return false;
+                })
+                .count();
     }
+
 }
