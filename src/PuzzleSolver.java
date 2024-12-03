@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class PuzzleSolver {
@@ -46,7 +47,7 @@ public abstract class PuzzleSolver {
         try {
             List<Future<String>> futures = tasks.stream()
                     .map(thread::submit)
-                    .toList();
+                    .collect(Collectors.toList());
             for (Future<String> future : futures) {
                 System.out.println(future.get());
             }
