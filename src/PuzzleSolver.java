@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public abstract class PuzzleSolver {
+
     public void run() {
         List<Task> tasks = new ArrayList<>();
 
@@ -43,7 +44,9 @@ public abstract class PuzzleSolver {
 
         ExecutorService thread = Executors.newFixedThreadPool(tasks.size());
         try {
-            List<Future<String>> futures = thread.invokeAll(tasks);
+            List<Future<String>> futures = tasks.stream()
+                    .map(thread::submit)
+                    .toList();
             for (Future<String> future : futures) {
                 System.out.println(future.get());
             }
@@ -81,6 +84,7 @@ public abstract class PuzzleSolver {
     public abstract long solvePartTwo(Stream<String> lines) throws Exception;
 
     private static abstract class Task implements Callable<String> {
+
         private final Stream<String> input;
         private final Long output;
 
@@ -122,9 +126,11 @@ public abstract class PuzzleSolver {
                 return (output != null ? getText() + " '" + output + "' ❌ " : getText() + " ❌ ") + e;
             }
         }
+
     }
 
     private class PartOneTask extends Task {
+
         PartOneTask(Stream<String> input) {
             super(input);
         }
@@ -142,9 +148,11 @@ public abstract class PuzzleSolver {
         long solve() throws Exception {
             return solvePartOne(getInput());
         }
+
     }
 
     private class PartTwoTask extends Task {
+
         PartTwoTask(Stream<String> input) {
             super(input);
         }
@@ -162,5 +170,7 @@ public abstract class PuzzleSolver {
         long solve() throws Exception {
             return solvePartTwo(getInput());
         }
+
     }
+
 }
