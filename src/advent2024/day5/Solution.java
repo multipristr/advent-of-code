@@ -60,25 +60,30 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartOne(Stream<String> lines) {
-        Map<Long, Set<Long>> pageOrderingRules = new HashMap<>();
+        Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
+        Map<Long, Set<Long>> pagesOrderedBefore = new HashMap<>();
         return lines.mapToLong(line -> {
                     if (line.contains("|")) {
                         String[] pageNumbers = line.split("\\|");
-                        pageOrderingRules.computeIfAbsent(Long.parseLong(pageNumbers[0]), k -> new HashSet<>()).add(Long.parseLong(pageNumbers[1]));
+                        long pageNumber1 = Long.parseLong(pageNumbers[0]);
+                        long pageNumber2 = Long.parseLong(pageNumbers[1]);
+                        pagesOrderedAfter.computeIfAbsent(pageNumber1, k -> new HashSet<>()).add(pageNumber2);
+                        pagesOrderedBefore.computeIfAbsent(pageNumber2, k -> new HashSet<>()).add(pageNumber1);
                     } else if (line.contains(",")) {
                         long[] update = Arrays.stream(line.split(","))
                                 .mapToLong(Long::parseLong)
                                 .toArray();
                         for (int i = 0; i < update.length; i++) {
                             long updatePageNumber = update[i];
+                            Set<Long> pageNumbersBefore = pagesOrderedBefore.get(updatePageNumber);
                             for (int j = 0; j < i; j++) {
-                                if (!pageOrderingRules.get(update[j]).contains(updatePageNumber)) {
+                                if (!pageNumbersBefore.contains(update[j])) {
                                     return 0;
                                 }
                             }
-                            Set<Long> pageNumberRules = pageOrderingRules.getOrDefault(updatePageNumber, Set.of());
+                            Set<Long> pageNumbersAfter = pagesOrderedAfter.getOrDefault(updatePageNumber, Set.of());
                             for (int j = i + 1; j < update.length; j++) {
-                                if (!pageNumberRules.contains(update[j])) {
+                                if (!pageNumbersAfter.contains(update[j])) {
                                     return 0;
                                 }
                             }
@@ -92,6 +97,50 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
+        Map<Long, Set<Long>> pagesOrderedBefore = new HashMap<>();
+        return lines.mapToLong(line -> {
+                    if (line.contains("|")) {
+                        String[] pageNumbers = line.split("\\|");
+                        long pageNumber1 = Long.parseLong(pageNumbers[0]);
+                        long pageNumber2 = Long.parseLong(pageNumbers[1]);
+                        pagesOrderedAfter.computeIfAbsent(pageNumber1, k -> new HashSet<>()).add(pageNumber2);
+                        pagesOrderedBefore.computeIfAbsent(pageNumber2, k -> new HashSet<>()).add(pageNumber1);
+                    } else if (line.contains(",")) {
+                        long[] update = Arrays.stream(line.split(","))
+                                .mapToLong(Long::parseLong)
+                                .toArray();
+                        boolean fixed = false;
+                        outer:
+                        for (int i = 0; i < update.length; i++) {
+                            long updatePageNumber = update[i];
+                            Set<Long> pageNumbersBefore = pagesOrderedBefore.get(updatePageNumber);
+                            for (int j = 0; j < i; j++) {
+                                long pageNumber = update[j];
+                                if (!pageNumbersBefore.contains(pageNumber)) {
+                                    update[j] = updatePageNumber;
+                                    update[i] = pageNumber;
+                                    i = j;
+                                    fixed = true;
+                                    continue outer;
+                                }
+                            }
+                            Set<Long> pageNumbersAfter = pagesOrderedAfter.getOrDefault(updatePageNumber, Set.of());
+                            for (int j = i + 1; j < update.length; j++) {
+                                long pageNumber = update[j];
+                                if (!pageNumbersAfter.contains(pageNumber)) {
+                                    update[i] = pageNumber;
+                                    update[j] = updatePageNumber;
+                                    --i;
+                                    fixed = true;
+                                    continue outer;
+                                }
+                            }
+                        }
+                        return fixed ? update[update.length / 2] : 0;
+                    }
+                    return 0;
+                })
+                .sum();
     }
 }
