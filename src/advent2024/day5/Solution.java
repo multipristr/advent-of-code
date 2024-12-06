@@ -61,34 +61,17 @@ public class Solution extends PuzzleSolver {
     @Override
     public long solvePartOne(Stream<String> lines) {
         Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
-        Map<Long, Set<Long>> pagesOrderedBefore = new HashMap<>();
         return lines.mapToLong(line -> {
                     if (line.contains("|")) {
                         String[] pageNumbers = line.split("\\|");
-                        long pageNumber1 = Long.parseLong(pageNumbers[0]);
-                        long pageNumber2 = Long.parseLong(pageNumbers[1]);
-                        pagesOrderedAfter.computeIfAbsent(pageNumber1, k -> new HashSet<>()).add(pageNumber2);
-                        pagesOrderedBefore.computeIfAbsent(pageNumber2, k -> new HashSet<>()).add(pageNumber1);
+                        pagesOrderedAfter.computeIfAbsent(Long.parseLong(pageNumbers[0]), k -> new HashSet<>()).add(Long.parseLong(pageNumbers[1]));
                     } else if (line.contains(",")) {
-                        long[] update = Arrays.stream(line.split(","))
-                                .mapToLong(Long::parseLong)
-                                .toArray();
-                        for (int i = 0; i < update.length; i++) {
-                            long updatePageNumber = update[i];
-                            Set<Long> pageNumbersBefore = pagesOrderedBefore.get(updatePageNumber);
-                            for (int j = 0; j < i; j++) {
-                                if (!pageNumbersBefore.contains(update[j])) {
-                                    return 0;
-                                }
-                            }
-                            Set<Long> pageNumbersAfter = pagesOrderedAfter.getOrDefault(updatePageNumber, Set.of());
-                            for (int j = i + 1; j < update.length; j++) {
-                                if (!pageNumbersAfter.contains(update[j])) {
-                                    return 0;
-                                }
-                            }
-                        }
-                        return update[update.length / 2];
+                        Long[] update = Arrays.stream(line.split(","))
+                                .map(Long::parseLong)
+                                .toArray(Long[]::new);
+                        Long[] sorted = Arrays.copyOf(update, update.length);
+                        Arrays.sort(sorted, (a, b) -> pagesOrderedAfter.getOrDefault(b, Set.of()).contains(a) ? 1 : -1);
+                        return Arrays.equals(update, sorted) ? sorted[sorted.length / 2] : 0;
                     }
                     return 0;
                 })
@@ -98,46 +81,17 @@ public class Solution extends PuzzleSolver {
     @Override
     public long solvePartTwo(Stream<String> lines) {
         Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
-        Map<Long, Set<Long>> pagesOrderedBefore = new HashMap<>();
         return lines.mapToLong(line -> {
                     if (line.contains("|")) {
                         String[] pageNumbers = line.split("\\|");
-                        long pageNumber1 = Long.parseLong(pageNumbers[0]);
-                        long pageNumber2 = Long.parseLong(pageNumbers[1]);
-                        pagesOrderedAfter.computeIfAbsent(pageNumber1, k -> new HashSet<>()).add(pageNumber2);
-                        pagesOrderedBefore.computeIfAbsent(pageNumber2, k -> new HashSet<>()).add(pageNumber1);
+                        pagesOrderedAfter.computeIfAbsent(Long.parseLong(pageNumbers[0]), k -> new HashSet<>()).add(Long.parseLong(pageNumbers[1]));
                     } else if (line.contains(",")) {
-                        long[] update = Arrays.stream(line.split(","))
-                                .mapToLong(Long::parseLong)
-                                .toArray();
-                        boolean fixed = false;
-                        outer:
-                        for (int i = 0; i < update.length; i++) {
-                            long updatePageNumber = update[i];
-                            Set<Long> pageNumbersBefore = pagesOrderedBefore.get(updatePageNumber);
-                            for (int j = 0; j < i; j++) {
-                                long pageNumber = update[j];
-                                if (!pageNumbersBefore.contains(pageNumber)) {
-                                    update[j] = updatePageNumber;
-                                    update[i] = pageNumber;
-                                    i = j;
-                                    fixed = true;
-                                    continue outer;
-                                }
-                            }
-                            Set<Long> pageNumbersAfter = pagesOrderedAfter.getOrDefault(updatePageNumber, Set.of());
-                            for (int j = i + 1; j < update.length; j++) {
-                                long pageNumber = update[j];
-                                if (!pageNumbersAfter.contains(pageNumber)) {
-                                    update[i] = pageNumber;
-                                    update[j] = updatePageNumber;
-                                    --i;
-                                    fixed = true;
-                                    continue outer;
-                                }
-                            }
-                        }
-                        return fixed ? update[update.length / 2] : 0;
+                        Long[] update = Arrays.stream(line.split(","))
+                                .map(Long::parseLong)
+                                .toArray(Long[]::new);
+                        Long[] sorted = Arrays.copyOf(update, update.length);
+                        Arrays.sort(sorted, (a, b) -> pagesOrderedAfter.getOrDefault(b, Set.of()).contains(a) ? 1 : -1);
+                        return Arrays.equals(update, sorted) ? 0 : sorted[sorted.length / 2];
                     }
                     return 0;
                 })
