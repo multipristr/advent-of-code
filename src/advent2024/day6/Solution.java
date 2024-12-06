@@ -8,14 +8,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
 
     public static void main(String[] args) {
         new Solution().run();
+    }
+
+    private static boolean isCreatingCycle(char[][] input, int x, int y, int xDirection, int yDirection, int obstructionX, int obstructionY) {
+        Set<Position> distinctPositions = new HashSet<>();
+        while (isWithinBounds(input, x, y)) {
+            if (!distinctPositions.add(new Position(x, y, xDirection, yDirection))) {
+                return true;
+            }
+            while (true) {
+                int newX = x + xDirection;
+                int newY = y + yDirection;
+                if (!isWithinBounds(input, newX, newY)) {
+                    return false;
+                } else if (input[newX][newY] == '#' || (newX == obstructionX && newY == obstructionY)) {
+                    if (xDirection == -1) {
+                        xDirection = 0;
+                        yDirection = 1;
+                    } else if (yDirection == 1) {
+                        xDirection = 1;
+                        yDirection = 0;
+                    } else if (xDirection == 1) {
+                        xDirection = 0;
+                        yDirection = -1;
+                    } else if (yDirection == -1) {
+                        xDirection = -1;
+                        yDirection = 0;
+                    }
+                } else {
+                    break;
+                }
+            }
+            x += xDirection;
+            y += yDirection;
+        }
+        return false;
+    }
+
+    private static boolean isWithinBounds(char[][] input, int x, int y) {
+        if (x < 0 || x >= input.length || y < 0) {
+            return false;
+        }
+        char[] row = input[x];
+        return y < row.length;
     }
 
     @Override
@@ -42,54 +83,6 @@ public class Solution extends PuzzleSolver {
         return List.of(6L);
     }
 
-    private static boolean isCreatingCycle(char[][] input, int x, int y, int xDirection, int yDirection, int obstructionX, int obstructionY) {
-        if (obstructionX == x && obstructionY == y) {
-            return false;
-        }
-
-        Set<Position> distinctPositions = new HashSet<>();
-        while (x >= 0 && x < input.length && y >= 0 && y < input[x].length) {
-            if (!distinctPositions.add(new Position(x, y, xDirection, yDirection))) {
-                StringJoiner joiner = new StringJoiner(System.lineSeparator());
-                joiner.add("-------------------");
-                for (int i = 0; i < input.length; i++) {
-                    String s = new String(input[i]);
-                    if (i == obstructionX) {
-                        s = s.substring(0, obstructionY) + 'O' + s.substring(obstructionY + 1);
-                    }
-                    joiner.add(s);
-                }
-                joiner.add("-------------------");
-//                System.out.println(joiner);
-                return true;
-            }
-            int newX = x + xDirection;
-            int newY = y + yDirection;
-            if (newX < 0 || newX >= input.length || newY < 0 || newY >= input[newX].length) {
-                return false;
-            }
-            if (input[newX][newY] == '#' || (newX == obstructionX && newY == obstructionY)) {
-                if (xDirection == -1) {
-                    xDirection = 0;
-                    yDirection = 1;
-                } else if (yDirection == 1) {
-                    xDirection = 1;
-                    yDirection = 0;
-                } else if (xDirection == 1) {
-                    xDirection = 0;
-                    yDirection = -1;
-                } else if (yDirection == -1) {
-                    xDirection = -1;
-                    yDirection = 0;
-                }
-            }
-            x = x + xDirection;
-            y = y + yDirection;
-        }
-
-        return false;
-    }
-
     @Override
     public long solvePartOne(Stream<String> lines) {
         char[][] input = lines.map(String::toCharArray)
@@ -97,55 +90,46 @@ public class Solution extends PuzzleSolver {
 
         int x;
         int y = 0;
-        int xDirection = 0;
+        int xDirection = -1;
         int yDirection = 0;
         outer:
         for (x = 0; x < input.length; x++) {
             char[] row = input[x];
             for (y = 0; y < row.length; y++) {
-                char position = row[y];
-                switch (position) {
-                    case '^':
-                        xDirection = -1;
-                        break outer;
-                    case '>':
-                        yDirection = 1;
-                        break outer;
-                    case 'v':
-                        xDirection = 1;
-                        break outer;
-                    case '<':
-                        yDirection = -1;
-                        break outer;
+                if (row[y] == '^') {
+                    break outer;
                 }
             }
         }
 
         Set<Map.Entry<Integer, Integer>> distinctPositions = new HashSet<>();
-        while (x >= 0 && x < input.length && y >= 0 && y < input[x].length) {
+        while (isWithinBounds(input, x, y)) {
             distinctPositions.add(new AbstractMap.SimpleImmutableEntry<>(x, y));
-            int newX = x + xDirection;
-            int newY = y + yDirection;
-            if (newX < 0 || newX >= input.length || newY < 0 || newY >= input[newX].length) {
-                break;
-            }
-            if (input[newX][newY] == '#') {
-                if (xDirection == -1) {
-                    xDirection = 0;
-                    yDirection = 1;
-                } else if (yDirection == 1) {
-                    xDirection = 1;
-                    yDirection = 0;
-                } else if (xDirection == 1) {
-                    xDirection = 0;
-                    yDirection = -1;
-                } else if (yDirection == -1) {
-                    xDirection = -1;
-                    yDirection = 0;
+            while (true) {
+                int newX = x + xDirection;
+                int newY = y + yDirection;
+                if (!isWithinBounds(input, newX, newY)) {
+                    return distinctPositions.size();
+                } else if (input[newX][newY] == '#') {
+                    if (xDirection == -1) {
+                        xDirection = 0;
+                        yDirection = 1;
+                    } else if (yDirection == 1) {
+                        xDirection = 1;
+                        yDirection = 0;
+                    } else if (xDirection == 1) {
+                        xDirection = 0;
+                        yDirection = -1;
+                    } else if (yDirection == -1) {
+                        xDirection = -1;
+                        yDirection = 0;
+                    }
+                } else {
+                    break;
                 }
             }
-            x = x + xDirection;
-            y = y + yDirection;
+            x += xDirection;
+            y += yDirection;
         }
 
         return distinctPositions.size();
@@ -158,40 +142,56 @@ public class Solution extends PuzzleSolver {
 
         int x;
         int y = 0;
-        int xDirection = 0;
+        int xDirection = -1;
         int yDirection = 0;
         outer:
         for (x = 0; x < input.length; x++) {
             char[] row = input[x];
             for (y = 0; y < row.length; y++) {
-                char position = row[y];
-                switch (position) {
-                    case '^':
-                        xDirection = -1;
-                        break outer;
-                    case '>':
-                        yDirection = 1;
-                        break outer;
-                    case 'v':
-                        xDirection = 1;
-                        break outer;
-                    case '<':
-                        yDirection = -1;
-                        break outer;
+                if (row[y] == '^') {
+                    break outer;
                 }
             }
         }
 
-        int finalXDirection = xDirection;
-        int finalYDirection = yDirection;
-        int finalY = y;
-        int finalX = x;
-        return IntStream.range(0, input.length).parallel()
-                .mapToLong(obstructionX -> IntStream.range(0, input[obstructionX].length).parallel()
-                        .filter(obstructionY -> isCreatingCycle(input, finalX, finalY, finalXDirection, finalYDirection, obstructionX, obstructionY))
-                        .count()
-                )
-                .sum();
+        int initialX = x;
+        int initialY = y;
+
+        Set<Map.Entry<Integer, Integer>> distinctPositions = new HashSet<>();
+        outer:
+        while (isWithinBounds(input, x, y)) {
+            distinctPositions.add(new AbstractMap.SimpleImmutableEntry<>(x, y));
+            while (true) {
+                int newX = x + xDirection;
+                int newY = y + yDirection;
+                if (!isWithinBounds(input, newX, newY)) {
+                    break outer;
+                } else if (input[newX][newY] == '#') {
+                    if (xDirection == -1) {
+                        xDirection = 0;
+                        yDirection = 1;
+                    } else if (yDirection == 1) {
+                        xDirection = 1;
+                        yDirection = 0;
+                    } else if (xDirection == 1) {
+                        xDirection = 0;
+                        yDirection = -1;
+                    } else if (yDirection == -1) {
+                        xDirection = -1;
+                        yDirection = 0;
+                    }
+                } else {
+                    break;
+                }
+            }
+            x += xDirection;
+            y += yDirection;
+        }
+
+        distinctPositions.remove(new AbstractMap.SimpleImmutableEntry<>(initialX, initialY));
+        return distinctPositions.stream()
+                .filter(position -> isCreatingCycle(input, initialX, initialY, -1, 0, position.getKey(), position.getValue()))
+                .count();
     }
 
     private static final class Position {
