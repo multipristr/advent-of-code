@@ -38,43 +38,36 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartOne(Stream<String> lines) {
-        return lines
-                .mapToLong(line -> {
-                    String[] parts = line.split(":?\\s");
-                    long testValue = Long.parseLong(parts[0]);
-                    long[] numbers = Arrays.stream(parts, 1, parts.length)
-                            .mapToLong(Long::parseLong)
-                            .toArray();
-                    return isAdditionMultiplicationTrue(testValue, numbers) ? testValue : 0;
-                })
-                .sum();
+        LongBinaryOperator[] operations = {
+                Long::sum,
+                (a, b) -> a * b
+        };
+        return solve(lines, operations);
     }
 
     @Override
     public long solvePartTwo(Stream<String> lines) {
-        return lines.parallel()
-                .mapToLong(line -> {
+        LongBinaryOperator[] operations = {
+                Long::sum,
+                (a, b) -> a * b,
+                (a, b) -> Long.parseLong(a + "" + b)
+        };
+        return solve(lines, operations);
+    }
+
+    private long solve(Stream<String> lines, LongBinaryOperator[] operations) {
+        return lines.mapToLong(line -> {
                     String[] parts = line.split(":?\\s");
                     long testValue = Long.parseLong(parts[0]);
                     long[] numbers = Arrays.stream(parts, 1, parts.length)
                             .mapToLong(Long::parseLong)
                             .toArray();
-                    return isAdditionMultiplicationConcatenationTrue(testValue, numbers) ? testValue : 0;
+                    return isTrueByOperations(testValue, numbers, operations, 1, numbers[0]) ? testValue : 0;
                 })
                 .sum();
     }
 
-    private boolean isAdditionMultiplicationTrue(long testValue, long[] numbers) {
-        LongBinaryOperator[] operations = {Long::sum, (a, b) -> a * b};
-        return tryOperations(testValue, numbers, operations, 1, numbers[0]);
-    }
-
-    private boolean isAdditionMultiplicationConcatenationTrue(long testValue, long[] numbers) {
-        LongBinaryOperator[] operations = {Long::sum, (a, b) -> a * b, (a, b) -> Long.parseLong(a + "" + b)};
-        return tryOperations(testValue, numbers, operations, 1, numbers[0]);
-    }
-
-    private boolean tryOperations(long testValue, long[] numbers, LongBinaryOperator[] operations, int index, long carry) {
+    private boolean isTrueByOperations(long testValue, long[] numbers, LongBinaryOperator[] operations, int index, long carry) {
         if (carry > testValue) {
             return false;
         }
@@ -83,6 +76,6 @@ public class Solution extends PuzzleSolver {
         }
         return Arrays.stream(operations)
                 .anyMatch(operation ->
-                        tryOperations(testValue, numbers, operations, index + 1, operation.applyAsLong(carry, numbers[index])));
+                        isTrueByOperations(testValue, numbers, operations, index + 1, operation.applyAsLong(carry, numbers[index])));
     }
 }
