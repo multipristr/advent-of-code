@@ -2,7 +2,6 @@ package src;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -72,7 +71,7 @@ public abstract class PuzzleSolver {
 
     public Stream<String> getInput1() {
         try {
-            return Files.lines(Paths.get(".").toAbsolutePath().resolve(getClass().getPackageName().replaceAll("\\.", "/")).resolve("input.txt"), StandardCharsets.UTF_8);
+            return Files.lines(Paths.get(".").toAbsolutePath().resolve(getClass().getPackageName().replaceAll("\\.", "/")).resolve("input.txt"));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
