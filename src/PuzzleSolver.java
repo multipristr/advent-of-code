@@ -23,7 +23,7 @@ public abstract class PuzzleSolver {
         var exampleInput1 = getExampleInput1();
         var exampleOutput1 = getExampleOutput1();
         if (exampleInput1.size() != exampleOutput1.size()) {
-            throw new IllegalArgumentException(exampleInput1.size() + " example 1 inputs != " + exampleOutput1.size() + " example 1 outputs");
+            throw new IllegalArgumentException(exampleInput1.size() + " example part one inputs != " + exampleOutput1.size() + " example part one outputs");
         }
         for (int i = 0; i < exampleInput1.size(); i++) {
             tasks.add(new PartOneTask(exampleInput1.get(i), exampleOutput1.get(i)));
@@ -34,7 +34,7 @@ public abstract class PuzzleSolver {
         var exampleOutput2 = getExampleOutput2();
         if (!exampleOutput2.isEmpty()) {
             if (exampleInput2.size() != exampleOutput2.size()) {
-                throw new IllegalArgumentException(exampleInput2.size() + " example 2 inputs != " + exampleOutput2.size() + " example 2 outputs");
+                throw new IllegalArgumentException(exampleInput2.size() + " example part two inputs != " + exampleOutput2.size() + " example part two outputs");
             }
             for (int i = 0; i < exampleInput2.size(); i++) {
                 tasks.add(new PartTwoTask(exampleInput2.get(i), exampleOutput2.get(i)));
