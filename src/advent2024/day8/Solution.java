@@ -60,11 +60,11 @@ public class Solution extends PuzzleSolver {
         }
 
         Set<Map.Entry<Integer, Integer>> antinodes = new HashSet<>();
-        for (List<Map.Entry<Integer, Integer>> antennaLocations : antennas.values()) {
+        for (var antennaLocations : antennas.values()) {
             for (int i = 0; i < antennaLocations.size(); i++) {
-                Map.Entry<Integer, Integer> antenna1 = antennaLocations.get(i);
+                var antenna1 = antennaLocations.get(i);
                 for (int j = i + 1; j < antennaLocations.size(); j++) {
-                    Map.Entry<Integer, Integer> antenna2 = antennaLocations.get(j);
+                    var antenna2 = antennaLocations.get(j);
 
                     int x1 = antenna1.getKey() + antenna1.getKey() - antenna2.getKey();
                     int y1 = antenna1.getValue() + antenna1.getValue() - antenna2.getValue();
@@ -105,11 +105,11 @@ public class Solution extends PuzzleSolver {
         }
 
         Set<Map.Entry<Integer, Integer>> antinodes = new HashSet<>();
-        for (List<Map.Entry<Integer, Integer>> antennaLocations : antennas.values()) {
+        for (var antennaLocations : antennas.values()) {
             for (int i = 0; i < antennaLocations.size(); i++) {
-                Map.Entry<Integer, Integer> antenna1 = antennaLocations.get(i);
+                var antenna1 = antennaLocations.get(i);
                 for (int j = i + 1; j < antennaLocations.size(); j++) {
-                    Map.Entry<Integer, Integer> antenna2 = antennaLocations.get(j);
+                    var antenna2 = antennaLocations.get(j);
 
                     int x1Direction = antenna1.getKey() - antenna2.getKey();
                     int y1Direction = antenna1.getValue() - antenna2.getValue();

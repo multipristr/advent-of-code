@@ -110,7 +110,7 @@ public class Solution extends PuzzleSolver {
                 if (row[y] == '^') {
                     int initialX = x;
                     int initialY = y;
-                    Set<Map.Entry<Integer, Integer>> distinctPositions = findDistinctPositions(input, x, y, -1, 0);
+                    var distinctPositions = findDistinctPositions(input, x, y, -1, 0);
                     distinctPositions.remove(new AbstractMap.SimpleImmutableEntry<>(x, y));
                     return distinctPositions.stream()
                             .filter(position -> isCreatingCycle(input, initialX, initialY, -1, 0, position.getKey(), position.getValue()))
