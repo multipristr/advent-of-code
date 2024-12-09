@@ -104,17 +104,16 @@ public class Solution extends PuzzleSolver {
                 while (tailBlockFiles.getValue() > emptySpaces && tailIterator.hasPrevious()) {
                     tailBlockFiles = tailIterator.previous();
                 }
-                if (tailBlockFiles.getValue() <= emptySpaces) {
-                    tailIterator.remove();
-                    for (int emptySpace = 0; emptySpace < tailBlockFiles.getValue(); emptySpace++) {
-                        checksum += (long) position * tailBlockFiles.getKey();
-                        ++position;
-                    }
-                    emptySpaces -= tailBlockFiles.getValue();
-                    if (blockFiles.isEmpty()) {
-                        break;
-                    }
-                } else {
+                if (tailBlockFiles.getValue() > emptySpaces) {
+                    break;
+                }
+                tailIterator.remove();
+                for (int emptySpace = 0; emptySpace < tailBlockFiles.getValue(); emptySpace++) {
+                    checksum += (long) position * tailBlockFiles.getKey();
+                    ++position;
+                }
+                emptySpaces -= tailBlockFiles.getValue();
+                if (blockFiles.isEmpty()) {
                     break;
                 }
             }
