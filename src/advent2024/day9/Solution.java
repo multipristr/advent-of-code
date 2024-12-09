@@ -84,7 +84,7 @@ public class Solution extends PuzzleSolver {
         for (int i = 1; i < diskMap.length(); i += 2) {
             int files = Character.getNumericValue(diskMap.charAt(i - 1));
             var headBlockFiles = blockFiles.get(0);
-            if (headBlockFiles.getValue() == files) {
+            if (headBlockFiles.getKey() == i / 2) {
                 blockFiles.remove(0);
                 for (int file = 0; file < headBlockFiles.getValue(); file++) {
                     checksum += (long) position * headBlockFiles.getKey();
