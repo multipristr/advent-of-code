@@ -6,12 +6,9 @@ import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -66,20 +63,24 @@ public class Solution extends PuzzleSolver {
         int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
                 .toArray(int[][]::new);
 
-        return IntStream.range(0, topographicMap.length).parallel()
-                .mapToLong(x -> IntStream.range(0, topographicMap[x].length)
-                        .filter(y -> topographicMap[x][y] == 0)
-                        .mapToLong(y -> findReachableNines(topographicMap, new Position(0, x, y)))
-                        .sum()
-                )
-                .sum();
+        int reachableNines = 0;
+        for (int x = 0; x < topographicMap.length; x++) {
+            int[] row = topographicMap[x];
+            for (int y = 0; y < row.length; y++) {
+                if (row[y] == 0) {
+                    reachableNines += countReachableNines(topographicMap, new Position(0, x, y));
+                }
+            }
+        }
+        return reachableNines;
     }
 
-    private long findReachableNines(int[][] topographicMap, Position trailheadStart) {
+    private int countReachableNines(int[][] topographicMap, Position trailheadStart) {
         int[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
-        Set<Position> closed = new HashSet<>();
+        boolean[][] closed = new boolean[topographicMap.length][topographicMap.length];
+        closed[trailheadStart.x][trailheadStart.y] = true;
+        int reachedNines = 0;
         Deque<Position> open = new ArrayDeque<>();
-        long reachedNines = 0;
 
         open.add(trailheadStart);
         while (!open.isEmpty()) {
@@ -93,15 +94,13 @@ public class Solution extends PuzzleSolver {
                 if (nextY < 0 || nextY >= topographicMap[nextX].length) {
                     continue;
                 }
-                int nextHeight = topographicMap[nextX][nextY];
-                if (nextHeight == current.height + 1) {
-                    Position next = new Position(nextHeight, nextX, nextY);
-                    if (closed.add(next)) {
-                        if (nextHeight == 9) {
-                            ++reachedNines;
-                        } else {
-                            open.addLast(next);
-                        }
+                int nextHeight = current.height + 1;
+                if (topographicMap[nextX][nextY] == nextHeight && !closed[nextX][nextY]) {
+                    closed[nextX][nextY] = true;
+                    if (nextHeight == 9) {
+                        ++reachedNines;
+                    } else {
+                        open.add(new Position(nextHeight, nextX, nextY));
                     }
                 }
             }
@@ -151,7 +150,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        long heightNineVisits = 0;
+        int heightNineVisits = 0;
         for (var position : heightLocations[9]) {
             int x = position.getKey();
             int y = position.getValue();
