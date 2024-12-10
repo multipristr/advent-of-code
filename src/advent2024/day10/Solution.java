@@ -3,6 +3,7 @@ package src.advent2024.day10;
 import src.PuzzleSolver;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -109,16 +110,67 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartTwo(Stream<String> lines) {
-        int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
-                .toArray(int[][]::new);
+        List<Long>[] heightLocations = IntStream.range(0, 10)
+                .mapToObj(i -> new ArrayList<>())
+                .toArray(List[]::new);
+        var lineIterator = lines.iterator();
+        List<int[]> rows = new ArrayList<>();
+        long row = 0;
+        for (; lineIterator.hasNext(); row++) {
+            String line = lineIterator.next();
+            int[] ints = new int[line.length()];
+            for (int y = 0; y < line.length(); y++) {
+                int height = Character.getNumericValue(line.charAt(y));
+                heightLocations[height].add(row << 32 | y);
+                ints[y] = height;
+            }
+            rows.add(ints);
+        }
+        int size = (int) row;
+        int[][] topographicMap = rows.toArray(int[][]::new);
+        int[][] visits = new int[size][size];
+        heightLocations[0].forEach(position -> visits[(int) (position >>> 32)][position.intValue()] = 1);
 
-        return IntStream.range(0, topographicMap.length).parallel()
-                .mapToLong(x -> IntStream.range(0, topographicMap[x].length)
-                        .filter(y -> topographicMap[x][y] == 0)
-                        .mapToLong(y -> calculateTrailheadRating(topographicMap, new Position(0, x, y)))
-                        .sum()
-                )
-                .sum();
+        for (int height = 1; height < 9; height++) {
+            for (var position : heightLocations[height]) {
+                int x = (int) (position >>> 32);
+                int y = position.intValue();
+                int newVisits = 0;
+                if (x > 0 && topographicMap[x - 1][y] == height - 1) {
+                    newVisits += visits[x - 1][y];
+                }
+                if (y > 0 && topographicMap[x][y - 1] == height - 1) {
+                    newVisits += visits[x][y - 1];
+                }
+                if (y < size - 1 && topographicMap[x][y + 1] == height - 1) {
+                    newVisits += visits[x][y + 1];
+                }
+                if (x < size - 1 && topographicMap[x + 1][y] == height - 1) {
+                    newVisits += visits[x + 1][y];
+                }
+                visits[x][y] = newVisits;
+            }
+        }
+
+        long heightNineVisits = 0;
+        for (var position : heightLocations[9]) {
+            int x = (int) (position >>> 32);
+            int y = position.intValue();
+            if (x > 0 && topographicMap[x - 1][y] == 8) {
+                heightNineVisits += visits[x - 1][y];
+            }
+            if (y > 0 && topographicMap[x][y - 1] == 8) {
+                heightNineVisits += visits[x][y - 1];
+            }
+            if (y < size - 1 && topographicMap[x][y + 1] == 8) {
+                heightNineVisits += visits[x][y + 1];
+            }
+            if (x < size - 1 && topographicMap[x + 1][y] == 8) {
+                heightNineVisits += visits[x + 1][y];
+            }
+        }
+
+        return heightNineVisits;
     }
 
     private long calculateTrailheadRating(int[][] topographicMap, Position trailheadStart) {
