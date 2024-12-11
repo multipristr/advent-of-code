@@ -3,8 +3,9 @@ package src.advent2024.day11;
 import src.PuzzleSolver;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -25,7 +26,7 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(0L);
+        return List.of(65601038650482L);
     }
 
     @Override
@@ -38,27 +39,39 @@ public class Solution extends PuzzleSolver {
         return calculateStonesAfterBlinking(lines, 75);
     }
 
-    private int calculateStonesAfterBlinking(Stream<String> lines, int blinks) {
-        List<Long> stones = lines.map(line -> line.split("\\s+"))
+    private long calculateStonesAfterBlinking(Stream<String> lines, int blinks) {
+        Map<Long, Long>[] stonesMemory = new Map[blinks];
+        for (int i = 0; i < stonesMemory.length; i++) {
+            stonesMemory[i] = new HashMap<>();
+        }
+        return lines.parallel().map(line -> line.split("\\s+"))
                 .flatMap(Arrays::stream)
                 .map(Long::parseLong)
-                .collect(Collectors.toList());
-        for (int blink = 0; blink < blinks; blink++) {
-            for (int stoneIndex = 0; stoneIndex < stones.size(); stoneIndex++) {
-                Long stone = stones.get(stoneIndex);
-                if (stone == 0) {
-                    stones.set(stoneIndex, 1L);
-                } else if ((stone.toString().length() & 1L) == 0L) {
-                    String stoneNumber = stone.toString();
-                    int numberMiddle = stoneNumber.length() >>> 1;
-                    stones.set(stoneIndex, Long.valueOf(stoneNumber.substring(0, numberMiddle)));
-                    ++stoneIndex;
-                    stones.add(stoneIndex, Long.valueOf(stoneNumber.substring(numberMiddle)));
-                } else {
-                    stones.set(stoneIndex, stone * 2024);
-                }
-            }
-        }
-        return stones.size();
+                .mapToLong(stone -> calculateStonesAfterBlinking(stone, 0, blinks, stonesMemory))
+                .sum();
     }
+
+    private long calculateStonesAfterBlinking(Long stone, int blink, int blinkTimes, Map<Long, Long>[] stonesMemory) {
+        if (blink == blinkTimes) {
+            return 1L;
+        } else if (stonesMemory[blink].containsKey(stone)) {
+            return stonesMemory[blink].get(stone);
+        } else if (stone == 0) {
+            long stones = calculateStonesAfterBlinking(1L, blink + 1, blinkTimes, stonesMemory);
+            stonesMemory[blink].put(stone, stones);
+            return stones;
+        } else if ((stone.toString().length() & 1L) == 0L) {
+            String stoneNumber = stone.toString();
+            int numberMiddle = stoneNumber.length() >>> 1;
+            long stones = calculateStonesAfterBlinking(Long.parseLong(stoneNumber.substring(0, numberMiddle)), blink + 1, blinkTimes, stonesMemory)
+                    + calculateStonesAfterBlinking(Long.parseLong(stoneNumber.substring(numberMiddle)), blink + 1, blinkTimes, stonesMemory);
+            stonesMemory[blink].put(stone, stones);
+            return stones;
+        } else {
+            long stones = calculateStonesAfterBlinking(stone * 2024, blink + 1, blinkTimes, stonesMemory);
+            stonesMemory[blink].put(stone, stones);
+            return stones;
+        }
+    }
+
 }
