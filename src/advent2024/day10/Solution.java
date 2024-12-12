@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -82,7 +81,7 @@ public class Solution extends PuzzleSolver {
         int reachedNines = 0;
         Deque<Position> open = new ArrayDeque<>();
 
-        open.add(trailheadStart);
+        open.addLast(trailheadStart);
         while (!open.isEmpty()) {
             Position current = open.pollFirst();
             for (int i = 1; i < directions.length; i += 2) {
@@ -100,7 +99,7 @@ public class Solution extends PuzzleSolver {
                     if (nextHeight == 9) {
                         ++reachedNines;
                     } else {
-                        open.add(new Position(nextHeight, nextX, nextY));
+                        open.addLast(new Position(nextHeight, nextX, nextY));
                     }
                 }
             }
@@ -181,19 +180,6 @@ public class Solution extends PuzzleSolver {
             this.height = height;
             this.x = x;
             this.y = y;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Position position = (Position) o;
-            return x == position.x && y == position.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
         }
 
     }
