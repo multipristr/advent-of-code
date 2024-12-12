@@ -6,8 +6,11 @@ import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -37,18 +40,28 @@ public class Solution extends PuzzleSolver {
                         "VVIIICJJEE\n" +
                         "MIIIIIJJEE\n" +
                         "MIIISIJEEE\n" +
-                        "MMMISSJEEE"
+                        "MMMISSJEEE",
+                ".....\n" +
+                        ".AAA.\n" +
+                        ".A.A.\n" +
+                        ".AA..\n" +
+                        ".A.A.\n" +
+                        ".AAA.\n" +
+                        "....."
         );
     }
 
     @Override
     public List<Long> getExampleOutput1() {
-        return List.of(140L, 772L, 1930L);
+        return List.of(140L, 772L, 1930L, 1202L);
     }
 
     @Override
     public List<String> getExampleInput2() {
         return List.of(
+                "OOOOO\n" +
+                        "OXOXO\n" +
+                        "OXXXO",
                 "AAAA\n" +
                         "BBCD\n" +
                         "BBCC\n" +
@@ -78,13 +91,20 @@ public class Solution extends PuzzleSolver {
                         "VVIIICJJEE\n" +
                         "MIIIIIJJEE\n" +
                         "MIIISIJEEE\n" +
-                        "MMMISSJEEE"
+                        "MMMISSJEEE",
+                ".....\n" +
+                        ".AAA.\n" +
+                        ".A.A.\n" +
+                        ".AA..\n" +
+                        ".A.A.\n" +
+                        ".AAA.\n" +
+                        "....."
         );
     }
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(80L, 436L, 236L, 368L, 1206L);
+        return List.of(160L, 80L, 436L, 236L, 368L, 1206L, 452L);
     }
 
     @Override
@@ -137,7 +157,7 @@ public class Solution extends PuzzleSolver {
                 .toArray(char[][]::new);
         int[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
 
-        int[][] regions = new int[map.length][map.length];
+        int[][] regions = new int[map.length][map[0].length];
         int region = 1;
         Map<Integer, Long> areas = new HashMap<>();
         for (int x = 0; x < map.length; x++) {
@@ -188,13 +208,9 @@ public class Solution extends PuzzleSolver {
                 int currentX = x;
                 int currentY = y;
                 Direction currentDirection = Direction.RIGHT;
-                int firstSideTouchX = x;
-                int firstSideTouchY = y;
                 Direction firstSideTouchDirection = Direction.UP;
-                if (firstSideTouchX >= 1) {
-                    sides.merge(regions[firstSideTouchX + Direction.UP.x][firstSideTouchY], 1L, Long::sum);
-                }
-                while (currentX != firstSideTouchX || currentY != firstSideTouchY || currentDirection != firstSideTouchDirection) {
+                Integer outsideRegion = -1;
+                while (currentX != x || currentY != y || currentDirection != firstSideTouchDirection) {
                     Direction leftDirection = currentDirection.getLeft();
                     int fenceX = currentX + leftDirection.x;
                     int fenceY = currentY + leftDirection.y;
@@ -210,8 +226,14 @@ public class Solution extends PuzzleSolver {
                             currentX = nextX;
                             currentY = nextY;
                         } else {
-                            if (nextX >= 0 && nextX < map.length && nextY >= 0 && nextY < map.length) {
-                                sides.merge(regions[nextX][nextY], 1L, Long::sum);
+                            if (nextX >= 0 && nextX < map.length && nextY >= 0 && nextY < map[nextX].length) {
+                                if (outsideRegion == -1) {
+                                    outsideRegion = regions[nextX][nextY];
+                                } else if (outsideRegion != regions[nextX][nextY]) {
+                                    outsideRegion = -2;
+                                }
+                            } else {
+                                outsideRegion = -2;
                             }
                             ++outerSides;
                             currentDirection = currentDirection.getRight();
@@ -219,6 +241,9 @@ public class Solution extends PuzzleSolver {
                     }
                 }
 
+                if (outsideRegion > 0) {
+                    sides.merge(outsideRegion, outerSides, Long::sum);
+                }
                 sides.merge(region, outerSides, Long::sum);
             }
         }
@@ -229,7 +254,7 @@ public class Solution extends PuzzleSolver {
     }
 
     private boolean isPlantTypeAt(char[][] map, char plantType, int x, int y) {
-        return x >= 0 && x < map.length && y >= 0 && y < map.length && map[x][y] == plantType;
+        return x >= 0 && x < map.length && y >= 0 && y < map[x].length && map[x][y] == plantType;
     }
 
     private enum Direction {
