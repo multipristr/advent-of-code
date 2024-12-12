@@ -5,6 +5,7 @@ import src.PuzzleSolver;
 import java.util.AbstractMap;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -134,22 +135,22 @@ public class Solution extends PuzzleSolver {
     public long solvePartTwo(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
-
         int[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
-        boolean[][] closed = new boolean[map.length][map.length];
-        long price = 0;
 
+        int[][] regions = new int[map.length][map.length];
+        int region = 1;
+        Map<Integer, Long> areas = new HashMap<>();
         for (int x = 0; x < map.length; x++) {
             char[] row = map[x];
-            boolean[] closedRow = closed[x];
+            int[] regionRow = regions[x];
             for (int y = 0; y < row.length; y++) {
-                if (closedRow[y]) {
+                if (regionRow[y] != 0) {
                     continue;
                 }
                 char plantType = row[y];
 
                 long area = 0;
-                closedRow[y] = true;
+                regionRow[y] = region;
                 Deque<Map.Entry<Integer, Integer>> open = new ArrayDeque<>();
                 open.addLast(new AbstractMap.SimpleImmutableEntry<>(x, y));
                 while (!open.isEmpty()) {
@@ -158,26 +159,47 @@ public class Solution extends PuzzleSolver {
                     for (int i = 1; i < directions.length; i += 2) {
                         int nextX = current.getKey() + directions[i - 1];
                         int nextY = current.getValue() + directions[i];
-                        if (isPlantTypeAt(map, plantType, nextX, nextY) && !closed[nextX][nextY]) {
-                            closed[nextX][nextY] = true;
+                        if (isPlantTypeAt(map, plantType, nextX, nextY) && regions[nextX][nextY] == 0) {
+                            regions[nextX][nextY] = region;
                             open.addLast(new AbstractMap.SimpleImmutableEntry<>(nextX, nextY));
                         }
                     }
                 }
 
-                long sides = 1;
+                areas.put(region, area);
+                ++region;
+            }
+        }
+
+        Map<Integer, Long> sides = new HashMap<>(areas.size());
+        boolean[] closedRegions = new boolean[areas.size()];
+        for (int x = 0; x < map.length; x++) {
+            char[] row = map[x];
+            int[] regionRow = regions[x];
+            for (int y = 0; y < row.length; y++) {
+                region = regionRow[y];
+                if (closedRegions[region - 1]) {
+                    continue;
+                }
+                closedRegions[region - 1] = true;
+                char plantType = row[y];
+
+                long outerSides = 1;
                 int currentX = x;
                 int currentY = y;
                 Direction currentDirection = Direction.RIGHT;
                 int firstSideTouchX = x;
                 int firstSideTouchY = y;
                 Direction firstSideTouchDirection = Direction.UP;
+                if (firstSideTouchX >= 1) {
+                    sides.merge(regions[firstSideTouchX + Direction.UP.x][firstSideTouchY], 1L, Long::sum);
+                }
                 while (currentX != firstSideTouchX || currentY != firstSideTouchY || currentDirection != firstSideTouchDirection) {
                     Direction leftDirection = currentDirection.getLeft();
                     int fenceX = currentX + leftDirection.x;
                     int fenceY = currentY + leftDirection.y;
                     if (isPlantTypeAt(map, plantType, fenceX, fenceY)) {
-                        ++sides;
+                        ++outerSides;
                         currentX = fenceX;
                         currentY = fenceY;
                         currentDirection = leftDirection;
@@ -188,18 +210,22 @@ public class Solution extends PuzzleSolver {
                             currentX = nextX;
                             currentY = nextY;
                         } else {
-                            ++sides;
+                            if (nextX >= 0 && nextX < map.length && nextY >= 0 && nextY < map.length) {
+                                sides.merge(regions[nextX][nextY], 1L, Long::sum);
+                            }
+                            ++outerSides;
                             currentDirection = currentDirection.getRight();
                         }
                     }
                 }
 
-//                System.out.println(plantType + " " + area + " x " + sides);
-                price += area * sides;
+                sides.merge(region, outerSides, Long::sum);
             }
         }
 
-        return price;
+        return areas.entrySet().stream()
+                .mapToLong(entry -> entry.getValue() * sides.get(entry.getKey()))
+                .sum();
     }
 
     private boolean isPlantTypeAt(char[][] map, char plantType, int x, int y) {
