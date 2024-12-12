@@ -51,7 +51,7 @@ public class Solution extends PuzzleSolver {
                 "AAAA\n" +
                         "BBCD\n" +
                         "BBCC\n" +
-                        "EEEC"/*,
+                        "EEEC",
                 "OOOOO\n" +
                         "OXOXO\n" +
                         "OOOOO\n" +
@@ -77,13 +77,13 @@ public class Solution extends PuzzleSolver {
                         "VVIIICJJEE\n" +
                         "MIIIIIJJEE\n" +
                         "MIIISIJEEE\n" +
-                        "MMMISSJEEE"*/
+                        "MMMISSJEEE"
         );
     }
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(80L/*, 436L, 236L, 368L, 1206L*/);
+        return List.of(80L, 436L, 236L, 368L, 1206L);
     }
 
     @Override
@@ -114,16 +114,10 @@ public class Solution extends PuzzleSolver {
                     ++area;
                     for (int i = 1; i < directions.length; i += 2) {
                         int nextX = current.getKey() + directions[i - 1];
-                        if (nextX < 0 || nextX >= map.length) {
-                            ++perimeter;
-                            continue;
-                        }
                         int nextY = current.getValue() + directions[i];
-                        if (nextY < 0 || nextY >= map[nextX].length || map[nextX][nextY] != plantType) {
+                        if (!isPlantTypeAt(map, plantType, nextX, nextY)) {
                             ++perimeter;
-                            continue;
-                        }
-                        if (!closed[nextX][nextY]) {
+                        } else if (!closed[nextX][nextY]) {
                             closed[nextX][nextY] = true;
                             open.addLast(new AbstractMap.SimpleImmutableEntry<>(nextX, nextY));
                         }
@@ -163,28 +157,98 @@ public class Solution extends PuzzleSolver {
                     ++area;
                     for (int i = 1; i < directions.length; i += 2) {
                         int nextX = current.getKey() + directions[i - 1];
-                        if (nextX < 0 || nextX >= map.length) {
-                            continue;
-                        }
                         int nextY = current.getValue() + directions[i];
-                        if (nextY < 0 || nextY >= map[nextX].length || map[nextX][nextY] != plantType) {
-                            continue;
-                        }
-                        if (!closed[nextX][nextY]) {
+                        if (isPlantTypeAt(map, plantType, nextX, nextY) && !closed[nextX][nextY]) {
                             closed[nextX][nextY] = true;
                             open.addLast(new AbstractMap.SimpleImmutableEntry<>(nextX, nextY));
                         }
                     }
                 }
 
-                long sides = 0;
+                long sides = 1;
+                int currentX = x;
+                int currentY = y;
+                Direction currentDirection = Direction.RIGHT;
+                int firstSideTouchX = x;
+                int firstSideTouchY = y;
+                Direction firstSideTouchDirection = Direction.UP;
+                while (currentX != firstSideTouchX || currentY != firstSideTouchY || currentDirection != firstSideTouchDirection) {
+                    Direction leftDirection = currentDirection.getLeft();
+                    int fenceX = currentX + leftDirection.x;
+                    int fenceY = currentY + leftDirection.y;
+                    if (isPlantTypeAt(map, plantType, fenceX, fenceY)) {
+                        ++sides;
+                        currentX = fenceX;
+                        currentY = fenceY;
+                        currentDirection = leftDirection;
+                    } else {
+                        int nextX = currentX + currentDirection.x;
+                        int nextY = currentY + currentDirection.y;
+                        if (isPlantTypeAt(map, plantType, nextX, nextY)) {
+                            currentX = nextX;
+                            currentY = nextY;
+                        } else {
+                            ++sides;
+                            currentDirection = currentDirection.getRight();
+                        }
+                    }
+                }
 
-                System.out.println(plantType + " " + area + " x " + sides);
+//                System.out.println(plantType + " " + area + " x " + sides);
                 price += area * sides;
             }
         }
 
         return price;
+    }
+
+    private boolean isPlantTypeAt(char[][] map, char plantType, int x, int y) {
+        return x >= 0 && x < map.length && y >= 0 && y < map.length && map[x][y] == plantType;
+    }
+
+    private enum Direction {
+        UP(-1, 0),
+        LEFT(0, -1),
+        DOWN(1, 0),
+        RIGHT(0, 1);
+
+        private final int x;
+        private final int y;
+
+        Direction(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public Direction getLeft() {
+            switch (this) {
+                case UP:
+                    return LEFT;
+                case LEFT:
+                    return DOWN;
+                case DOWN:
+                    return RIGHT;
+                case RIGHT:
+                    return UP;
+                default:
+                    throw new IllegalStateException(toString());
+            }
+        }
+
+        private Direction getRight() {
+            switch (this) {
+                case UP:
+                    return RIGHT;
+                case LEFT:
+                    return UP;
+                case DOWN:
+                    return LEFT;
+                case RIGHT:
+                    return DOWN;
+                default:
+                    throw new IllegalStateException(toString());
+            }
+        }
     }
 
 }
