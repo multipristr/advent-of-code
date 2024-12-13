@@ -4,13 +4,13 @@ import src.PuzzleSolver;
 
 import java.util.AbstractMap;
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -157,12 +157,12 @@ public class Solution extends PuzzleSolver {
                 .toArray(char[][]::new);
         int[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
 
-        int[][] regions = new int[map.length][map[0].length];
-        int region = 1;
-        Map<Integer, Long> areas = new HashMap<>();
+        int[][] regionMap = new int[map.length][map[0].length];
+        int regionIndex = 1;
+        Map<Integer, Region> regions = new HashMap<>();
         for (int x = 0; x < map.length; x++) {
             char[] row = map[x];
-            int[] regionRow = regions[x];
+            int[] regionRow = regionMap[x];
             for (int y = 0; y < row.length; y++) {
                 if (regionRow[y] != 0) {
                     continue;
@@ -170,86 +170,44 @@ public class Solution extends PuzzleSolver {
                 char plantType = row[y];
 
                 long area = 0;
-                regionRow[y] = region;
+                Map<Edge, Integer> regionEdges = new HashMap<>();
+                regionRow[y] = regionIndex;
                 Deque<Map.Entry<Integer, Integer>> open = new ArrayDeque<>();
                 open.addLast(new AbstractMap.SimpleImmutableEntry<>(x, y));
                 while (!open.isEmpty()) {
                     var current = open.pollFirst();
                     ++area;
+
+                    regionEdges.merge(new Edge(current.getKey(), current.getKey() + 1, current.getValue(), current.getValue()), 1, Integer::sum);
+                    regionEdges.merge(new Edge(current.getKey(), current.getKey() + 1, current.getValue() + 1, current.getValue() + 1), 1, Integer::sum);
+                    regionEdges.merge(new Edge(current.getKey(), current.getKey(), current.getValue(), current.getValue() + 1), 1, Integer::sum);
+                    regionEdges.merge(new Edge(current.getKey() + 1, current.getKey() + 1, current.getValue(), current.getValue() + 1), 1, Integer::sum);
+
                     for (int i = 1; i < directions.length; i += 2) {
                         int nextX = current.getKey() + directions[i - 1];
                         int nextY = current.getValue() + directions[i];
-                        if (isPlantTypeAt(map, plantType, nextX, nextY) && regions[nextX][nextY] == 0) {
-                            regions[nextX][nextY] = region;
+                        if (isPlantTypeAt(map, plantType, nextX, nextY) && regionMap[nextX][nextY] == 0) {
+                            regionMap[nextX][nextY] = regionIndex;
                             open.addLast(new AbstractMap.SimpleImmutableEntry<>(nextX, nextY));
                         }
                     }
                 }
 
-                areas.put(region, area);
-                ++region;
+                regions.put(regionIndex - 1, new Region(regionEdges, area));
+                ++regionIndex;
             }
         }
 
-        Map<Integer, Long> sides = new HashMap<>(areas.size());
-        boolean[] closedRegions = new boolean[areas.size()];
-        for (int x = 0; x < map.length; x++) {
-            char[] row = map[x];
-            int[] regionRow = regions[x];
-            for (int y = 0; y < row.length; y++) {
-                region = regionRow[y];
-                if (closedRegions[region - 1]) {
-                    continue;
-                }
-                closedRegions[region - 1] = true;
-                char plantType = row[y];
-
-                long outerSides = 1;
-                int currentX = x;
-                int currentY = y;
-                Direction currentDirection = Direction.RIGHT;
-                Direction firstSideTouchDirection = Direction.UP;
-                Integer outsideRegion = -1;
-                while (currentX != x || currentY != y || currentDirection != firstSideTouchDirection) {
-                    Direction leftDirection = currentDirection.getLeft();
-                    int fenceX = currentX + leftDirection.x;
-                    int fenceY = currentY + leftDirection.y;
-                    if (isPlantTypeAt(map, plantType, fenceX, fenceY)) {
-                        ++outerSides;
-                        currentX = fenceX;
-                        currentY = fenceY;
-                        currentDirection = leftDirection;
-                    } else {
-                        int nextX = currentX + currentDirection.x;
-                        int nextY = currentY + currentDirection.y;
-                        if (isPlantTypeAt(map, plantType, nextX, nextY)) {
-                            currentX = nextX;
-                            currentY = nextY;
-                        } else {
-                            if (nextX >= 0 && nextX < map.length && nextY >= 0 && nextY < map[nextX].length) {
-                                if (outsideRegion == -1) {
-                                    outsideRegion = regions[nextX][nextY];
-                                } else if (outsideRegion != regions[nextX][nextY]) {
-                                    outsideRegion = -2;
-                                }
-                            } else {
-                                outsideRegion = -2;
-                            }
-                            ++outerSides;
-                            currentDirection = currentDirection.getRight();
-                        }
-                    }
-                }
-
-                if (outsideRegion > 0) {
-                    sides.merge(outsideRegion, outerSides, Long::sum);
-                }
-                sides.merge(region, outerSides, Long::sum);
-            }
+        for (Region region : regions.values()) {
+            region.removeInnerEdges();
+            Map<Integer, List<Edge>> yEdges = region.getEdges().keySet().stream()
+                    .sorted(Comparator.comparingInt(Edge::getX1).thenComparing(Edge::getX2))
+                    .collect(Collectors.groupingBy(Edge::getY1));
         }
 
-        return areas.entrySet().stream()
-                .mapToLong(entry -> entry.getValue() * sides.get(entry.getKey()))
+        return regions.values()
+                .stream()
+                .mapToLong(region -> region.getArea() * region.getSides())
                 .sum();
     }
 
@@ -257,48 +215,77 @@ public class Solution extends PuzzleSolver {
         return x >= 0 && x < map.length && y >= 0 && y < map[x].length && map[x][y] == plantType;
     }
 
-    private enum Direction {
-        UP(-1, 0),
-        LEFT(0, -1),
-        DOWN(1, 0),
-        RIGHT(0, 1);
+    private static final class Region {
+        private final Map<Edge, Integer> edges;
+        private final long area;
+        private long sides;
 
-        private final int x;
-        private final int y;
-
-        Direction(int x, int y) {
-            this.x = x;
-            this.y = y;
+        private Region(Map<Edge, Integer> edges, long area) {
+            this.edges = edges;
+            this.area = area;
         }
 
-        public Direction getLeft() {
-            switch (this) {
-                case UP:
-                    return LEFT;
-                case LEFT:
-                    return DOWN;
-                case DOWN:
-                    return RIGHT;
-                case RIGHT:
-                    return UP;
-                default:
-                    throw new IllegalStateException(toString());
-            }
+        public void removeInnerEdges() {
+            edges.values().removeIf(occurrence -> occurrence > 1);
         }
 
-        private Direction getRight() {
-            switch (this) {
-                case UP:
-                    return RIGHT;
-                case LEFT:
-                    return UP;
-                case DOWN:
-                    return LEFT;
-                case RIGHT:
-                    return DOWN;
-                default:
-                    throw new IllegalStateException(toString());
-            }
+        public Map<Edge, Integer> getEdges() {
+            return edges;
+        }
+
+        public long getArea() {
+            return area;
+        }
+
+        public long getSides() {
+            return sides;
+        }
+
+        public Region setSides(long sides) {
+            this.sides = sides;
+            return this;
+        }
+    }
+
+    private static final class Edge {
+        private final int x1;
+        private final int x2;
+        private final int y1;
+        private final int y2;
+
+        private Edge(int x1, int x2, int y1, int y2) {
+            this.x1 = x1;
+            this.x2 = x2;
+            this.y1 = y1;
+            this.y2 = y2;
+        }
+
+        public int getX1() {
+            return x1;
+        }
+
+        public int getX2() {
+            return x2;
+        }
+
+        public int getY1() {
+            return y1;
+        }
+
+        public int getY2() {
+            return y2;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Edge edge = (Edge) o;
+            return x1 == edge.x1 && x2 == edge.x2 && y1 == edge.y1 && y2 == edge.y2;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x1, x2, y1, y2);
         }
     }
 
