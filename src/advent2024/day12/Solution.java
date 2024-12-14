@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -109,19 +108,17 @@ public class Solution extends PuzzleSolver {
     public long solvePartOne(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
+        byte[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
 
-        int[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
-        boolean[][] closed = new boolean[map.length][map.length];
+        boolean[][] closed = new boolean[map.length][map[0].length];
         long price = 0;
-
         for (int x = 0; x < map.length; x++) {
-            char[] row = map[x];
             boolean[] closedRow = closed[x];
-            for (int y = 0; y < row.length; y++) {
+            for (int y = 0; y < closedRow.length; y++) {
                 if (closedRow[y]) {
                     continue;
                 }
-                char plantType = row[y];
+                char plantType = map[x][y];
 
                 long area = 0;
                 long perimeter = 0;
@@ -147,14 +144,6 @@ public class Solution extends PuzzleSolver {
         }
 
         return price;
-    }
-
-    private static boolean isLeftCrossing(long[][] regions, long region, int y, int x) {
-        return x <= 0 || regions[y][x - 1] != region;
-    }
-
-    private boolean isPlantTypeAt(char[][] map, char plantType, int x, int y) {
-        return x >= 0 && x < map.length && y >= 0 && y < map[x].length && map[x][y] == plantType;
     }
 
     @Override
@@ -197,12 +186,14 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        for (byte rotatin = 0; rotatin < 4; rotatin++) {
+        for (byte rotation = 0; rotation < 4; rotation++) {
             for (int y = 0; y < regionMap.length; y++) {
                 var row = regionMap[y];
                 for (int x = 0; x < row.length; x++) {
                     var region = row[x];
-                    if (isLeftCrossing(regionMap, region, y, x) && (y == 0 || regionMap[y - 1][x] != region || !isLeftCrossing(regionMap, region, y - 1, x))) {
+                    if (isLeftCrossing(regionMap, region, y, x)
+                            && (y == 0 || regionMap[y - 1][x] != region || !isLeftCrossing(regionMap, region, y - 1, x))
+                    ) {
                         regions.get(region).addSide();
                     }
                 }
@@ -225,21 +216,20 @@ public class Solution extends PuzzleSolver {
                 .sum();
     }
 
+    private boolean isPlantTypeAt(char[][] map, char plantType, int x, int y) {
+        return x >= 0 && x < map.length && y >= 0 && y < map[x].length && map[x][y] == plantType;
+    }
+
+    private boolean isLeftCrossing(long[][] regions, long region, int y, int x) {
+        return x <= 0 || regions[y][x - 1] != region;
+    }
+
     private static final class Region {
-        private Map<Edge, Integer> edges;
         private final long area;
         private long sides;
 
         private Region(long area) {
             this.area = area;
-        }
-
-        public void removeInnerEdges() {
-            edges.values().removeIf(occurrence -> occurrence > 1);
-        }
-
-        public Map<Edge, Integer> getEdges() {
-            return edges;
         }
 
         public long getArea() {
@@ -253,48 +243,6 @@ public class Solution extends PuzzleSolver {
         public Region addSide() {
             ++this.sides;
             return this;
-        }
-    }
-
-    private static final class Edge {
-        private final int x1;
-        private final int x2;
-        private final int y1;
-        private final int y2;
-
-        private Edge(int x1, int x2, int y1, int y2) {
-            this.x1 = x1;
-            this.x2 = x2;
-            this.y1 = y1;
-            this.y2 = y2;
-        }
-
-        public int getX1() {
-            return x1;
-        }
-
-        public int getX2() {
-            return x2;
-        }
-
-        public int getY1() {
-            return y1;
-        }
-
-        public int getY2() {
-            return y2;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            Edge edge = (Edge) o;
-            return x1 == edge.x1 && x2 == edge.x2 && y1 == edge.y1 && y2 == edge.y2;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x1, x2, y1, y2);
         }
     }
 
