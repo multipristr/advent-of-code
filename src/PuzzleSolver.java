@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,7 +16,7 @@ import java.util.stream.Stream;
 public abstract class PuzzleSolver {
 
     public void run() {
-        List<Task> tasks = new ArrayList<>();
+        var tasks = new ArrayList<Task>();
 
         var exampleInput1 = getExampleInput1();
         var exampleOutput1 = getExampleOutput1();
@@ -41,7 +40,7 @@ public abstract class PuzzleSolver {
             tasks.add(new PartTwoTask(getInput2()));
         }
 
-        ExecutorService thread = Executors.newFixedThreadPool(tasks.size());
+        var thread = Executors.newFixedThreadPool(tasks.size());
         try {
             var futures = tasks.stream()
                     .map(thread::submit)
@@ -87,12 +86,12 @@ public abstract class PuzzleSolver {
         private final Stream<String> input;
         private final Long output;
 
-        Task(Stream<String> input) {
+        private Task(Stream<String> input) {
             this.input = input;
             this.output = null;
         }
 
-        Task(String input, long output) {
+        private Task(String input, long output) {
             this.input = input.lines();
             this.output = output;
         }
@@ -108,7 +107,7 @@ public abstract class PuzzleSolver {
         @Override
         public String call() {
             try {
-                Instant start = Instant.now();
+                var start = Instant.now();
                 var solution = solve();
                 var duration = Duration.between(start, Instant.now());
                 if (output == null) {
@@ -130,11 +129,11 @@ public abstract class PuzzleSolver {
 
     private class PartOneTask extends Task {
 
-        PartOneTask(Stream<String> input) {
+        private PartOneTask(Stream<String> input) {
             super(input);
         }
 
-        PartOneTask(String input, long output) {
+        private PartOneTask(String input, long output) {
             super(input, output);
         }
 
@@ -152,11 +151,11 @@ public abstract class PuzzleSolver {
 
     private class PartTwoTask extends Task {
 
-        PartTwoTask(Stream<String> input) {
+        private PartTwoTask(Stream<String> input) {
             super(input);
         }
 
-        PartTwoTask(String input, long output) {
+        private PartTwoTask(String input, long output) {
             super(input, output);
         }
 
