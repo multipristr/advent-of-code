@@ -2,7 +2,6 @@ package src.advent2024.day13;
 
 import src.PuzzleSolver;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +10,9 @@ import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
 
-    private static final Pattern XY_PATTERN = Pattern.compile("[+=](?<xy>\\d+)");
+    private static final Pattern XY_PATTERN = Pattern.compile(
+            "Button A: X\\+(?<aX>\\d+), Y\\+(?<aY>\\d+)Button B: X\\+(?<bX>\\d+), Y\\+(?<bY>\\d+)Prize: X=(?<x>\\d+), Y=(?<y>\\d+)"
+    );
 
     public static void main(String[] args) {
         new Solution().run();
@@ -48,51 +49,47 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public long solvePartOne(Stream<String> lines) {
-        String[] input = lines.collect(Collectors.joining("\n")).split("\\R{2}");
-        return Arrays.stream(input).parallel()
-                .mapToLong(equation -> solveEquation(equation, 0d, 0d))
-                .sum();
+        return calculateTokens(lines, 0d, 0d);
     }
 
     @Override
     public long solvePartTwo(Stream<String> lines) {
-        String[] input = lines.collect(Collectors.joining("\n")).split("\\R{2}");
-        return Arrays.stream(input).parallel()
-                .mapToLong(equation -> solveEquation(equation, 10000000000000d, 10000000000000d))
-                .sum();
+        return calculateTokens(lines, 10000000000000d, 10000000000000d);
     }
 
-    private long solveEquation(String equation, double xAddition, double yAddition) {
-        Matcher matcher = XY_PATTERN.matcher(equation);
-        matcher.find();
-        double aX = Double.parseDouble(matcher.group("xy"));
-        matcher.find();
-        double aY = Double.parseDouble(matcher.group("xy"));
-        matcher.find();
-        double bX = Double.parseDouble(matcher.group("xy"));
-        matcher.find();
-        double bY = Double.parseDouble(matcher.group("xy"));
-        matcher.find();
-        double x = Double.parseDouble(matcher.group("xy")) + xAddition;
-        matcher.find();
-        double y = Double.parseDouble(matcher.group("xy")) + yAddition;
+    private long calculateTokens(Stream<String> lines, double xAddition, double yAddition) {
+        String input = lines.collect(Collectors.joining());
+        Matcher matcher = XY_PATTERN.matcher(input);
 
-        // 94a + 22b = 8400
-        // 34a + 67b = 5400
-        // ---
-        // aX * a + bX * b = x
-        // aY * a + bY * b = y
-        // ---
-        // b = (x - aX * a) / bX
-        // aY * a + bY * ((x - aX * a) / bX) = y
-        // aY * a + (bY * x - bY * aX * a) / bX = y
-        // aY * bX * a + bY * x - bY * aX * a = bX * y
-        // aY * bX * a - bY * aX * a = bX * y - bY * x
-        // a (aY * bX - bY * aX) = bX * y - bY * x
-        // a = (bX * y - bY * x) / (aY * bX - bY * aX)
-        double a = (bX * y - bY * x) / (aY * bX - bY * aX);
-        double b = (x - aX * a) / bX;
-        return Math.rint(a) == a && Math.rint(b) == b ? (long) (a * 3.0 + b) : 0L;
+        long token = 0L;
+        while (matcher.find()) {
+            double aX = Double.parseDouble(matcher.group("aX"));
+            double aY = Double.parseDouble(matcher.group("aY"));
+            double bX = Double.parseDouble(matcher.group("bX"));
+            double bY = Double.parseDouble(matcher.group("bY"));
+            double x = Double.parseDouble(matcher.group("x")) + xAddition;
+            double y = Double.parseDouble(matcher.group("y")) + yAddition;
+
+            // 94a + 22b = 8400
+            // 34a + 67b = 5400
+            // ---
+            // aX * a + bX * b = x
+            // aY * a + bY * b = y
+            // ---
+            // b = (x - aX * a) / bX
+            // aY * a + bY * ((x - aX * a) / bX) = y
+            // aY * a + (bY * x - bY * aX * a) / bX = y
+            // aY * bX * a + bY * x - bY * aX * a = bX * y
+            // aY * bX * a - bY * aX * a = bX * y - bY * x
+            // a (aY * bX - bY * aX) = bX * y - bY * x
+            // a = (bX * y - bY * x) / (aY * bX - bY * aX)
+            double a = (bX * y - bY * x) / (aY * bX - bY * aX);
+            double b = (x - aX * a) / bX;
+            if (Math.rint(a) == a && Math.rint(b) == b) {
+                token += (long) (a * 3.0 + b);
+            }
+        }
+        return token;
     }
 
 }
