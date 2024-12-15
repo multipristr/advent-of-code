@@ -166,11 +166,11 @@ public class Solution extends PuzzleSolver {
             return Math.floorMod(positionY, height);
         }
 
-        private void move() {
+        public void move() {
             move(1);
         }
 
-        private void move(int seconds) {
+        public void move(int seconds) {
             positionX += velocityX * seconds;
             positionY += velocityY * seconds;
         }
