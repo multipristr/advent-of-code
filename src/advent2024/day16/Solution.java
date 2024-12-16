@@ -340,10 +340,15 @@ public class Solution extends PuzzleSolver {
                 .filter(moveWithVisited -> moveWithVisited.getX() == finalEndTileX && moveWithVisited.getY() == finalEndTileY)
                 .collect(Collectors.toCollection(ArrayDeque::new));
         var bestPathTiles = new HashSet<Map.Entry<Integer, Integer>>();
+        var closed2 = new HashSet<>(remainingTiles);
         while (!remainingTiles.isEmpty()) {
             var current = remainingTiles.pollFirst();
             bestPathTiles.add(new AbstractMap.SimpleImmutableEntry<>(current.getX(), current.getY()));
-            remainingTiles.addAll(bestTiles.getOrDefault(current, List.of()));
+            for (var visited : bestTiles.getOrDefault(current, List.of())) {
+                if (closed2.add(visited)) {
+                    remainingTiles.add(visited);
+                }
+            }
         }
         return bestPathTiles.size();
     }
