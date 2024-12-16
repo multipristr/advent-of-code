@@ -3,6 +3,8 @@ package src.advent2024.day16;
 import src.PuzzleSolver;
 
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,7 +93,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        Move startMove = new Move(endTileX, endTileY, startTileX, startTileY, 1, 0, 0);
+        var startMove = new Move(endTileX, endTileY, startTileX, startTileY, 1, 0, 0);
         var open = new PriorityQueue<Move>();
         open.add(startMove);
         var closed = new HashMap<Move, Integer>();
@@ -183,27 +185,17 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        MoveWithVisited startMove = new MoveWithVisited(endTileX, endTileY, startTileX, startTileY, 1, 0, 0, null);
+        var bestTiles = new HashMap<MoveWithVisited, List<MoveWithVisited>>();
+
+        var startMove = new MoveWithVisited(endTileX, endTileY, startTileX, startTileY, 1, 0, 0, null);
         var open = new PriorityQueue<MoveWithVisited>();
         open.add(startMove);
-        Set<MoveWithVisited> closed = new HashSet<>();
-        closed.add(startMove);
-
-        int bestScore = Integer.MAX_VALUE;
-        var bestTiles = new HashSet<Map.Entry<Integer, Integer>>();
-
+        var closed = new HashMap<MoveWithVisited, Integer>();
+        closed.put(startMove, startMove.getScore());
         while (!open.isEmpty()) {
             var current = open.poll();
-            if (current.getScore() > bestScore) {
-                break;
-            }
             if (current.getX() == endTileX && current.getY() == endTileY) {
-                bestScore = current.getScore();
-                var cur = current;
-                while (cur != null) {
-                    bestTiles.add(new AbstractMap.SimpleImmutableEntry<>(cur.getX(), cur.getY()));
-                    cur = cur.getPrevious();
-                }
+                break;
             }
 
             if (isStepToEmpty(map, current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY())) {
@@ -211,8 +203,12 @@ public class Solution extends PuzzleSolver {
                         current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY(),
                         current.getDirectionX(), current.getDirectionY(),
                         current.getScore() + 1, current);
-                if (closed.add(nextStep)) {
+                if (nextStep.getScore() < closed.getOrDefault(nextStep, Integer.MAX_VALUE)) {
+                    closed.put(nextStep, nextStep.getScore());
                     open.add(nextStep);
+                    bestTiles.put(nextStep, new ArrayList<>(Set.of(nextStep.getPrevious())));
+                } else if (nextStep.getScore() == closed.getOrDefault(nextStep, Integer.MAX_VALUE)) {
+                    bestTiles.get(nextStep).add(nextStep.getPrevious());
                 }
             }
             if (current.getDirectionX() == 0) {
@@ -221,8 +217,12 @@ public class Solution extends PuzzleSolver {
                             current.getX() - 1, current.getY(),
                             -1, 0,
                             current.getScore() + 1_001, current);
-                    if (closed.add(leftTurn)) {
+                    if (leftTurn.getScore() < closed.getOrDefault(leftTurn, Integer.MAX_VALUE)) {
+                        closed.put(leftTurn, leftTurn.getScore());
                         open.add(leftTurn);
+                        bestTiles.put(leftTurn, new ArrayList<>(Set.of(leftTurn.getPrevious())));
+                    } else if (leftTurn.getScore() == closed.getOrDefault(leftTurn, Integer.MAX_VALUE)) {
+                        bestTiles.get(leftTurn).add(leftTurn.getPrevious());
                     }
                 }
                 if (isStepToEmpty(map, current.getX() + 1, current.getY())) {
@@ -230,8 +230,12 @@ public class Solution extends PuzzleSolver {
                             current.getX() + 1, current.getY(),
                             1, 0,
                             current.getScore() + 1_001, current);
-                    if (closed.add(rightTurn)) {
+                    if (rightTurn.getScore() < closed.getOrDefault(rightTurn, Integer.MAX_VALUE)) {
+                        closed.put(rightTurn, rightTurn.getScore());
                         open.add(rightTurn);
+                        bestTiles.put(rightTurn, new ArrayList<>(Set.of(rightTurn.getPrevious())));
+                    } else if (rightTurn.getScore() == closed.getOrDefault(rightTurn, Integer.MAX_VALUE)) {
+                        bestTiles.get(rightTurn).add(rightTurn.getPrevious());
                     }
                 }
             } else {
@@ -240,8 +244,12 @@ public class Solution extends PuzzleSolver {
                             current.getX(), current.getY() - 1,
                             0, -1,
                             current.getScore() + 1_001, current);
-                    if (closed.add(upTurn)) {
+                    if (upTurn.getScore() < closed.getOrDefault(upTurn, Integer.MAX_VALUE)) {
+                        closed.put(upTurn, upTurn.getScore());
                         open.add(upTurn);
+                        bestTiles.put(upTurn, new ArrayList<>(Set.of(upTurn.getPrevious())));
+                    } else if (upTurn.getScore() == closed.getOrDefault(upTurn, Integer.MAX_VALUE)) {
+                        bestTiles.get(upTurn).add(upTurn.getPrevious());
                     }
                 }
                 if (isStepToEmpty(map, current.getX(), current.getY() + 1)) {
@@ -249,14 +257,30 @@ public class Solution extends PuzzleSolver {
                             current.getX(), current.getY() + 1,
                             0, 1,
                             current.getScore() + 1_001, current);
-                    if (closed.add(downTurn)) {
+                    if (downTurn.getScore() < closed.getOrDefault(downTurn, Integer.MAX_VALUE)) {
+                        closed.put(downTurn, downTurn.getScore());
                         open.add(downTurn);
+                        bestTiles.put(downTurn, new ArrayList<>(Set.of(downTurn.getPrevious())));
+                    } else if (downTurn.getScore() == closed.getOrDefault(downTurn, Integer.MAX_VALUE)) {
+                        bestTiles.get(downTurn).add(downTurn.getPrevious());
                     }
                 }
             }
         }
 
-        return bestTiles.size();
+        int finalEndTileX = endTileX;
+        int finalEndTileY = endTileY;
+        var remainingTiles = bestTiles.keySet()
+                .stream()
+                .filter(moveWithVisited -> moveWithVisited.getX() == finalEndTileX && moveWithVisited.getY() == finalEndTileY)
+                .collect(Collectors.toCollection(ArrayDeque::new));
+        var bestPathTiles = new HashSet<Map.Entry<Integer, Integer>>();
+        while (!remainingTiles.isEmpty()) {
+            var current = remainingTiles.pollFirst();
+            bestPathTiles.add(new AbstractMap.SimpleImmutableEntry<>(current.getX(), current.getY()));
+            remainingTiles.addAll(bestTiles.getOrDefault(current, List.of()));
+        }
+        return bestPathTiles.size();
     }
 
     private boolean isStepToEmpty(char[][] map, int x, int y) {
@@ -278,15 +302,6 @@ public class Solution extends PuzzleSolver {
 
         public MoveWithVisited getPrevious() {
             return previous;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
-            MoveWithVisited that = (MoveWithVisited) o;
-            return Objects.equals(previous, that.previous);
         }
 
     }
