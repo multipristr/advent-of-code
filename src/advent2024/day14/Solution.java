@@ -46,7 +46,7 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(7_572L);
+        return List.of(17L);
     }
 
     @Override
@@ -102,47 +102,95 @@ public class Solution extends PuzzleSolver {
                     return new Robot(matcher.group("positionX"), matcher.group("positionY"), matcher.group("velocityX"), matcher.group("velocityY"));
                 })
                 .toArray(Robot[]::new);
+        long secondsToTree;
 
         /*Path arrangementOutput = Paths.get(".")
                 .resolve(getClass().getPackageName().replaceAll("\\.", "/"))
                 .resolve("robotsArrangement-" + System.nanoTime() + ".txt");
         try (BufferedWriter writer = Files.newBufferedWriter(arrangementOutput)) {
-            printArrangement(robots, writer, 101, 103, 7_572, 7_574);
+            secondsToTree = calculateSecondsToTree(robots, writer, 101, 103);
         }*/
         ByteArrayOutputStream arrangementOutput = new ByteArrayOutputStream();
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(arrangementOutput)))) {
-            printArrangement(robots, writer, 101, 103, 7_572, 7_573);
+            secondsToTree = calculateSecondsToTree(robots, writer, 101, 103);
         }
         System.out.print(arrangementOutput);
 
-        return 7_572L;
+        return secondsToTree;
     }
 
-    private void printArrangement(Robot[] robots, BufferedWriter writer, int width, int height, int fromSeconds, long toSeconds) throws IOException {
+    private long calculateSecondsToTree(Robot[] robots, BufferedWriter writer, int width, int height) throws IOException {
+        int widthMiddle = width >> 1;
+        int heightMiddle = height >> 1;
+
+        int quadrant1Robots = 0;
+        int quadrant2Robots = 0;
+        int quadrant3Robots = 0;
+        int quadrant4Robots = 0;
         for (Robot robot : robots) {
-            robot.move(fromSeconds - 1);
+            robot.move();
+            int y = robot.getPositionY(height);
+            int x = robot.getPositionX(width);
+            if (x < widthMiddle) {
+                if (y < heightMiddle) {
+                    ++quadrant1Robots;
+                } else if (y > heightMiddle) {
+                    ++quadrant3Robots;
+                }
+            } else if (x > widthMiddle) {
+                if (y < heightMiddle) {
+                    ++quadrant2Robots;
+                } else if (y > heightMiddle) {
+                    ++quadrant4Robots;
+                }
+            }
         }
-        for (long second = fromSeconds; second < toSeconds; second++) {
-            long[][] tiles = new long[height][width];
+        int lastSafetyValue = quadrant1Robots * quadrant2Robots * quadrant3Robots * quadrant4Robots;
+
+        for (long second = 2; second < Long.MAX_VALUE; second++) {
+            int[][] tiles = new int[height][width];
+            quadrant1Robots = 0;
+            quadrant2Robots = 0;
+            quadrant3Robots = 0;
+            quadrant4Robots = 0;
             for (Robot robot : robots) {
                 robot.move();
                 int y = robot.getPositionY(height);
                 int x = robot.getPositionX(width);
                 ++tiles[y][x];
-            }
-            StringBuilder stringBuilder = new StringBuilder("After ")
-                    .append(second)
-                    .append(" seconds:")
-                    .append(System.lineSeparator());
-            for (long[] tile : tiles) {
-                for (long robotAmount : tile) {
-                    stringBuilder.append(robotAmount > 0 ? robotAmount : ".");
+                if (x < widthMiddle) {
+                    if (y < heightMiddle) {
+                        ++quadrant1Robots;
+                    } else if (y > heightMiddle) {
+                        ++quadrant3Robots;
+                    }
+                } else if (x > widthMiddle) {
+                    if (y < heightMiddle) {
+                        ++quadrant2Robots;
+                    } else if (y > heightMiddle) {
+                        ++quadrant4Robots;
+                    }
                 }
-                stringBuilder.append(System.lineSeparator());
             }
-            writer.write(stringBuilder.toString());
-            writer.newLine();
+            int safetyValue = quadrant1Robots * quadrant2Robots * quadrant3Robots * quadrant4Robots;
+            if (safetyValue < lastSafetyValue * 0.5) {
+                StringBuilder stringBuilder = new StringBuilder("After ")
+                        .append(second)
+                        .append(" seconds:")
+                        .append(System.lineSeparator());
+                for (var tile : tiles) {
+                    for (var robotAmount : tile) {
+                        stringBuilder.append(robotAmount > 0 ? robotAmount : ".");
+                    }
+                    stringBuilder.append(System.lineSeparator());
+                }
+                writer.write(stringBuilder.toString());
+                writer.newLine();
+                return second;
+            }
+            lastSafetyValue = safetyValue;
         }
+        return -1;
     }
 
     private static final class Robot {
