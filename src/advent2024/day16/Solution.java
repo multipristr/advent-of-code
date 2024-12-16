@@ -185,6 +185,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
+        int bestScore = Integer.MAX_VALUE;
         var bestTiles = new HashMap<MoveWithVisited, List<MoveWithVisited>>();
 
         var startMove = new MoveWithVisited(endTileX, endTileY, startTileX, startTileY, 1, 0, 0, null);
@@ -194,8 +195,12 @@ public class Solution extends PuzzleSolver {
         closed.put(startMove, startMove.getScore());
         while (!open.isEmpty()) {
             var current = open.poll();
-            if (current.getX() == endTileX && current.getY() == endTileY) {
+            if (current.getScore() > bestScore) {
                 break;
+            }
+            if (current.getX() == endTileX && current.getY() == endTileY) {
+                bestScore = current.getScore();
+                continue;
             }
 
             if (isStepToEmpty(map, current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY())) {
