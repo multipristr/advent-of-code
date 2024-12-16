@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,7 +92,7 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        var startMove = new Move(endTileX, endTileY, startTileX, startTileY, 1, 0, 0);
+        var startMove = new Move(startTileX, startTileY, 1, 0, 0);
         var open = new PriorityQueue<Move>();
         open.add(startMove);
         var closed = new HashMap<Move, Integer>();
@@ -105,7 +104,7 @@ public class Solution extends PuzzleSolver {
             }
 
             if (isStepToEmpty(map, current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY())) {
-                var nextStep = new Move(endTileX, endTileY,
+                var nextStep = new Move(
                         current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY(),
                         current.getDirectionX(), current.getDirectionY(),
                         current.getScore() + 1);
@@ -116,7 +115,7 @@ public class Solution extends PuzzleSolver {
             }
             if (current.getDirectionX() == 0) {
                 if (isStepToEmpty(map, current.getX() - 1, current.getY())) {
-                    var leftTurn = new Move(endTileX, endTileY,
+                    var leftTurn = new Move(
                             current.getX() - 1, current.getY(),
                             -1, 0,
                             current.getScore() + 1_001);
@@ -126,7 +125,7 @@ public class Solution extends PuzzleSolver {
                     }
                 }
                 if (isStepToEmpty(map, current.getX() + 1, current.getY())) {
-                    var rightTurn = new Move(endTileX, endTileY,
+                    var rightTurn = new Move(
                             current.getX() + 1, current.getY(),
                             1, 0,
                             current.getScore() + 1_001);
@@ -137,7 +136,7 @@ public class Solution extends PuzzleSolver {
                 }
             } else {
                 if (isStepToEmpty(map, current.getX(), current.getY() - 1)) {
-                    var upTurn = new Move(endTileX, endTileY,
+                    var upTurn = new Move(
                             current.getX(), current.getY() - 1,
                             0, -1,
                             current.getScore() + 1_001);
@@ -147,7 +146,7 @@ public class Solution extends PuzzleSolver {
                     }
                 }
                 if (isStepToEmpty(map, current.getX(), current.getY() + 1)) {
-                    var downTurn = new Move(endTileX, endTileY,
+                    var downTurn = new Move(
                             current.getX(), current.getY() + 1,
                             0, 1,
                             current.getScore() + 1_001);
@@ -188,7 +187,7 @@ public class Solution extends PuzzleSolver {
         int bestScore = Integer.MAX_VALUE;
         var bestTiles = new HashMap<MoveWithVisited, List<MoveWithVisited>>();
 
-        var startMove = new MoveWithVisited(endTileX, endTileY, startTileX, startTileY, 1, 0, 0, null);
+        var startMove = new MoveWithVisited(startTileX, startTileY, 1, 0, 0, null);
         var open = new PriorityQueue<MoveWithVisited>();
         open.add(startMove);
         var closed = new HashMap<MoveWithVisited, Integer>();
@@ -204,68 +203,68 @@ public class Solution extends PuzzleSolver {
             }
 
             if (isStepToEmpty(map, current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY())) {
-                var nextStep = new MoveWithVisited(endTileX, endTileY,
+                var nextStep = new MoveWithVisited(
                         current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY(),
                         current.getDirectionX(), current.getDirectionY(),
                         current.getScore() + 1, current);
                 if (nextStep.getScore() < closed.getOrDefault(nextStep, Integer.MAX_VALUE)) {
                     closed.put(nextStep, nextStep.getScore());
                     open.add(nextStep);
-                    bestTiles.put(nextStep, new ArrayList<>(Set.of(nextStep.getPrevious())));
+                    bestTiles.put(nextStep, new ArrayList<>(List.of(nextStep.getPrevious())));
                 } else if (nextStep.getScore() == closed.getOrDefault(nextStep, Integer.MAX_VALUE)) {
                     bestTiles.get(nextStep).add(nextStep.getPrevious());
                 }
             }
             if (current.getDirectionX() == 0) {
                 if (isStepToEmpty(map, current.getX() - 1, current.getY())) {
-                    var leftTurn = new MoveWithVisited(endTileX, endTileY,
+                    var leftTurn = new MoveWithVisited(
                             current.getX() - 1, current.getY(),
                             -1, 0,
                             current.getScore() + 1_001, current);
                     if (leftTurn.getScore() < closed.getOrDefault(leftTurn, Integer.MAX_VALUE)) {
                         closed.put(leftTurn, leftTurn.getScore());
                         open.add(leftTurn);
-                        bestTiles.put(leftTurn, new ArrayList<>(Set.of(leftTurn.getPrevious())));
+                        bestTiles.put(leftTurn, new ArrayList<>(List.of(leftTurn.getPrevious())));
                     } else if (leftTurn.getScore() == closed.getOrDefault(leftTurn, Integer.MAX_VALUE)) {
                         bestTiles.get(leftTurn).add(leftTurn.getPrevious());
                     }
                 }
                 if (isStepToEmpty(map, current.getX() + 1, current.getY())) {
-                    var rightTurn = new MoveWithVisited(endTileX, endTileY,
+                    var rightTurn = new MoveWithVisited(
                             current.getX() + 1, current.getY(),
                             1, 0,
                             current.getScore() + 1_001, current);
                     if (rightTurn.getScore() < closed.getOrDefault(rightTurn, Integer.MAX_VALUE)) {
                         closed.put(rightTurn, rightTurn.getScore());
                         open.add(rightTurn);
-                        bestTiles.put(rightTurn, new ArrayList<>(Set.of(rightTurn.getPrevious())));
+                        bestTiles.put(rightTurn, new ArrayList<>(List.of(rightTurn.getPrevious())));
                     } else if (rightTurn.getScore() == closed.getOrDefault(rightTurn, Integer.MAX_VALUE)) {
                         bestTiles.get(rightTurn).add(rightTurn.getPrevious());
                     }
                 }
             } else {
                 if (isStepToEmpty(map, current.getX(), current.getY() - 1)) {
-                    var upTurn = new MoveWithVisited(endTileX, endTileY,
+                    var upTurn = new MoveWithVisited(
                             current.getX(), current.getY() - 1,
                             0, -1,
                             current.getScore() + 1_001, current);
                     if (upTurn.getScore() < closed.getOrDefault(upTurn, Integer.MAX_VALUE)) {
                         closed.put(upTurn, upTurn.getScore());
                         open.add(upTurn);
-                        bestTiles.put(upTurn, new ArrayList<>(Set.of(upTurn.getPrevious())));
+                        bestTiles.put(upTurn, new ArrayList<>(List.of(upTurn.getPrevious())));
                     } else if (upTurn.getScore() == closed.getOrDefault(upTurn, Integer.MAX_VALUE)) {
                         bestTiles.get(upTurn).add(upTurn.getPrevious());
                     }
                 }
                 if (isStepToEmpty(map, current.getX(), current.getY() + 1)) {
-                    var downTurn = new MoveWithVisited(endTileX, endTileY,
+                    var downTurn = new MoveWithVisited(
                             current.getX(), current.getY() + 1,
                             0, 1,
                             current.getScore() + 1_001, current);
                     if (downTurn.getScore() < closed.getOrDefault(downTurn, Integer.MAX_VALUE)) {
                         closed.put(downTurn, downTurn.getScore());
                         open.add(downTurn);
-                        bestTiles.put(downTurn, new ArrayList<>(Set.of(downTurn.getPrevious())));
+                        bestTiles.put(downTurn, new ArrayList<>(List.of(downTurn.getPrevious())));
                     } else if (downTurn.getScore() == closed.getOrDefault(downTurn, Integer.MAX_VALUE)) {
                         bestTiles.get(downTurn).add(downTurn.getPrevious());
                     }
@@ -300,8 +299,8 @@ public class Solution extends PuzzleSolver {
 
         private final MoveWithVisited previous;
 
-        private MoveWithVisited(int endTileX, int endTileY, int x, int y, int directionX, int directionY, int score, MoveWithVisited previous) {
-            super(endTileX, endTileY, x, y, directionX, directionY, score);
+        private MoveWithVisited(int x, int y, int directionX, int directionY, int score, MoveWithVisited previous) {
+            super(x, y, directionX, directionY, score);
             this.previous = previous;
         }
 
@@ -318,15 +317,13 @@ public class Solution extends PuzzleSolver {
         private final int directionX;
         private final int directionY;
         private final int score;
-        private final int remainingDistance;
 
-        private Move(int endTileX, int endTileY, int x, int y, int directionX, int directionY, int score) {
+        private Move(int x, int y, int directionX, int directionY, int score) {
             this.y = y;
             this.x = x;
             this.directionY = directionY;
             this.directionX = directionX;
             this.score = score;
-            remainingDistance = Math.abs(x - endTileX) + Math.abs(y - endTileY);
         }
 
         public int getX() {
@@ -351,7 +348,7 @@ public class Solution extends PuzzleSolver {
 
         @Override
         public int compareTo(Move that) {
-            return (score + remainingDistance) - (that.score + remainingDistance);
+            return score - that.score;
         }
 
         @Override
