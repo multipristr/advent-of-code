@@ -4,6 +4,7 @@ import src.PuzzleSolver;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +94,8 @@ public class Solution extends PuzzleSolver {
         Move startMove = new Move(endTileX, endTileY, startTileX, startTileY, 1, 0, 0);
         var open = new PriorityQueue<Move>();
         open.add(startMove);
-        Set<Move> closed = new HashSet<>();
-        closed.add(startMove);
+        var closed = new HashMap<Move, Integer>();
+        closed.put(startMove, startMove.getScore());
         while (!open.isEmpty()) {
             var current = open.poll();
             if (current.getX() == endTileX && current.getY() == endTileY) {
@@ -106,7 +107,8 @@ public class Solution extends PuzzleSolver {
                         current.getX() + current.getDirectionX(), current.getY() + current.getDirectionY(),
                         current.getDirectionX(), current.getDirectionY(),
                         current.getScore() + 1);
-                if (closed.add(nextStep)) {
+                if (nextStep.getScore() < closed.getOrDefault(nextStep, Integer.MAX_VALUE)) {
+                    closed.put(nextStep, nextStep.getScore());
                     open.add(nextStep);
                 }
             }
@@ -116,7 +118,8 @@ public class Solution extends PuzzleSolver {
                             current.getX() - 1, current.getY(),
                             -1, 0,
                             current.getScore() + 1_001);
-                    if (closed.add(leftTurn)) {
+                    if (leftTurn.getScore() < closed.getOrDefault(leftTurn, Integer.MAX_VALUE)) {
+                        closed.put(leftTurn, leftTurn.getScore());
                         open.add(leftTurn);
                     }
                 }
@@ -125,7 +128,8 @@ public class Solution extends PuzzleSolver {
                             current.getX() + 1, current.getY(),
                             1, 0,
                             current.getScore() + 1_001);
-                    if (closed.add(rightTurn)) {
+                    if (rightTurn.getScore() < closed.getOrDefault(rightTurn, Integer.MAX_VALUE)) {
+                        closed.put(rightTurn, rightTurn.getScore());
                         open.add(rightTurn);
                     }
                 }
@@ -135,7 +139,8 @@ public class Solution extends PuzzleSolver {
                             current.getX(), current.getY() - 1,
                             0, -1,
                             current.getScore() + 1_001);
-                    if (closed.add(upTurn)) {
+                    if (upTurn.getScore() < closed.getOrDefault(upTurn, Integer.MAX_VALUE)) {
+                        closed.put(upTurn, upTurn.getScore());
                         open.add(upTurn);
                     }
                 }
@@ -144,7 +149,8 @@ public class Solution extends PuzzleSolver {
                             current.getX(), current.getY() + 1,
                             0, 1,
                             current.getScore() + 1_001);
-                    if (closed.add(downTurn)) {
+                    if (downTurn.getScore() < closed.getOrDefault(downTurn, Integer.MAX_VALUE)) {
+                        closed.put(downTurn, downTurn.getScore());
                         open.add(downTurn);
                     }
                 }
@@ -189,7 +195,7 @@ public class Solution extends PuzzleSolver {
         while (!open.isEmpty()) {
             var current = open.poll();
             if (current.getScore() > bestScore) {
-                continue;
+                break;
             }
             if (current.getX() == endTileX && current.getY() == endTileY) {
                 bestScore = current.getScore();
@@ -274,6 +280,15 @@ public class Solution extends PuzzleSolver {
             return previous;
         }
 
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            MoveWithVisited that = (MoveWithVisited) o;
+            return Objects.equals(previous, that.previous);
+        }
+
     }
 
     private static class Move implements Comparable<Move> {
@@ -324,12 +339,12 @@ public class Solution extends PuzzleSolver {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Move move = (Move) o;
-            return x == move.x && y == move.y && directionX == move.directionX && directionY == move.directionY && score == move.score;
+            return x == move.x && y == move.y && directionX == move.directionX && directionY == move.directionY;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(x, y, directionX, directionY, score);
+            return Objects.hash(x, y, directionX, directionY);
         }
 
     }
