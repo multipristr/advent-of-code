@@ -335,9 +335,11 @@ public class Solution extends PuzzleSolver {
 
         int finalEndTileX = endTileX;
         int finalEndTileY = endTileY;
+        int finalBestScore = bestScore;
         var remainingTiles = bestTiles.keySet()
                 .stream()
-                .filter(moveWithVisited -> moveWithVisited.getX() == finalEndTileX && moveWithVisited.getY() == finalEndTileY)
+                .filter(moveWithVisited -> moveWithVisited.getX() == finalEndTileX && moveWithVisited.getY() == finalEndTileY
+                        && moveWithVisited.getScore() == finalBestScore)
                 .collect(Collectors.toCollection(ArrayDeque::new));
         var bestPathTiles = new HashSet<Map.Entry<Integer, Integer>>();
         var closed2 = new HashSet<>(remainingTiles);
