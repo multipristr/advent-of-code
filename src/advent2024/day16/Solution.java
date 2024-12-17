@@ -247,6 +247,7 @@ public class Solution extends PuzzleSolver {
 
         int bestScore = Integer.MAX_VALUE;
         var bestTiles = new HashMap<MoveWithVisited, List<MoveWithVisited>>();
+        var remainingTiles = new ArrayDeque<MoveWithVisited>();
 
         var startMove = new MoveWithVisited(startTileX, startTileY, 1, 0, 0, null);
         var open = new PriorityQueue<MoveWithVisited>();
@@ -260,6 +261,7 @@ public class Solution extends PuzzleSolver {
             }
             if (current.getX() == endTileX && current.getY() == endTileY) {
                 bestScore = current.getScore();
+                remainingTiles.addLast(current);
                 continue;
             }
 
@@ -333,14 +335,6 @@ public class Solution extends PuzzleSolver {
             }
         }
 
-        int finalEndTileX = endTileX;
-        int finalEndTileY = endTileY;
-        int finalBestScore = bestScore;
-        var remainingTiles = bestTiles.keySet()
-                .stream()
-                .filter(moveWithVisited -> moveWithVisited.getX() == finalEndTileX && moveWithVisited.getY() == finalEndTileY
-                        && moveWithVisited.getScore() == finalBestScore)
-                .collect(Collectors.toCollection(ArrayDeque::new));
         var bestPathTiles = new HashSet<Map.Entry<Integer, Integer>>();
         var closed2 = new HashSet<>(remainingTiles);
         while (!remainingTiles.isEmpty()) {
