@@ -3,12 +3,14 @@ package src.advent2024.day17;
 import src.PuzzleSolver;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -23,30 +25,54 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("Register A: 729\n" +
-                "Register B: 0\n" +
-                "Register C: 0\n" +
-                "\n" +
-                "Program: 0,1,5,4,3,0");
+        return List.of(
+                "Register A: 729\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 0,1,5,4,3,0",
+                "Register A: 12345678\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 2,4,1,0,7,5,1,5,0,3,4,5,5,5,3,0",
+                "Register A: 12345678\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 2,4,1,3,7,5,0,3,1,4,4,4,5,5,3,0"
+        );
     }
 
     @Override
     public List<Long> getExampleOutput1() {
-        return List.of(4635635210L);
+        return List.of(4635635210L, 60454520L, 34417022L);
     }
 
     @Override
     public List<String> getExampleInput2() {
-        return List.of("Register A: 2024\n" +
-                "Register B: 0\n" +
-                "Register C: 0\n" +
-                "\n" +
-                "Program: 0,3,5,4,3,0");
+        return List.of(
+                "Register A: 2024\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 0,3,5,4,3,0",
+                "Register A: 12345678\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 2,4,1,0,7,5,1,5,0,3,4,5,5,5,3,0",
+                "Register A: 12345678\n" +
+                        "Register B: 0\n" +
+                        "Register C: 0\n" +
+                        "\n" +
+                        "Program: 2,4,1,3,7,5,0,3,1,4,4,4,5,5,3,0"
+        );
     }
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(117440L);
+        return List.of(117440L, 202797954918051L, 266926175730705L);
     }
 
     @Override
@@ -63,7 +89,7 @@ public class Solution extends PuzzleSolver {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        String output = determineProgramOutput(opcodes, registerA, registerB, registerC);
+        String output = determineProgramOutput(opcodes, registerA, registerB, registerC, false);
         System.out.println(output);
         return Long.parseLong(output.replaceAll(",", ""));
     }
@@ -82,14 +108,25 @@ public class Solution extends PuzzleSolver {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        return LongStream.iterate(9_999_999_999L,
-                        registerA -> !determineProgramOutput(opcodes, registerA, registerB, registerC).equals(program),
-                        i -> ++i)
-                .unordered().parallel()
-                .max().orElseThrow() + 1L;
+        Set<Long> registers = new HashSet<>();
+        registers.add((long) opcodes[opcodes.length - 1]);
+        for (int i = opcodes.length - 1; i >= 0; i--) {
+            int opcode = opcodes[i];
+            Set<Long> nextRegisters = new HashSet<>();
+            for (var previousRegisterA : registers) {
+                for (long registerA = previousRegisterA * 8L; registerA < (previousRegisterA + 1L) * 8L; registerA++) {
+                    String output = determineProgramOutput(opcodes, registerA, registerB, registerC, true);
+                    if (opcode == Long.parseLong(output)) {
+                        nextRegisters.add(registerA);
+                    }
+                }
+            }
+            registers = nextRegisters;
+        }
+        return registers.stream().min(Comparator.naturalOrder()).orElseThrow();
     }
 
-    private String determineProgramOutput(int[] opcodes, long registerA, long registerB, long registerC) {
+    private String determineProgramOutput(int[] opcodes, long registerA, long registerB, long registerC, boolean onlyFirstOutput) {
         StringJoiner output = new StringJoiner(",");
         for (int instructionPointer = 0; instructionPointer < opcodes.length; instructionPointer += 2) {
             int instructionOpcode = opcodes[instructionPointer];
@@ -99,7 +136,7 @@ public class Solution extends PuzzleSolver {
                     long adv = (long) (registerA / Math.pow(2, getComboOperandValue(registerA, registerB, registerC, operand)));
                     registerA = adv;
                     break;
-                case 1: //bxl
+                case 1: // bxl
                     long bxl = registerB ^ operand;
                     registerB = bxl;
                     break;
@@ -117,8 +154,11 @@ public class Solution extends PuzzleSolver {
                     registerB = bxc;
                     break;
                 case 5: // out
-                    long out = getComboOperandValue(registerA, registerB, registerC, operand) % 8;
-                    output.add(out + "");
+                    String out = "" + getComboOperandValue(registerA, registerB, registerC, operand) % 8;
+                    if (onlyFirstOutput) {
+                        return out;
+                    }
+                    output.add(out);
                     break;
                 case 6: // bdv
                     long bdv = (long) (registerA / Math.pow(2, getComboOperandValue(registerA, registerB, registerC, operand)));
