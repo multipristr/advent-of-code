@@ -94,6 +94,9 @@ public class Solution extends PuzzleSolver {
         open.add(new Step(memorySpace.length - 1, 0, 0, 0));
         while (!open.isEmpty()) {
             var current = open.poll();
+            if (current.getY() == memorySpace.length - 1 && current.getX() == memorySpace[current.getY()].length - 1) {
+                return Optional.of(current.getPathSteps());
+            }
             for (byte i = 1; i < directions.length; i += 2) {
                 var nextY = current.getY() + directions[i - 1];
                 if (nextY < 0 || nextY >= memorySpace.length) {
@@ -102,9 +105,6 @@ public class Solution extends PuzzleSolver {
                 var nextX = current.getX() + directions[i];
                 if (nextX < 0 || nextX >= memorySpace[nextY].length || closed[nextY][nextX]) {
                     continue;
-                }
-                if (nextX == memorySpace.length - 1 && nextY == memorySpace[nextY].length - 1) {
-                    return Optional.of(current.getPathSteps() + 1);
                 }
                 closed[nextY][nextX] = true;
                 open.add(new Step(memorySpace.length - 1, nextX, nextY, current.getPathSteps() + 1));
