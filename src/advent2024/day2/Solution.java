@@ -22,17 +22,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(2L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(4L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         return lines.map(line -> line.split("\\s+"))
                 .filter(line -> {
                     boolean increasing = false;
@@ -62,7 +62,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         return lines.map(line -> line.split("\\s+"))
                 .filter(line -> {
                     outer:

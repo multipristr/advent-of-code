@@ -23,12 +23,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(1048970L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(5714438L);
     }
 
@@ -38,7 +38,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)
@@ -62,7 +62,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)

@@ -20,17 +20,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(998996L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(1001996L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         boolean[][] lights = new boolean[1_000][1_000];
 
         lines.forEach(line -> {
@@ -78,7 +78,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         int[][] lights = new int[1_000][1_000];
 
         lines.forEach(line -> {

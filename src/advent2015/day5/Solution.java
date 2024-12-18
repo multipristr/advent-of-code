@@ -23,7 +23,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(2L);
     }
 
@@ -37,12 +37,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(2L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         return lines
                 .filter(line -> {
                     Map<Character, Integer> occurence = new HashMap<>();
@@ -73,7 +73,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         return lines
                 .filter(line -> {
                     char[] chars = line.toCharArray();

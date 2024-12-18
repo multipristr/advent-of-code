@@ -121,17 +121,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(7036L, 11048L, 21148L, 5078L, 21110L, 41210L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(45L, 64L, 149L, 413L, 264L, 514L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 
@@ -223,7 +223,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 

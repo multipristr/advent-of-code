@@ -160,12 +160,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(4L, 8L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(4L, 8L, 10L);
     }
 
@@ -206,7 +206,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);
@@ -237,7 +237,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);

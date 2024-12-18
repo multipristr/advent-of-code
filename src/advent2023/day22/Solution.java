@@ -67,17 +67,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(5L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(7L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         AtomicInteger letterIndex = new AtomicInteger();
         List<Brick> bricks = lines.map(line -> line.split("~"))
                 .map(intervals -> {
@@ -149,7 +149,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         AtomicInteger letterIndex = new AtomicInteger();
         List<Brick> bricks = lines.map(line -> line.split("~"))
                 .map(intervals -> {
@@ -230,7 +230,7 @@ public class Solution extends PuzzleSolver {
         private final Set<Brick> supporting = new HashSet<>();
         private long startZ;
         private long endZ;
-        private char letter;
+        private final char letter;
 
         Brick(long startX, long endX, long startY, long endY, long startZ, long endZ, char letter) {
             this.startX = startX;

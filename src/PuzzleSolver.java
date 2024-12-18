@@ -55,17 +55,17 @@ public abstract class PuzzleSolver {
         }
     }
 
-    public abstract long solvePartOne(Stream<String> lines) throws Exception;
+    public abstract Comparable<?> solvePartOne(Stream<String> lines) throws Exception;
 
     public abstract List<String> getExampleInput1();
 
-    public abstract List<Long> getExampleOutput1();
+    public abstract List<Comparable<?>> getExampleOutput1();
 
     public List<String> getExampleInput2() {
         return getExampleInput1();
     }
 
-    public abstract List<Long> getExampleOutput2();
+    public abstract List<Comparable<?>> getExampleOutput2();
 
     public Stream<String> getInput1() {
         try {
@@ -79,19 +79,19 @@ public abstract class PuzzleSolver {
         return getInput1();
     }
 
-    public abstract long solvePartTwo(Stream<String> lines) throws Exception;
+    public abstract Comparable<?> solvePartTwo(Stream<String> lines) throws Exception;
 
     private static abstract class Task implements Callable<String> {
 
         private final Stream<String> input;
-        private final Long output;
+        private final Comparable<?> output;
 
         private Task(Stream<String> input) {
             this.input = input;
             this.output = null;
         }
 
-        private Task(String input, long output) {
+        private Task(String input, Comparable<?> output) {
             this.input = input.lines();
             this.output = output;
         }
@@ -102,7 +102,7 @@ public abstract class PuzzleSolver {
 
         abstract String getText();
 
-        abstract long solve() throws Exception;
+        abstract Comparable<?> solve() throws Exception;
 
         @Override
         public String call() {
@@ -113,7 +113,7 @@ public abstract class PuzzleSolver {
                 if (output == null) {
                     return getText() + " '" + solution + "' " + duration.toMillis() + " ms";
                 } else {
-                    if (output != solution) {
+                    if (!output.equals(solution)) {
                         return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
                     } else {
                         return getText() + " '" + output + "' ✅ " + duration.toMillis() + " ms";
@@ -133,7 +133,7 @@ public abstract class PuzzleSolver {
             super(input);
         }
 
-        private PartOneTask(String input, long output) {
+        private PartOneTask(String input, Comparable<?> output) {
             super(input, output);
         }
 
@@ -143,7 +143,7 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        long solve() throws Exception {
+        Comparable<?> solve() throws Exception {
             return solvePartOne(getInput());
         }
 
@@ -155,7 +155,7 @@ public abstract class PuzzleSolver {
             super(input);
         }
 
-        private PartTwoTask(String input, long output) {
+        private PartTwoTask(String input, Comparable<?> output) {
             super(input, output);
         }
 
@@ -165,7 +165,7 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        long solve() throws Exception {
+        Comparable<?> solve() throws Exception {
             return solvePartTwo(getInput());
         }
 

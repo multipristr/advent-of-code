@@ -31,17 +31,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(4361L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(467835L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         int partNumberSum = 0;
@@ -94,7 +94,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         Map<String, List<Integer>> gearAdjacent = new HashMap<>();

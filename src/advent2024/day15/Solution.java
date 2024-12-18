@@ -50,7 +50,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(2028L, 10092L);
     }
 
@@ -199,12 +199,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(9021L, 406L, 509L, 822L, 511L, 816L, 1226L, 1420L, 1020L, 2339L, 1216L, 1430L, 2827L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         String[] inputParts = lines.collect(Collectors.joining("\n")).split("\\R{2}");
         char[][] warehouseMap = inputParts[0].lines().map(String::toCharArray).toArray(char[][]::new);
         int robotPosition = inputParts[0].indexOf("@");
@@ -280,7 +280,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         String[] inputParts = lines.collect(Collectors.joining("\n")).split("\\R{2}");
 
         String changedInput = inputParts[0].replaceAll("#", "##")

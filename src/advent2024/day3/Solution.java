@@ -20,7 +20,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(161L);
     }
 
@@ -30,12 +30,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(48L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         Pattern instructions = Pattern.compile("mul\\((?<number1>\\d{1,3}),(?<number2>\\d{1,3})\\)");
         String input = lines.collect(Collectors.joining());
 
@@ -51,7 +51,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         Pattern instructions = Pattern.compile("mul\\((?<number1>\\d{1,3}),(?<number2>\\d{1,3})\\)|do\\(\\)|don't\\(\\)");
         String input = lines.collect(Collectors.joining());
 

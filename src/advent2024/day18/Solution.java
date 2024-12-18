@@ -45,17 +45,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(22L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
-        return List.of(61L);
+    public List<Comparable<?>> getExampleOutput2() {
+        return List.of("6,1");
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         byte coordinatesRange = 70;
         short fallenBytes = 1024;
 
@@ -67,7 +67,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         byte coordinatesRange = 70;
 
         var memorySpace = new boolean[coordinatesRange + 1][coordinatesRange + 1];
@@ -77,8 +77,7 @@ public class Solution extends PuzzleSolver {
             int byteY = Integer.parseInt(line.substring(commaPosition + 1));
             memorySpace[byteY][byteX] = true;
             if (calculateMinimumSteps(memorySpace).isEmpty()) {
-                System.out.println(line);
-                return byteX * 10L + byteY;
+                return line;
             }
         }
 

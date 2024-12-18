@@ -18,7 +18,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(43L);
     }
 
@@ -28,12 +28,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(34L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         return lines.mapToInt(line -> {
             String[] dimensions = line.split("x");
             int lw = Integer.parseInt(dimensions[0]) * Integer.parseInt(dimensions[1]);
@@ -45,7 +45,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         return lines.mapToInt(line -> {
             String[] dimensions = line.split("x");
             List<Integer> sides = Arrays.asList(Integer.parseInt(dimensions[0]), Integer.parseInt(dimensions[1]), Integer.parseInt(dimensions[2]));

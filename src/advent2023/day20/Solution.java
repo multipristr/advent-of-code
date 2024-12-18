@@ -49,12 +49,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(32000000L, 11687500L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         Map<String, Module> modules = new HashMap<>();
         Map<String, List<String>> inputModules = new HashMap<>();
         lines.map(line -> line.split(" -> "))
@@ -106,12 +106,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(1L);
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         Map<String, Module> modules = new HashMap<>();
         Map<String, List<String>> inputModules = new HashMap<>();
         lines.map(line -> line.split(" -> "))
@@ -168,7 +168,7 @@ public class Solution extends PuzzleSolver {
     }
 
     private enum Pulse {
-        LOW, HIGH;
+        LOW, HIGH
     }
 
     private static class Signal {

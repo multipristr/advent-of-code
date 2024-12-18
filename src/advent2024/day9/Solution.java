@@ -22,17 +22,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(1928L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(2858L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         String diskMap = lines.collect(Collectors.joining());
         List<Integer> blockFiles = new ArrayList<>();
         for (int i = 0; i * 2 < diskMap.length(); i++) {
@@ -71,7 +71,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         String diskMap = lines.collect(Collectors.joining());
         List<Map.Entry<Integer, Integer>> blockFiles = new ArrayList<>();
         for (int i = 0; i * 2 < diskMap.length(); i++) {

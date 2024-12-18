@@ -79,23 +79,23 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(6440L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(3667L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
         return lines.map(CardHand1::new).sorted().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
         List<CardHand2> cards = lines.map(CardHand2::new).sorted().collect(Collectors.toList());
         return cards.stream().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();

@@ -23,17 +23,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(8L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(2286L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         Map<String, Integer> cubes = new HashMap<>(3);
         cubes.put("red", 12);
         cubes.put("green", 13);
@@ -56,7 +56,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         return lines.map(line -> line.replaceAll(":", ""))
                 .map(line -> line.replaceAll(",", ""))
                 .map(line -> line.replaceAll(";", ""))

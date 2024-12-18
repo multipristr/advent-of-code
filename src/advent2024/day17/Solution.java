@@ -45,8 +45,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
-        return List.of(4635635210L, 60454520L, 34417022L);
+    public List<Comparable<?>> getExampleOutput1() {
+        return List.of("4,6,3,5,6,3,5,2,1,0", "6,0,4,5,4,5,2,0", "3,4,4,1,7,0,2,2");
     }
 
     @Override
@@ -71,12 +71,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(117440L, 202797954918051L, 266926175730705L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         String input = lines.collect(Collectors.joining());
         Matcher matcher = INSTRUCTIONS_PATTERN.matcher(input);
         if (!matcher.find()) {
@@ -89,13 +89,11 @@ public class Solution extends PuzzleSolver {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        String output = determineProgramOutput(opcodes, registerA, registerB, registerC, false);
-        System.out.println(output);
-        return Long.parseLong(output.replaceAll(",", ""));
+        return determineProgramOutput(opcodes, registerA, registerB, registerC, false);
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         String input = lines.collect(Collectors.joining());
         Matcher matcher = INSTRUCTIONS_PATTERN.matcher(input);
         if (!matcher.find()) {

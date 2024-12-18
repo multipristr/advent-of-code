@@ -40,17 +40,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(21L);
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(17L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         return calculateSafetyFactor(lines, 101, 103, 100);
     }
 
@@ -93,7 +93,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) throws IOException {
+    public Comparable<?> solvePartTwo(Stream<String> lines) throws IOException {
         Robot[] robots = lines.map(line -> {
                     Matcher matcher = ROBOT_PATTERN.matcher(line);
                     if (!matcher.find()) {

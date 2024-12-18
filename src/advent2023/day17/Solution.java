@@ -37,7 +37,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(102L);
     }
 
@@ -65,12 +65,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(94L, 71L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) throws InterruptedException {
+    public Comparable<?> solvePartOne(Stream<String> lines) throws InterruptedException {
         int[][] map = lines.map(line -> line.chars().map(Character::getNumericValue).toArray()).toArray(int[][]::new);
         Map<Integer, Map<Integer, Map<Integer, Map<Integer, NavigableMap<Integer, Long>>>>> searchStates = new HashMap<>(map.length);
         searchStates.computeIfAbsent(0, r -> new HashMap<>(map[0].length))
@@ -164,7 +164,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         int[][] map = lines.map(line -> line.chars().map(Character::getNumericValue).toArray()).toArray(int[][]::new);
         Map<Integer, Map<Integer, Map<Integer, Map<Integer, NavigableMap<Integer, Long>>>>> searchStates = new HashMap<>(map.length);
         searchStates.computeIfAbsent(0, r -> new HashMap<>(map[0].length))

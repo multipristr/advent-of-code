@@ -36,7 +36,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput1() {
+    public List<Comparable<?>> getExampleOutput1() {
         return List.of(1L, 36L);
     }
 
@@ -53,12 +53,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Long> getExampleOutput2() {
+    public List<Comparable<?>> getExampleOutput2() {
         return List.of(81L);
     }
 
     @Override
-    public long solvePartOne(Stream<String> lines) {
+    public Comparable<?> solvePartOne(Stream<String> lines) {
         int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
                 .toArray(int[][]::new);
 
@@ -109,7 +109,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public long solvePartTwo(Stream<String> lines) {
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
         int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
                 .toArray(int[][]::new);
         List<Map.Entry<Integer, Integer>>[] heightLocations = new List[10];
