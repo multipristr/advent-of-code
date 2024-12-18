@@ -113,10 +113,13 @@ public abstract class PuzzleSolver {
                 if (output == null) {
                     return getText() + " '" + solution + "' " + duration.toMillis() + " ms";
                 } else {
-                    if (!output.equals(solution)) {
-                        return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
-                    } else {
+                    boolean isCorrect = solution instanceof Number
+                            ? ((Number) output).longValue() == ((Number) solution).longValue()
+                            : output.equals(solution);
+                    if (isCorrect) {
                         return getText() + " '" + output + "' ✅ " + duration.toMillis() + " ms";
+                    } else {
+                        return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
                     }
                 }
             } catch (Exception e) {
