@@ -2,10 +2,11 @@ package src.advent2024.day18;
 
 import src.PuzzleSolver;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.stream.Stream;
 
@@ -89,8 +90,8 @@ public class Solution extends PuzzleSolver {
 
         var closed = Arrays.stream(memorySpace).map(boolean[]::clone).toArray(boolean[][]::new);
         closed[0][0] = true;
-        Queue<Step> open = new ArrayDeque<>();
-        open.add(new Step(0, 0, 0));
+        Queue<Step> open = new PriorityQueue<>();
+        open.add(new Step(memorySpace.length - 1, 0, 0, 0));
         while (!open.isEmpty()) {
             var current = open.poll();
             for (byte i = 1; i < directions.length; i += 2) {
@@ -106,22 +107,24 @@ public class Solution extends PuzzleSolver {
                     return Optional.of(current.getPathSteps() + 1);
                 }
                 closed[nextY][nextX] = true;
-                open.add(new Step(nextX, nextY, current.getPathSteps() + 1));
+                open.add(new Step(memorySpace.length - 1, nextX, nextY, current.getPathSteps() + 1));
             }
         }
         return Optional.empty();
     }
 
-    private static final class Step {
+    private static final class Step implements Comparable<Step> {
 
         private final int x;
         private final int y;
         private final int pathSteps;
+        private final int remainingDistance;
 
-        private Step(int x, int y, int pathSteps) {
+        private Step(int end, int x, int y, int pathSteps) {
             this.x = x;
             this.y = y;
             this.pathSteps = pathSteps;
+            remainingDistance = Math.abs(x - end) + Math.abs(y - end);
         }
 
         public int getX() {
@@ -136,6 +139,22 @@ public class Solution extends PuzzleSolver {
             return pathSteps;
         }
 
+        @Override
+        public int compareTo(Step that) {
+            return remainingDistance - that.remainingDistance;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Step step = (Step) o;
+            return x == step.x && y == step.y && pathSteps == step.pathSteps;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y, pathSteps);
+        }
     }
 
 }
