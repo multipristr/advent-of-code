@@ -72,8 +72,7 @@ public class Solution extends PuzzleSolver {
         int finalEndX = endX;
         int finalEndY = endY;
         return findPathFasterThan(racetrackMap, startX, startY, endX, endY, Integer.MAX_VALUE)
-                .stream()
-                .mapToInt(fastestMove -> {
+                .map(fastestMove -> {
                     int timeLimit = fastestMove.getPicoseconds() - 100;
                     int savingCheats = 0;
                     for (char[] row : racetrackMap) {
@@ -89,7 +88,7 @@ public class Solution extends PuzzleSolver {
                     }
                     return savingCheats;
                 })
-                .findAny().orElseThrow();
+                .orElseThrow();
     }
 
     @Override
