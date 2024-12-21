@@ -42,7 +42,7 @@ public class Solution extends PuzzleSolver {
                 Long::sum,
                 (a, b) -> a * b
         };
-        return solve(lines, operations);
+        return determineTotalCalibrationResult(lines, operations);
     }
 
     @Override
@@ -52,10 +52,10 @@ public class Solution extends PuzzleSolver {
                 (a, b) -> a * b,
                 (a, b) -> Long.parseLong(a + "" + b)
         };
-        return solve(lines, operations);
+        return determineTotalCalibrationResult(lines, operations);
     }
 
-    private long solve(Stream<String> lines, LongBinaryOperator[] operations) {
+    private long determineTotalCalibrationResult(Stream<String> lines, LongBinaryOperator[] operations) {
         return lines.mapToLong(line -> {
                     String[] parts = line.split(":?\\s");
                     long testValue = Long.parseLong(parts[0]);

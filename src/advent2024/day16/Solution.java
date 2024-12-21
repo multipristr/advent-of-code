@@ -347,7 +347,7 @@ public class Solution extends PuzzleSolver {
         return x < tile.length && tile[x] != '#';
     }
 
-    private static class MoveWithVisited extends Move {
+    private static final class MoveWithVisited extends Move {
 
         private final MoveWithVisited previous;
 

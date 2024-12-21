@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public abstract class PuzzleSolver {
 
     public void run() {
-        var tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
 
         var exampleInput1 = getExampleInput1();
         var exampleOutput1 = getExampleOutput1();

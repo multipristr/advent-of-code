@@ -39,15 +39,15 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public Comparable<?> solvePartOne(Stream<String> lines) {
-        return solve(lines, 2);
+        return calculateSumOfComplexities(lines, 2);
     }
 
     @Override
     public Comparable<?> solvePartTwo(Stream<String> lines) {
-        return solve(lines, 25);
+        return calculateSumOfComplexities(lines, 25);
     }
 
-    private long solve(Stream<String> lines, int directionalKeypads) {
+    private long calculateSumOfComplexities(Stream<String> lines, int directionalKeypads) {
         char[][] numericKeypad = {
                 {'7', '8', '9'},
                 {'4', '5', '6'},
@@ -78,7 +78,8 @@ public class Solution extends PuzzleSolver {
                 .sum();
     }
 
-    private long calculateShortestSequenceLength(Map<String, Long>[] memory, Map<Character, Map<Character, List<String>>> directionalKeypadSequences, String sequence, int remainingDirectionalKeypads) {
+    private long calculateShortestSequenceLength(Map<String, Long>[] memory, Map<Character, Map<Character, List<String>>> directionalKeypadSequences,
+                                                 String sequence, int remainingDirectionalKeypads) {
         if (remainingDirectionalKeypads == 0) {
             return sequence.length();
         }
@@ -128,7 +129,7 @@ public class Solution extends PuzzleSolver {
     }
 
     private List<String> findShortestSequences(char[][] keypad, int startX, int startY, int endX, int endY) {
-        long[][] closed = new long[keypad.length][keypad[0].length];
+        var closed = new long[keypad.length][keypad[0].length];
         closed[startY][startX] = -1;
         var startMove = new Press(endX, endY, startX, startY, "");
         Queue<Press> open = new PriorityQueue<>();
@@ -173,7 +174,7 @@ public class Solution extends PuzzleSolver {
         return y >= 0 && y < keypad.length && x >= 0 && x < keypad[y].length && keypad[y][x] != ' ';
     }
 
-    private static class Press implements Comparable<Press> {
+    private static final class Press implements Comparable<Press> {
 
         private final int x;
         private final int y;
