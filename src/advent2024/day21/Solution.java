@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
@@ -34,11 +34,20 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<Comparable<?>> getExampleOutput2() {
-        return List.of(0);
+        return List.of(154115708116294L);
     }
 
     @Override
     public Comparable<?> solvePartOne(Stream<String> lines) {
+        return solve(lines, 2);
+    }
+
+    @Override
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
+        return solve(lines, 25);
+    }
+
+    private long solve(Stream<String> lines, int directionalKeypads) {
         char[][] numericKeypad = {
                 {'7', '8', '9'},
                 {'4', '5', '6'},
@@ -53,45 +62,43 @@ public class Solution extends PuzzleSolver {
         };
         var directionalKeypadSequences = populateAllSequences(directionalKeypad);
 
-        return lines.parallel().mapToLong(line -> {
+        var memory = IntStream.rangeClosed(0, directionalKeypads).mapToObj(i -> new HashMap<String, Long>()).toArray(Map[]::new);
+        return lines.mapToLong(line -> {
                     char from = 'A';
-                    List<String> numericSequences = List.of("");
-                    for (char to : line.toCharArray()) {
-                        var sequences = numericKeypadSequences.get(from).get(to);
-                        var finalNumericSequences = numericSequences;
-                        numericSequences = sequences.stream()
-                                .flatMap(sequenceEnd -> finalNumericSequences.stream().map(sequenceStart -> sequenceStart + sequenceEnd))
-                                .collect(Collectors.toList());
+                    long sequenceLength = 0;
+                    for (int i = 0; i < line.length(); i++) {
+                        char to = line.charAt(i);
+                        sequenceLength += numericKeypadSequences.get(from).get(to).stream()
+                                .mapToLong(s -> calculateShortestSequenceLength(memory, directionalKeypadSequences, s, directionalKeypads))
+                                .min().orElseThrow();
                         from = to;
                     }
-
-                    Stream<String> directionSequences = numericSequences.stream();
-                    for (int i = 0; i < 2; i++) {
-                        directionSequences = directionSequences
-                                .flatMap(previousSequence -> {
-                                    char start = 'A';
-                                    List<String> subSequences = List.of("");
-                                    for (char to : previousSequence.toCharArray()) {
-                                        var sequences = directionalKeypadSequences.get(start).get(to);
-                                        var finalDirectionalSubSequences = subSequences;
-                                        subSequences = sequences.stream()
-                                                .flatMap(sequenceEnd -> finalDirectionalSubSequences.stream().map(sequenceStart -> sequenceStart + sequenceEnd))
-                                                .collect(Collectors.toList());
-                                        start = to;
-                                    }
-                                    return subSequences.stream();
-                                }).parallel();
-                    }
-
-                    return directionSequences.mapToInt(String::length).min().orElseThrow()
-                            * Long.parseLong(line.replace("A", ""));
+                    return sequenceLength * Long.parseLong(line.replace("A", ""));
                 })
                 .sum();
     }
 
-    @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private long calculateShortestSequenceLength(Map<String, Long>[] memory, Map<Character, Map<Character, List<String>>> directionalKeypadSequences, String sequence, int remainingDirectionalKeypads) {
+        if (remainingDirectionalKeypads == 0) {
+            return sequence.length();
+        }
+        var keypadMemory = memory[remainingDirectionalKeypads];
+        var memorizedSequenceLength = keypadMemory.get(sequence);
+        if (memorizedSequenceLength != null) {
+            return memorizedSequenceLength;
+        }
+
+        char from = 'A';
+        long sequenceLength = 0;
+        for (int i = 0; i < sequence.length(); i++) {
+            char to = sequence.charAt(i);
+            sequenceLength += directionalKeypadSequences.get(from).get(to).stream()
+                    .mapToLong(s -> calculateShortestSequenceLength(memory, directionalKeypadSequences, s, remainingDirectionalKeypads - 1))
+                    .min().orElseThrow();
+            from = to;
+        }
+        keypadMemory.put(sequence, sequenceLength);
+        return sequenceLength;
     }
 
     private Map<Character, Map<Character, List<String>>> populateAllSequences(char[][] keypad) {
