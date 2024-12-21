@@ -21,7 +21,7 @@ public abstract class PuzzleSolver {
         var exampleInput1 = getExampleInput1();
         var exampleOutput1 = getExampleOutput1();
         if (exampleInput1.size() != exampleOutput1.size()) {
-            throw new IllegalArgumentException(exampleInput1.size() + " example part one inputs != " + exampleOutput1.size() + " example part one outputs");
+            throw new IllegalArgumentException(exampleInput1.size() + " example part one inputs ≠ " + exampleOutput1.size() + " example part one outputs");
         }
         for (int i = 0; i < exampleInput1.size(); i++) {
             tasks.add(new PartOneTask(exampleInput1.get(i), exampleOutput1.get(i)));
@@ -32,7 +32,7 @@ public abstract class PuzzleSolver {
         var exampleOutput2 = getExampleOutput2();
         if (!exampleOutput2.isEmpty()) {
             if (exampleInput2.size() != exampleOutput2.size()) {
-                throw new IllegalArgumentException(exampleInput2.size() + " example part two inputs != " + exampleOutput2.size() + " example part two outputs");
+                throw new IllegalArgumentException(exampleInput2.size() + " example part two inputs ≠ " + exampleOutput2.size() + " example part two outputs");
             }
             for (int i = 0; i < exampleInput2.size(); i++) {
                 tasks.add(new PartTwoTask(exampleInput2.get(i), exampleOutput2.get(i)));
@@ -104,6 +104,22 @@ public abstract class PuzzleSolver {
 
         abstract Comparable<?> solve() throws Exception;
 
+        private static String red(Object text) {
+            return "\033[0;31m" + text + "\033[0m";
+        }
+
+        private static String green(Object text) {
+            return "\033[0;32m" + text + "\033[0m";
+        }
+
+        private static String bold(Object text) {
+            return "\033[0;1m" + text + "\033[0m";
+        }
+
+        private static String boldUnderline(Object text) {
+            return "\033[4;1m" + text + "\033[0m";
+        }
+
         @Override
         public String call() {
             try {
@@ -111,20 +127,20 @@ public abstract class PuzzleSolver {
                 var solution = solve();
                 var duration = Duration.between(start, Instant.now());
                 if (output == null) {
-                    return getText() + " '" + solution + "' " + duration.toMillis() + " ms";
+                    return boldUnderline(getText()) + " '" + bold(solution) + "' " + duration.toMillis() + " ms";
                 } else {
                     boolean isCorrect = solution instanceof Number
                             ? ((Number) output).longValue() == ((Number) solution).longValue()
                             : output.equals(solution);
                     if (isCorrect) {
-                        return getText() + " '" + output + "' ✅ " + duration.toMillis() + " ms";
+                        return green(getText()) + " '" + green(output) + "' ✅ " + duration.toMillis() + " ms";
                     } else {
-                        return getText() + " '" + output + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
+                        return red(getText()) + " '" + red(output) + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return (output != null ? getText() + " '" + output + "' ❌ " : getText() + " ❌ ") + e;
+                return output != null ? red(getText()) + " '" + red(output) + "' ❌ " : red(getText()) + " ❌ " + e;
             }
         }
 
