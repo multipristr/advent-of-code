@@ -140,7 +140,7 @@ public abstract class PuzzleSolver {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return output != null ? red(getText()) + " '" + red(output) + "' ❌ " : red(getText()) + " ❌ " + e;
+                return (output != null ? red(getText()) + " '" + red(output) + "' ❌ " : red(getText()) + " ❌ ") + e;
             }
         }
 
