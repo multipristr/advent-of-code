@@ -36,6 +36,48 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<String> getExampleInput1() {
+        return List.of(
+                "MMMSXXMASM\n" +
+                        "MSAMXMSMSA\n" +
+                        "AMXSXMAAMM\n" +
+                        "MSAMASMSMX\n" +
+                        "XMASAMXAMM\n" +
+                        "XXAMMXXAMA\n" +
+                        "SMSMSASXSS\n" +
+                        "SAXAMASAAA\n" +
+                        "MAMMMXMMMM\n" +
+                        "MXMXAXMASX",
+                "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS\n" +
+                        "XMASXMAS",
+                "XXXX\n" +
+                        "XXXM\n" +
+                        "XXXX\n" +
+                        "AXXX\n" +
+                        "XSXX",
+                ".....\n" +
+                        "X.SAM\n" +
+                        ".....",
+                ".X.\n" +
+                        "...\n" +
+                        ".S.\n" +
+                        ".A.\n" +
+                        ".M."
+        );
+    }
+
+    @Override
+    public List<Comparable<?>> getExampleOutput1() {
+        return List.of(18L, 36, 0, 0, 0);
+    }
+
+    @Override
+    public List<String> getExampleInput2() {
         return List.of("MMMSXXMASM\n" +
                 "MSAMXMSMSA\n" +
                 "AMXSXMAAMM\n" +
@@ -46,11 +88,6 @@ public class Solution extends PuzzleSolver {
                 "SAXAMASAAA\n" +
                 "MAMMMXMMMM\n" +
                 "MXMXAXMASX");
-    }
-
-    @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(18L);
     }
 
     @Override

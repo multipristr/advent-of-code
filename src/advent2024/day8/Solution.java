@@ -19,28 +19,33 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("............\n" +
-                "........0...\n" +
-                ".....0......\n" +
-                ".......0....\n" +
-                "....0.......\n" +
-                "......A.....\n" +
+        return List.of(
                 "............\n" +
-                "............\n" +
-                "........A...\n" +
-                ".........A..\n" +
-                "............\n" +
-                "............");
+                        "........0...\n" +
+                        ".....0......\n" +
+                        ".......0....\n" +
+                        "....0.......\n" +
+                        "......A.....\n" +
+                        "............\n" +
+                        "............\n" +
+                        "........A...\n" +
+                        ".........A..\n" +
+                        "............\n" +
+                        "............",
+                ".A.\n" +
+                        "...\n" +
+                        "..A"
+        );
     }
 
     @Override
     public List<Comparable<?>> getExampleOutput1() {
-        return List.of(14L);
+        return List.of(14L, 0);
     }
 
     @Override
     public List<Comparable<?>> getExampleOutput2() {
-        return List.of(34L);
+        return List.of(34L, 2);
     }
 
     @Override

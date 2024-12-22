@@ -44,13 +44,53 @@ public class Solution extends PuzzleSolver {
                         ".AA..\n" +
                         ".A.A.\n" +
                         ".AAA.\n" +
-                        "....."
+                        ".....",
+                "AXAA\n" +
+                        "XAAA\n" +
+                        "XAAA\n" +
+                        "XAAA",
+                "AAAAA\n" +
+                        "ABBAA\n" +
+                        "ABCBA",
+                "AAAAA\n" +
+                        "ABBCA\n" +
+                        "ABCBA",
+                "AAAAA\n" +
+                        "ABBBA\n" +
+                        "ABCBA",
+                "AAAA\n" +
+                        "ABCA\n" +
+                        "ABCA\n" +
+                        "AAAD",
+                "AAAA\n" +
+                        "ABCA\n" +
+                        "ABCA\n" +
+                        "AAAA",
+                "XOXOX\n" +
+                        "XXXXX",
+                "XXOXOXX\n" +
+                        "XOOOOOX\n" +
+                        "OOXOXOO\n" +
+                        "XOOXOOX\n" +
+                        "OOXOXOO\n" +
+                        "XOOOOOX\n" +
+                        "XXOXOXX",
+                "----\n" +
+                        "-OOO\n" +
+                        "-O-O\n" +
+                        "OO-O\n" +
+                        "-OOO",
+                "----\n" +
+                        "OOO-\n" +
+                        "O-O-\n" +
+                        "O-OO\n" +
+                        "OOO-"
         );
     }
 
     @Override
     public List<Comparable<?>> getExampleOutput1() {
-        return List.of(140L, 772L, 1930L, 1202L);
+        return List.of(140L, 772L, 1930L, 1202L, 186, 232, 216, 244, 292, 312, 152, 1700, 342, 342);
     }
 
     @Override
@@ -95,13 +135,55 @@ public class Solution extends PuzzleSolver {
                         ".AA..\n" +
                         ".A.A.\n" +
                         ".AAA.\n" +
-                        "....."
+                        ".....",
+                "XXOXOXX\n" +
+                        "XOOOOOX\n" +
+                        "OOXOXOO\n" +
+                        "XOOXOOX\n" +
+                        "OOXOXOO\n" +
+                        "XOOOOOX\n" +
+                        "XXOXOXX",
+                "----\n" +
+                        "-OOO\n" +
+                        "-O-O\n" +
+                        "OO-O\n" +
+                        "-OOO",
+                "----\n" +
+                        "OOO-\n" +
+                        "O-O-\n" +
+                        "O-OO\n" +
+                        "OOO-",
+                "OOX\n" +
+                        "XOX\n" +
+                        "OOO\n" +
+                        "OXO\n" +
+                        "OOO",
+                "AAAAAAAA\n" +
+                        "AACBBDDA\n" +
+                        "AACBBAAA\n" +
+                        "ABBAAAAA\n" +
+                        "ABBADDDA\n" +
+                        "AAAADADA\n" +
+                        "AAAAAAAA",
+                "AAXXX\n" +
+                        "AAXAX\n" +
+                        "AAAAX\n" +
+                        "AAXAX\n" +
+                        "AAXXX",
+                "AAAA\n" +
+                        "ABBA\n" +
+                        "ABBA\n" +
+                        "AAAA",
+                "AAAA\n" +
+                        "AABA\n" +
+                        "ABBA\n" +
+                        "AABA"
         );
     }
 
     @Override
     public List<Comparable<?>> getExampleOutput2() {
-        return List.of(160L, 80L, 436L, 236L, 368L, 1206L, 452L);
+        return List.of(160L, 80L, 436L, 236L, 368L, 1206L, 452L, 1676, 180, 180, 170, 946, 300, 112, 176);
     }
 
     @Override

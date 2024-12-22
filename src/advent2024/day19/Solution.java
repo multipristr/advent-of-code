@@ -33,8 +33,48 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
+    public List<String> getExampleInput2() {
+        return List.of(
+                "r, wr, b, g, bwu, rb, gb, br\n" +
+                        "\n" +
+                        "brwrr\n" +
+                        "bggr\n" +
+                        "gbbr\n" +
+                        "rrbgbr\n" +
+                        "ubwu\n" +
+                        "bwurrg\n" +
+                        "brgr\n" +
+                        "bbrgwb",
+                "b, bb, bbb, bbbb, bbbbb, bbbbbb, ru, ur, rr, uu, r\n" +
+                        "\n" +
+                        "brrru\n" +
+                        "brruu\n" +
+                        "bruur\n" +
+                        "brurr",
+                "b, bb, bbb, bbbb, bbbbb, bbbbbb, ru, ur, rr, uu, r\n" +
+                        "\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbrrru\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbrruu\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbruur\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbrurr",
+                "b, bb, bbb, bbbb, bbbbb, bbbbbb, ru, ur, rr, uu, r\n" +
+                        "\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbrrru\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbrruu\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbruur\n" +
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbrurr",
+                "r, b, rb, rr\n" +
+                        "\n" +
+                        "rrbb",
+                "b, w, g, u, r, rb, wg, gur, rwg, bw\n" +
+                        "\n" +
+                        "rwrurbbubburwbwwwbwuwubrwbwwwbburwbwwwbwuwubwubburwbwwwbwuwbburwbwwwbwuwubugguwbbburwbwwwbwuwubburwbwwwbwuwubrubgbggw"
+        );
+    }
+
+    @Override
     public List<Comparable<?>> getExampleOutput2() {
-        return List.of(16);
+        return List.of(16, 9, 64644552, 128227824, 3, 32768);
     }
 
     @Override

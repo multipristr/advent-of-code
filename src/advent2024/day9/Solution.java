@@ -18,12 +18,17 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("2333133121414131402");
+        return List.of("2333133121414131402", "234567874874903342482349");
     }
 
     @Override
     public List<Comparable<?>> getExampleOutput1() {
-        return List.of(1928L);
+        return List.of(1928L, 8250);
+    }
+
+    @Override
+    public List<String> getExampleInput2() {
+        return List.of("2333133121414131402");
     }
 
     @Override
