@@ -4,10 +4,11 @@ import src.PuzzleSolver;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -67,29 +68,22 @@ public class Solution extends PuzzleSolver {
     }
 
     private void calculateSequenceBananas(Map<String, Long> sequences, long initialSecretNumber) {
-        var circularQueue = new String[4];
-        int head = 0;
-        int tail = 0;
+        Queue<String> priceChanges = new LinkedList<>();
         Set<String> seenSequences = new HashSet<>();
-        var previousLastDigit = initialSecretNumber % 10;
 
+        var previousLastDigit = initialSecretNumber % 10;
         for (short i = 0; i < 2000; i++) {
             var secretNumber = generateNextSecretNumber(initialSecretNumber);
             var lastDigit = secretNumber % 10;
             var priceChange = lastDigit - previousLastDigit;
 
-            circularQueue[tail] = "" + priceChange;
-            tail = (tail + 1) % circularQueue.length;
-            if (head == tail) {
-                StringJoiner stringJoiner = new StringJoiner(",");
-                for (int j = 0; j < circularQueue.length; j++) {
-                    stringJoiner.add(circularQueue[(head + j) % circularQueue.length]);
-                }
-                var sequence = stringJoiner.toString();
+            priceChanges.add("" + priceChange);
+            if (priceChanges.size() >= 4) {
+                var sequence = String.join(",", priceChanges);
                 if (seenSequences.add(sequence)) {
                     sequences.merge(sequence, lastDigit, Long::sum);
                 }
-                head = (head + 1) % circularQueue.length;
+                priceChanges.poll();
             }
 
             initialSecretNumber = secretNumber;

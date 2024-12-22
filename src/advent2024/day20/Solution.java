@@ -89,18 +89,19 @@ public class Solution extends PuzzleSolver {
                         || calculateManhattanDistance(x1, y1, startX, startY) >= timeLimit) {
                     continue;
                 }
-                int distanceFromStart = distancesFromStart[y1][x1];
+                var distanceFromStart = distancesFromStart[y1][x1];
                 if (distanceFromStart >= timeLimit) {
                     continue;
                 }
                 for (int y2 = 0; y2 < racetrackMap.length; y2++) {
                     var racetrackRow2 = racetrackMap[y2];
+                    var distanceFromEndRow = distancesFromEnd[y2];
                     for (int x2 = 0; x2 < racetrackRow2.length; x2++) {
                         if (racetrackRow2[x2] == '#') {
                             continue;
                         }
                         int cheatDistance = calculateManhattanDistance(x1, y1, x2, y2);
-                        if (cheatDistance <= cheatPicoseconds && distanceFromStart + cheatDistance + distancesFromEnd[y2][x2] <= timeLimit) {
+                        if (cheatDistance <= cheatPicoseconds && distanceFromStart + cheatDistance + distanceFromEndRow[x2] <= timeLimit) {
                             ++savingCheats;
                         }
                     }
