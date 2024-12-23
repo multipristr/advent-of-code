@@ -11,7 +11,9 @@ import java.util.stream.Stream;
 public class Solution extends PuzzleSolver {
 
     private static final Pattern XY_PATTERN = Pattern.compile(
-            "Button A: X\\+(?<aX>\\d+), Y\\+(?<aY>\\d+)Button B: X\\+(?<bX>\\d+), Y\\+(?<bY>\\d+)Prize: X=(?<x>\\d+), Y=(?<y>\\d+)"
+            "Button A: X\\+(?<aX>\\d+), Y\\+(?<aY>\\d+)" +
+                    "Button B: X\\+(?<bX>\\d+), Y\\+(?<bY>\\d+)" +
+                    "Prize: X=(?<x>\\d+), Y=(?<y>\\d+)"
     );
 
     public static void main(String[] args) {
