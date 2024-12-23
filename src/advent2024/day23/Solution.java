@@ -59,87 +59,64 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<String> getExampleInput2() {
-        return List.of(
-                "kh-tc\n" +
-                        "qp-kh\n" +
-                        "de-cg\n" +
-                        "ka-co\n" +
-                        "yn-aq\n" +
-                        "qp-ub\n" +
-                        "cg-tb\n" +
-                        "vc-aq\n" +
-                        "tb-ka\n" +
-                        "wh-tc\n" +
-                        "yn-cg\n" +
-                        "kh-ub\n" +
-                        "ta-co\n" +
-                        "de-co\n" +
-                        "tc-td\n" +
-                        "tb-wq\n" +
-                        "wh-td\n" +
-                        "ta-ka\n" +
-                        "td-qp\n" +
-                        "aq-cg\n" +
-                        "wq-ub\n" +
-                        "ub-vc\n" +
-                        "de-ta\n" +
-                        "wq-aq\n" +
-                        "wq-vc\n" +
-                        "wh-yn\n" +
-                        "ka-de\n" +
-                        "kh-ta\n" +
-                        "co-tc\n" +
-                        "wh-qp\n" +
-                        "tb-vc\n" +
-                        "td-yn",
-                "ka-co\n" +
-                        "ta-co\n" +
-                        "de-co\n" +
-                        "ta-ka\n" +
-                        "de-ta\n" +
-                        "ka-de"
-        );
-    }
-
-    @Override
     public List<Comparable<?>> getExampleOutput2() {
-        return List.of("co,de,ka,ta", "co,de,ka,ta");
+        return List.of("co,de,ka,ta");
     }
 
     @Override
     public Comparable<?> solvePartOne(Stream<String> lines) {
-        Map<String, Set<String>> computerConnections = new HashMap<>();
-        lines.map(line -> line.split("-"))
-                .forEach(computers -> {
-                    var computer1 = computers[0];
-                    var computer2 = computers[1];
-                    computerConnections.computeIfAbsent(computer1, k -> new HashSet<>()).add(computer2);
-                    computerConnections.computeIfAbsent(computer2, k -> new HashSet<>()).add(computer1);
-                });
+        var networkMap = createNetworkMap(lines);
 
-        Set<String> threeInterConnectedStartingWithT = new HashSet<>();
-        computerConnections.forEach((computer, connections) -> {
+        Set<String> threeInterConnectedComputersStartingWithT = new HashSet<>();
+        networkMap.forEach((computer, connections) -> {
             boolean startsWithT = computer.charAt(0) == 't';
             for (var connection : connections) {
-                var commonConnections = new ArrayList<>(computerConnections.get(connection));
-                commonConnections.retainAll(connections);
+                var interConnections = new ArrayList<>(networkMap.get(connection));
+                interConnections.retainAll(connections);
                 boolean connectionStartsWithT = startsWithT || connection.charAt(0) == 't';
-                for (var commonConnection : commonConnections) {
-                    if (connectionStartsWithT || commonConnection.charAt(0) == 't') {
-                        String[] threeInterConnected = {computer, connection, commonConnection};
+                for (var interConnection : interConnections) {
+                    if (connectionStartsWithT || interConnection.charAt(0) == 't') {
+                        String[] threeInterConnected = {computer, connection, interConnection};
                         Arrays.sort(threeInterConnected);
-                        threeInterConnectedStartingWithT.add(String.join(",", threeInterConnected));
+                        threeInterConnectedComputersStartingWithT.add(String.join(",", threeInterConnected));
                     }
                 }
             }
         });
-        return threeInterConnectedStartingWithT.size();
+        return threeInterConnectedComputersStartingWithT.size();
     }
 
     @Override
     public Comparable<?> solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var networkMap = createNetworkMap(lines);
+
+        List<String> largestConnectedComputersSet = List.of();
+        for (var computerConnections : networkMap.entrySet()) {
+            List<String> connectedComputersSet = new ArrayList<>();
+            connectedComputersSet.add(computerConnections.getKey());
+            for (var connection : computerConnections.getValue()) {
+                if (networkMap.get(connection).containsAll(connectedComputersSet)) {
+                    connectedComputersSet.add(connection);
+                }
+            }
+            if (connectedComputersSet.size() > largestConnectedComputersSet.size()) {
+                largestConnectedComputersSet = connectedComputersSet;
+            }
+        }
+        largestConnectedComputersSet.sort(null);
+        return String.join(",", largestConnectedComputersSet);
+    }
+
+    private Map<String, Set<String>> createNetworkMap(final Stream<String> lines) {
+        Map<String, Set<String>> networkMap = new HashMap<>();
+        lines.map(line -> line.split("-"))
+                .forEach(computers -> {
+                    var computer1 = computers[0];
+                    var computer2 = computers[1];
+                    networkMap.computeIfAbsent(computer1, k -> new HashSet<>()).add(computer2);
+                    networkMap.computeIfAbsent(computer2, k -> new HashSet<>()).add(computer1);
+                });
+        return networkMap;
     }
 
 }
