@@ -127,20 +127,20 @@ public abstract class PuzzleSolver {
                 var solution = solve();
                 var duration = Duration.between(start, Instant.now());
                 if (output == null) {
-                    return boldUnderline(getText()) + " '" + bold(solution) + "' " + duration.toMillis() + " ms";
+                    return boldUnderline(getText()) + " `" + bold(solution) + "` " + duration.toMillis() + " ms";
                 } else {
                     boolean isCorrect = solution instanceof Number
                             ? ((Number) output).longValue() == ((Number) solution).longValue()
                             : output.equals(solution);
                     if (isCorrect) {
-                        return green(getText()) + " '" + green(output) + "' ✅ " + duration.toMillis() + " ms";
+                        return green(getText()) + " `" + green(output) + "` ✅ " + duration.toMillis() + " ms";
                     } else {
-                        return red(getText()) + " '" + red(output) + "' ❌ " + duration.toMillis() + " ms | Got '" + solution + "'";
+                        return red(getText()) + " `" + red(output) + "` ❌ " + duration.toMillis() + " ms | Got `" + solution + "`";
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return (output != null ? red(getText()) + " '" + red(output) + "' ❌ " : red(getText()) + " ❌ ") + e;
+                return (output != null ? red(getText()) + " `" + red(output) + "` ❌ " : red(getText()) + " ❌ ") + e;
             }
         }
 
