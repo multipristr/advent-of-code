@@ -5,15 +5,17 @@ import src.PuzzleSolver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver {
 
+    private static final String GATE = "(?<input>(?<input1>\\p{Alnum}+) (?<operation>\\p{Alnum}+) (?<input2>\\p{Alnum}+))";
+    private static final Pattern GATE_PATTERN = Pattern.compile(GATE);
+
     private static final Pattern WIRE_VALUE_PATTERN = Pattern.compile(
-            "(?<wire>\\p{Alnum}+): (?<initialValue>[01])|(?<input>\\p{Alnum}+ \\p{Alnum}+ \\p{Alnum}+) -> (?<output>\\p{Alnum}+)"
+            "(?<wire>\\p{Alnum}+): (?<initialValue>[01])|" + GATE + " -> (?<output>\\p{Alnum}+)"
     );
 
     public static void main(String[] args) {
@@ -131,10 +133,10 @@ public class Solution extends PuzzleSolver {
         }
 
         return wireValues.keySet().stream()
-                .filter(s -> s.charAt(0) == 'z')
-                .mapToLong(s -> {
-                    int bit = Integer.parseInt(s.substring(1));
-                    return (long) calculateWireValue(wireValues, s) << bit;
+                .filter(wire -> wire.charAt(0) == 'z')
+                .mapToLong(wire -> {
+                    var bit = Byte.parseByte(wire.substring(1));
+                    return calculateWireValue(wireValues, wire) << bit;
                 })
                 .reduce((bit1, bit2) -> bit1 | bit2)
                 .orElseThrow();
@@ -145,36 +147,30 @@ public class Solution extends PuzzleSolver {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private int calculateWireValue(Map<String, String> wireValues, String wire) {
+    private long calculateWireValue(Map<String, String> wireValues, String wire) {
         var gate = wireValues.get(wire);
-        var maybeValue = tryParseNumber(gate);
-        if (maybeValue.isPresent()) {
-            return maybeValue.get();
-        }
-        var parts = gate.split(" ");
-        int wireValue;
-        switch (parts[1]) {
-            case "AND":
-                wireValue = calculateWireValue(wireValues, parts[0]) & calculateWireValue(wireValues, parts[2]);
-                break;
-            case "OR":
-                wireValue = calculateWireValue(wireValues, parts[0]) | calculateWireValue(wireValues, parts[2]);
-                break;
-            case "XOR":
-                wireValue = calculateWireValue(wireValues, parts[0]) ^ calculateWireValue(wireValues, parts[2]);
-                break;
-            default:
-                throw new IllegalArgumentException(gate);
-        }
-        wireValues.put(wire, wireValue + "");
-        return wireValue;
-    }
-
-    private Optional<Integer> tryParseNumber(String initialValue) {
-        try {
-            return Optional.of(Integer.parseInt(initialValue));
-        } catch (Exception ignored) {
-            return Optional.empty();
+        var matcher = GATE_PATTERN.matcher(gate);
+        if (matcher.find()) {
+            var wire1Value = calculateWireValue(wireValues, matcher.group("input1"));
+            var wire2Value = calculateWireValue(wireValues, matcher.group("input2"));
+            long outputValue;
+            switch (matcher.group("operation")) {
+                case "AND":
+                    outputValue = wire1Value & wire2Value;
+                    break;
+                case "OR":
+                    outputValue = wire1Value | wire2Value;
+                    break;
+                case "XOR":
+                    outputValue = wire1Value ^ wire2Value;
+                    break;
+                default:
+                    throw new IllegalArgumentException(gate);
+            }
+            wireValues.put(wire, outputValue + "");
+            return outputValue;
+        } else {
+            return Long.parseUnsignedLong(gate);
         }
     }
 
