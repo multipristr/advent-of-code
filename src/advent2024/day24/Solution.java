@@ -2,9 +2,11 @@ package src.advent2024.day24;
 
 import src.PuzzleSolver;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -120,17 +122,7 @@ public class Solution extends PuzzleSolver {
 
     @Override
     public Comparable<?> solvePartOne(Stream<String> lines) {
-        Map<String, String> wireValues = new HashMap<>();
-
-        var matcher = WIRE_VALUE_PATTERN.matcher(lines.collect(Collectors.joining(System.lineSeparator())));
-        while (matcher.find()) {
-            var initialValue = matcher.group("initialValue");
-            if (initialValue != null) {
-                wireValues.put(matcher.group("wire"), initialValue);
-            } else {
-                wireValues.put(matcher.group("output"), matcher.group("input"));
-            }
-        }
+        var wireValues = parseWireValues(lines);
 
         return wireValues.keySet().stream()
                 .filter(wire -> wire.charAt(0) == 'z')
@@ -140,11 +132,6 @@ public class Solution extends PuzzleSolver {
                 })
                 .reduce((bit1, bit2) -> bit1 | bit2)
                 .orElseThrow();
-    }
-
-    @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     private long calculateWireValue(Map<String, String> wireValues, String wire) {
@@ -172,6 +159,79 @@ public class Solution extends PuzzleSolver {
         } else {
             return Long.parseUnsignedLong(gate);
         }
+    }
+
+    @Override
+    public Comparable<?> solvePartTwo(Stream<String> lines) {
+        var wireValues = parseWireValues(lines);
+
+        Collection<String> swappedOutputs = new TreeSet<>();
+        for (var wireValue : wireValues.entrySet()) {
+            var matcher = GATE_PATTERN.matcher(wireValue.getValue());
+            if (matcher.find()) {
+                var input1 = matcher.group("input1");
+                var input2 = matcher.group("input2");
+                switch (matcher.group("operation")) {
+                    case "AND":
+                        if (wireValue.getKey().charAt(0) == 'z') {
+                            swappedOutputs.add(wireValue.getKey());
+                            break;
+                        }
+                        boolean initialOutput = "x00".equals(input1) && "y00".equals(input2);
+                        var targets = wireValues.values().stream()
+                                .filter(gate -> gate.contains(wireValue.getKey()))
+                                .toArray(String[]::new);
+                        if (!initialOutput && targets.length != 1) {
+                            swappedOutputs.add(wireValue.getKey());
+                            break;
+                        }
+                        var andTargetMatcher = GATE_PATTERN.matcher(targets[0]);
+                        if (!andTargetMatcher.find() || !initialOutput && !"OR".equals(andTargetMatcher.group("operation"))) {
+                            swappedOutputs.add(wireValue.getKey());
+                        }
+                        break;
+                    case "OR":
+                        if (wireValue.getKey().charAt(0) == 'z' && !"z45".equals(wireValue.getKey())) {
+                            swappedOutputs.add(wireValue.getKey());
+                        }
+                        var leftGateMatcher = GATE_PATTERN.matcher(wireValues.get(input1));
+                        if (!leftGateMatcher.find() || !"AND".equals(leftGateMatcher.group("operation"))) {
+                            swappedOutputs.add(input1);
+                        }
+                        var rightGateMatcher = GATE_PATTERN.matcher(wireValues.get(input2));
+                        if (!rightGateMatcher.find() || !"AND".equals(rightGateMatcher.group("operation"))) {
+                            swappedOutputs.add(input2);
+                        }
+                        break;
+                    case "XOR":
+                        boolean zOutput = wireValue.getKey().charAt(0) == 'z';
+                        boolean xyInput1 = input1.charAt(0) == 'x' || input1.charAt(0) == 'y';
+                        boolean xyInput2 = input2.charAt(0) == 'x' || input2.charAt(0) == 'y';
+                        if (!zOutput && (!xyInput1 || !xyInput2)) {
+                            swappedOutputs.add(wireValue.getKey());
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException(wireValue.getValue());
+                }
+            }
+        }
+
+        return String.join(",", swappedOutputs);
+    }
+
+    private Map<String, String> parseWireValues(Stream<String> lines) {
+        Map<String, String> wireValues = new HashMap<>();
+        var matcher = WIRE_VALUE_PATTERN.matcher(lines.collect(Collectors.joining(System.lineSeparator())));
+        while (matcher.find()) {
+            var initialValue = matcher.group("initialValue");
+            if (initialValue != null) {
+                wireValues.put(matcher.group("wire"), initialValue);
+            } else {
+                wireValues.put(matcher.group("output"), matcher.group("input"));
+            }
+        }
+        return wireValues;
     }
 
 }
