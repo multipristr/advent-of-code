@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -32,8 +32,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(41L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(41);
     }
 
     @Override
@@ -77,12 +77,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(6L, 1, 1, 0, 1);
+    public List<Long> getExampleOutput2() {
+        return List.of(6L, 1L, 1L, 0L, 1L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         char[][] input = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 
@@ -140,7 +140,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         char[][] input = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 

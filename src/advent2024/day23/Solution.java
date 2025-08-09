@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, String> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -54,17 +54,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Integer> getExampleOutput1() {
         return List.of(7);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<String> getExampleOutput2() {
         return List.of("co,de,ka,ta");
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         var networkMap = createNetworkMap(lines);
 
         Set<String> threeInterConnectedComputersStartingWithT = new HashSet<>();
@@ -87,7 +87,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public String solvePartTwo(Stream<String> lines) {
         var networkMap = createNetworkMap(lines);
 
         List<String> largestConnectedComputersSet = List.of();

@@ -13,10 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class PuzzleSolver {
+public abstract class PuzzleSolver<O1, O2> {
 
     public void run() {
-        List<Task> tasks = new ArrayList<>();
+        List<Task<?>> tasks = new ArrayList<>();
 
         var exampleInput1 = getExampleInput1();
         var exampleOutput1 = getExampleOutput1();
@@ -55,17 +55,17 @@ public abstract class PuzzleSolver {
         }
     }
 
-    public abstract Comparable<?> solvePartOne(Stream<String> lines) throws Exception;
+    public abstract O1 solvePartOne(Stream<String> lines) throws Exception;
 
     public abstract List<String> getExampleInput1();
 
-    public abstract List<Comparable<?>> getExampleOutput1();
+    public abstract List<O1> getExampleOutput1();
 
     public List<String> getExampleInput2() {
         return getExampleInput1();
     }
 
-    public abstract List<Comparable<?>> getExampleOutput2();
+    public abstract List<O2> getExampleOutput2();
 
     public Stream<String> getInput1() {
         try {
@@ -79,30 +79,22 @@ public abstract class PuzzleSolver {
         return getInput1();
     }
 
-    public abstract Comparable<?> solvePartTwo(Stream<String> lines) throws Exception;
+    public abstract O2 solvePartTwo(Stream<String> lines) throws Exception;
 
-    private static abstract class Task implements Callable<String> {
+    private static abstract class Task<O> implements Callable<String> {
 
         private final Stream<String> input;
-        private final Comparable<?> output;
+        private final O output;
 
         private Task(Stream<String> input) {
             this.input = input;
             this.output = null;
         }
 
-        private Task(String input, Comparable<?> output) {
+        private Task(String input, O output) {
             this.input = input.lines();
             this.output = output;
         }
-
-        Stream<String> getInput() {
-            return input;
-        }
-
-        abstract String getText();
-
-        abstract Comparable<?> solve() throws Exception;
 
         private static String red(Object text) {
             return "\033[0;31m" + text + "\033[0m";
@@ -120,6 +112,14 @@ public abstract class PuzzleSolver {
             return "\033[4;1m" + text + "\033[0m";
         }
 
+        Stream<String> getInput() {
+            return input;
+        }
+
+        abstract String getText();
+
+        abstract O solve() throws Exception;
+
         @Override
         public String call() {
             try {
@@ -129,10 +129,7 @@ public abstract class PuzzleSolver {
                 if (output == null) {
                     return boldUnderline(getText()) + " `" + bold(solution) + "` " + duration.toMillis() + " ms";
                 } else {
-                    boolean isCorrect = solution instanceof Number
-                            ? ((Number) output).longValue() == ((Number) solution).longValue()
-                            : output.equals(solution);
-                    if (isCorrect) {
+                    if (output.equals(solution)) {
                         return green(getText()) + " `" + green(output) + "` ✅ " + duration.toMillis() + " ms";
                     } else {
                         return red(getText()) + " `" + red(output) + "` ❌ " + duration.toMillis() + " ms | Got `" + solution + "`";
@@ -146,13 +143,13 @@ public abstract class PuzzleSolver {
 
     }
 
-    private class PartOneTask extends Task {
+    private class PartOneTask extends Task<O1> {
 
         private PartOneTask(Stream<String> input) {
             super(input);
         }
 
-        private PartOneTask(String input, Comparable<?> output) {
+        private PartOneTask(String input, O1 output) {
             super(input, output);
         }
 
@@ -162,19 +159,19 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        Comparable<?> solve() throws Exception {
+        O1 solve() throws Exception {
             return solvePartOne(getInput());
         }
 
     }
 
-    private class PartTwoTask extends Task {
+    private class PartTwoTask extends Task<O2> {
 
         private PartTwoTask(Stream<String> input) {
             super(input);
         }
 
-        private PartTwoTask(String input, Comparable<?> output) {
+        private PartTwoTask(String input, O2 output) {
             super(input, output);
         }
 
@@ -184,7 +181,7 @@ public abstract class PuzzleSolver {
         }
 
         @Override
-        Comparable<?> solve() throws Exception {
+        O2 solve() throws Exception {
             return solvePartTwo(getInput());
         }
 

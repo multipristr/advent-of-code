@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -56,17 +56,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Long> getExampleOutput1() {
         return List.of(35L);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(46L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         String[] lineArray = lines.toArray(String[]::new);
         TreeMap<Long, Long> locations = new TreeMap<>();
 
@@ -100,7 +100,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         String[] lineArray = lines.toArray(String[]::new);
         Map<Range, Range> locations = new HashMap<>();
 

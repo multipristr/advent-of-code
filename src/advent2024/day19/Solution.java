@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -28,8 +28,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(6);
+    public List<Long> getExampleOutput1() {
+        return List.of(6L);
     }
 
     @Override
@@ -73,12 +73,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(16, 9, 64644552, 128227824, 3, 32768);
+    public List<Long> getExampleOutput2() {
+        return List.of(16L, 9L, 64644552L, 128227824L, 3L, 32768L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         var linesIterator = lines.iterator();
         var availableTowelPatterns = linesIterator.next().split(", ");
         linesIterator.next(); // empty line
@@ -94,7 +94,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         var linesIterator = lines.iterator();
         var availableTowelPatterns = linesIterator.next().split(", ");
         linesIterator.next(); // empty line

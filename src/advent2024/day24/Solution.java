@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, String> {
 
     private static final String GATE = "(?<input>(?<input1>\\p{Alnum}+) (?<operation>\\p{Alnum}+) (?<input2>\\p{Alnum}+))";
     private static final Pattern GATE_PATTERN = Pattern.compile(GATE);
@@ -88,8 +88,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(4, 2024);
+    public List<Long> getExampleOutput1() {
+        return List.of(4L, 2024L);
     }
 
     @Override
@@ -116,12 +116,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<String> getExampleOutput2() {
         return List.of("z00,z01,z02,z05");
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         var wireValues = parseWireValues(lines);
 
         return wireValues.keySet().stream()
@@ -162,7 +162,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public String solvePartTwo(Stream<String> lines) {
         var wireValues = parseWireValues(lines);
 
         Collection<String> swappedOutputs = new TreeSet<>();

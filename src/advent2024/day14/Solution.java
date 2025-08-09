@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     private static final Pattern ROBOT_PATTERN = Pattern.compile(
             "p=(?<positionX>-?\\d+),(?<positionY>-?\\d+) v=(?<velocityX>-?\\d+),(?<velocityY>-?\\d+)"
@@ -40,17 +40,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Long> getExampleOutput1() {
         return List.of(21L);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(17L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         return calculateSafetyFactor(lines, 101, 103, 100);
     }
 
@@ -93,7 +93,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) throws IOException {
+    public Long solvePartTwo(Stream<String> lines) throws IOException {
         Robot[] robots = lines.map(line -> {
                     Matcher matcher = ROBOT_PATTERN.matcher(line);
                     if (!matcher.find()) {

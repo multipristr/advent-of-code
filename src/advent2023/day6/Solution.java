@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -21,17 +21,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(288L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(288);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(71503L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
 
         StringTokenizer tokens = new StringTokenizer(linesArray[0], " ");
@@ -59,7 +59,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         int time = Integer.parseInt(linesArray[0].replaceFirst("Time:", "").replaceAll("\\s", ""));
         long distance = Long.parseLong(linesArray[1].replaceFirst("Distance:", "").replaceAll("\\s", ""));

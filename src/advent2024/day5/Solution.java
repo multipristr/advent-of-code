@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -49,17 +49,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Long> getExampleOutput1() {
         return List.of(143L);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(123L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
         return lines.mapToLong(line -> {
                     if (line.contains("|")) {
@@ -79,7 +79,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         Map<Long, Set<Long>> pagesOrderedAfter = new HashMap<>();
         return lines.mapToLong(line -> {
                     if (line.contains("|")) {

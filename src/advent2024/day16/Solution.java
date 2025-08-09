@@ -15,7 +15,7 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -127,17 +127,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(7036L, 11048L, 21148L, 5078L, 21110L, 41210L, 3022);
+    public List<Integer> getExampleOutput1() {
+        return List.of(7036, 11048, 21148, 5078, 21110, 41210, 3022);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(45L, 64L, 149L, 413L, 264L, 514L, 23);
+    public List<Integer> getExampleOutput2() {
+        return List.of(45, 64, 149, 413, 264, 514, 23);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 
@@ -224,7 +224,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
 

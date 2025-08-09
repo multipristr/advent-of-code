@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -23,13 +23,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(1048970L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(1048970);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(5714438L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(5714438);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)
@@ -62,7 +62,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         String secretKey = lines.collect(Collectors.joining());
         byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return IntStream.iterate(1, n -> n + 1)

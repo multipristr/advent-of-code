@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -35,22 +35,22 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Integer> getExampleOutput1() {
         return List.of(0);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Integer> getExampleOutput2() {
         return List.of(0);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         return countCheatSavingAtLeastPicoseconds(lines, 2, 100);
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         return countCheatSavingAtLeastPicoseconds(lines, 20, 100);
     }
 

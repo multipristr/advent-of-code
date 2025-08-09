@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<String, Long> {
 
     private static final Pattern INSTRUCTIONS_PATTERN = Pattern.compile(
             "Register A: (?<registerA>-?\\d+)Register B: (?<registerB>-?\\d+)Register C: (?<registerC>-?\\d+)Program: (?<opcodes>(-?\\d+,?)+)"
@@ -45,7 +45,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<String> getExampleOutput1() {
         return List.of("4,6,3,5,6,3,5,2,1,0", "6,0,4,5,4,5,2,0", "3,4,4,1,7,0,2,2");
     }
 
@@ -71,12 +71,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(117440L, 202797954918051L, 266926175730705L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public String solvePartOne(Stream<String> lines) {
         String input = lines.collect(Collectors.joining());
         Matcher matcher = INSTRUCTIONS_PATTERN.matcher(input);
         if (!matcher.find()) {
@@ -93,7 +93,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         String input = lines.collect(Collectors.joining());
         Matcher matcher = INSTRUCTIONS_PATTERN.matcher(input);
         if (!matcher.find()) {

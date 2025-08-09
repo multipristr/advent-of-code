@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -27,18 +27,18 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(65412L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(65412);
     }
 
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(65412L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(65412);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         Map<String, String> wireSignals = new HashMap<>();
 
         lines.forEach(line -> {
@@ -56,7 +56,7 @@ public class Solution extends PuzzleSolver {
             }
         });
 
-        return calculateWireValue(wireSignals, "a");
+        return (int) calculateWireValue(wireSignals, "a");
     }
 
     private char calculateWireValue(Map<String, String> wireSignals, String wire) {
@@ -105,7 +105,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         Map<String, String> wireSignals = new HashMap<>();
 
         lines.forEach(line -> {
@@ -125,6 +125,6 @@ public class Solution extends PuzzleSolver {
 
         wireSignals.put("b", "46065");
 
-        return calculateWireValue(wireSignals, "a");
+        return (int) calculateWireValue(wireSignals, "a");
     }
 }

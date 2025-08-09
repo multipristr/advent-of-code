@@ -12,7 +12,7 @@ import java.util.Queue;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -28,22 +28,22 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(126384);
+    public List<Long> getExampleOutput1() {
+        return List.of(126384L);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(154115708116294L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         return calculateSumOfComplexities(lines, 2);
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         return calculateSumOfComplexities(lines, 25);
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -73,8 +73,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(1L, 36L, 464);
+    public List<Integer> getExampleOutput1() {
+        return List.of(1, 36, 464);
     }
 
     @Override
@@ -129,12 +129,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(81L, 16451);
+    public List<Integer> getExampleOutput2() {
+        return List.of(81, 16451);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
                 .toArray(int[][]::new);
 
@@ -185,7 +185,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         int[][] topographicMap = lines.map(line -> line.chars().map(Character::getNumericValue).toArray())
                 .toArray(int[][]::new);
         List<Map.Entry<Integer, Integer>>[] heightLocations = new List[10];

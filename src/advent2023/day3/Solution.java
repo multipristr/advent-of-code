@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -31,17 +31,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(4361L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(4361);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(467835L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(467835);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         int partNumberSum = 0;
@@ -94,7 +94,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         char[][] schematic = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         Map<String, List<Integer>> gearAdjacent = new HashMap<>();

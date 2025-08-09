@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -27,8 +27,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(37327623);
+    public List<Long> getExampleOutput1() {
+        return List.of(37327623L);
     }
 
     @Override
@@ -40,12 +40,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(23);
+    public List<Long> getExampleOutput2() {
+        return List.of(23L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         return lines.parallel()
                 .mapToLong(Long::parseLong)
                 .map(initialSecretNumber -> {
@@ -58,7 +58,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         Map<String, Long> sequences = new ConcurrentHashMap<>();
         lines.parallel()
                 .mapToLong(Long::parseLong)

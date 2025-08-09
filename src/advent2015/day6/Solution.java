@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -20,17 +20,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(998996L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(998996);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(1001996L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(1001996);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         boolean[][] lights = new boolean[1_000][1_000];
 
         lines.forEach(line -> {
@@ -78,7 +78,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         int[][] lights = new int[1_000][1_000];
 
         lines.forEach(line -> {

@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -41,8 +41,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(2L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(2);
     }
 
     @Override
@@ -60,12 +60,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(6L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         char[] instructions = linesArray[0].toCharArray();
 
@@ -96,7 +96,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         String[] linesArray = lines.toArray(String[]::new);
         char[] instructions = linesArray[0].toCharArray();
 

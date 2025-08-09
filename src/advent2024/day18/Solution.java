@@ -10,7 +10,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, String> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -46,17 +46,17 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(22L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(22);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<String> getExampleOutput2() {
         return List.of("6,1");
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         byte coordinatesRange = 70;
         short fallenBytes = 1024;
 
@@ -68,7 +68,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public String solvePartTwo(Stream<String> lines) {
         byte coordinatesRange = 70;
 
         var memorySpace = new boolean[coordinatesRange + 1][coordinatesRange + 1];

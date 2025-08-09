@@ -5,7 +5,7 @@ import src.PuzzleSolver;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -160,13 +160,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(4L, 8L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(4, 8);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(4L, 8L, 10L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(4, 8, 10);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);
@@ -237,7 +237,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         char[][] sketch = lines
                 .map(line -> line.toCharArray())
                 .toArray(char[][]::new);

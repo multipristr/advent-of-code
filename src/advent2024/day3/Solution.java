@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -20,7 +20,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
+    public List<Long> getExampleOutput1() {
         return List.of(161L);
     }
 
@@ -30,12 +30,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
+    public List<Long> getExampleOutput2() {
         return List.of(48L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         Pattern instructions = Pattern.compile("mul\\((?<number1>\\d{1,3}),(?<number2>\\d{1,3})\\)");
         String input = lines.collect(Collectors.joining());
 
@@ -51,7 +51,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         Pattern instructions = Pattern.compile("mul\\((?<number1>\\d{1,3}),(?<number2>\\d{1,3})\\)|do\\(\\)|don't\\(\\)");
         String input = lines.collect(Collectors.joining());
 

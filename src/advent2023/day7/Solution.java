@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
     private static final Map<Character, Integer> CARD_ORDER1 = new HashMap<>(13);
     private static final Map<Character, Integer> CARD_ORDER2 = new HashMap<>(13);
 
@@ -79,23 +79,23 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(6440L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(6440);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(3667L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(3667);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
         return lines.map(CardHand1::new).sorted().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         AtomicInteger index = new AtomicInteger(1);
         List<CardHand2> cards = lines.map(CardHand2::new).sorted().collect(Collectors.toList());
         return cards.stream().mapToInt(cardHand -> cardHand.getBid() * index.getAndIncrement()).sum();

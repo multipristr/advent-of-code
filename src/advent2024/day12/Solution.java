@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Long, Long> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -89,8 +89,8 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(140L, 772L, 1930L, 1202L, 186, 232, 216, 244, 292, 312, 152, 1700, 342, 342);
+    public List<Long> getExampleOutput1() {
+        return List.of(140L, 772L, 1930L, 1202L, 186L, 232L, 216L, 244L, 292L, 312L, 152L, 1700L, 342L, 342L);
     }
 
     @Override
@@ -182,12 +182,12 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(160L, 80L, 436L, 236L, 368L, 1206L, 452L, 1676, 180, 180, 170, 946, 300, 112, 176);
+    public List<Long> getExampleOutput2() {
+        return List.of(160L, 80L, 436L, 236L, 368L, 1206L, 452L, 1676L, 180L, 180L, 170L, 946L, 300L, 112L, 176L);
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Long solvePartOne(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         byte[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};
@@ -229,7 +229,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Long solvePartTwo(Stream<String> lines) {
         char[][] map = lines.map(String::toCharArray)
                 .toArray(char[][]::new);
         byte[] directions = {-1, 0, 0, -1, 0, 1, 1, 0};

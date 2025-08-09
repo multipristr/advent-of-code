@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class Solution extends PuzzleSolver {
+public class Solution extends PuzzleSolver<Integer, Integer> {
 
     public static void main(String[] args) {
         new Solution().run();
@@ -31,13 +31,13 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput1() {
-        return List.of(52L, 1320L);
+    public List<Integer> getExampleOutput1() {
+        return List.of(52, 1320);
     }
 
     @Override
-    public List<Comparable<?>> getExampleOutput2() {
-        return List.of(145L);
+    public List<Integer> getExampleOutput2() {
+        return List.of(145);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartOne(Stream<String> lines) {
+    public Integer solvePartOne(Stream<String> lines) {
         return lines.parallel()
                 .flatMap(line -> Arrays.stream(line.split(",")))
                 .mapToInt(Solution::hash)
@@ -54,7 +54,7 @@ public class Solution extends PuzzleSolver {
     }
 
     @Override
-    public Comparable<?> solvePartTwo(Stream<String> lines) {
+    public Integer solvePartTwo(Stream<String> lines) {
         Map<Integer, Map<String, Integer>> lenses = new HashMap<>(256);
         lines.flatMap(line -> Arrays.stream(line.split(",")))
                 .forEach(word -> {
