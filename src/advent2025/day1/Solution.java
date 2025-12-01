@@ -66,26 +66,22 @@ public class Solution extends PuzzleSolver<Long, Long> {
             var distance = Long.parseLong(rotation.substring(1));
 
             if (rotation.startsWith("L")) {
-                boolean startedAtZero = dial == 0;
+                if (dial == 0 && distance > 0) {
+                    --pointingAtZeroTime;
+                }
                 dial -= distance;
                 while (dial < 0) {
                     dial += 100;
-                    if (!startedAtZero) {
-                        ++pointingAtZeroTime;
-                        startedAtZero = false;
-                    }
+                    ++pointingAtZeroTime;
                 }
                 if (dial == 0) {
                     ++pointingAtZeroTime;
                 }
             } else {
                 dial += distance;
-                while (dial >= 100) {
-                    dial -= 100;
-                    ++pointingAtZeroTime;
-                }
+                pointingAtZeroTime += dial / 100;
+                dial %= 100;
             }
-
         }
         return pointingAtZeroTime;
     }
