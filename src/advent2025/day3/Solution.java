@@ -13,12 +13,15 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("");
+        return List.of("987654321111111\n" +
+                "811111111111119\n" +
+                "234234234234278\n" +
+                "818181911112111");
     }
 
     @Override
     public List<Long> getExampleOutput1() {
-        return List.of();
+        return List.of(357L);
     }
 
     @Override
