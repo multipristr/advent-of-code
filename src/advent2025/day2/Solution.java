@@ -4,6 +4,7 @@ import src.PuzzleSolver;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -30,18 +31,27 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
+        return addInvalidIds(lines, this::findIdsWithDigitsRepeatedTwiceInRange);
+    }
+
+    @Override
+    public Long solvePartTwo(Stream<String> lines) {
+        return addInvalidIds(lines, this::findIdsWithDigitsRepeatedAtLeastTwiceInRange);
+    }
+
+    private long addInvalidIds(Stream<String> lines, BiFunction<Long, Long, LongStream> findInvalidIdsInRange) {
         return lines.parallel()
                 .flatMap(line -> Arrays.stream(line.split(",")))
                 .flatMapToLong(range -> {
                     var dashIndex = range.indexOf("-");
                     var firstId = range.substring(0, dashIndex);
                     var lastId = range.substring(dashIndex + 1);
-                    return findInvalidIdsInRange(Long.parseLong(firstId), Long.parseLong(lastId));
+                    return findInvalidIdsInRange.apply(Long.parseLong(firstId), Long.parseLong(lastId));
                 })
                 .sum();
     }
 
-    private LongStream findInvalidIdsInRange(long firstId, long lastId) {
+    private LongStream findIdsWithDigitsRepeatedTwiceInRange(long firstId, long lastId) {
         var streamBuilder = LongStream.builder();
         for (long id = firstId; id <= lastId; id++) {
             var idString = Long.toString(id);
@@ -55,8 +65,20 @@ public class Solution extends PuzzleSolver<Long, Long> {
         return streamBuilder.build();
     }
 
-    @Override
-    public Long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private LongStream findIdsWithDigitsRepeatedAtLeastTwiceInRange(long firstId, long lastId) {
+        var streamBuilder = LongStream.builder();
+        outerLoop:
+        for (long id = firstId; id <= lastId; id++) {
+            var idString = Long.toString(id);
+            var middleIndex = idString.length() >> 1;
+            for (int digits = 1; digits <= middleIndex; digits++) {
+                var subRange = idString.substring(0, digits);
+                if (idString.matches('(' + subRange + ")+")) {
+                    streamBuilder.add(id);
+                    continue outerLoop;
+                }
+            }
+        }
+        return streamBuilder.build();
     }
 }

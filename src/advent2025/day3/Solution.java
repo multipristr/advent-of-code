@@ -26,16 +26,37 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of();
+        return List.of(3121910778619L);
     }
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return findTotalOutputJoltage(lines, (byte) 2);
     }
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return findTotalOutputJoltage(lines, (byte) 12);
+    }
+
+    private long findTotalOutputJoltage(Stream<String> lines, byte batteries) {
+        return lines.parallel()
+                .mapToLong(bank -> findLargestJoltagePerBankPerBatteries(bank, batteries))
+                .sum();
+    }
+
+    private long findLargestJoltagePerBankPerBatteries(String bank, byte batteries) {
+        for (byte firstBattery = 9; firstBattery >= 0; --firstBattery) {
+            var firstBatteryIndex = bank.indexOf(Byte.toString(firstBattery));
+            if (firstBatteryIndex > -1) {
+                for (byte secondBattery = 9; secondBattery >= 0; --secondBattery) {
+                    var secondBatteryIndex = bank.indexOf(Byte.toString(secondBattery), firstBatteryIndex + 1);
+                    if (secondBatteryIndex > -1) {
+                        return firstBattery * 10 + secondBattery;
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException(bank);
     }
 }
