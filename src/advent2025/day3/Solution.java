@@ -3,6 +3,7 @@ package src.advent2025.day3;
 import src.PuzzleSolver;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
@@ -31,32 +32,34 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
-        return findTotalOutputJoltage(lines, (byte) 2);
+        return findTotalOutputJoltage(lines, 2);
     }
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        return findTotalOutputJoltage(lines, (byte) 12);
+        return findTotalOutputJoltage(lines, 12);
     }
 
-    private long findTotalOutputJoltage(Stream<String> lines, byte batteries) {
-        return lines.parallel()
-                .mapToLong(bank -> findLargestJoltagePerBankPerBatteries(bank, batteries))
+    private long findTotalOutputJoltage(Stream<String> lines, int batteries) {
+        return lines.map(bank -> findLargestJoltage(bank, batteries, 0).orElseThrow())
+                .mapToLong(Long::parseLong)
                 .sum();
     }
 
-    private long findLargestJoltagePerBankPerBatteries(String bank, byte batteries) {
-        for (byte firstBattery = 9; firstBattery >= 0; --firstBattery) {
-            var firstBatteryIndex = bank.indexOf(Byte.toString(firstBattery));
-            if (firstBatteryIndex > -1) {
-                for (byte secondBattery = 9; secondBattery >= 0; --secondBattery) {
-                    var secondBatteryIndex = bank.indexOf(Byte.toString(secondBattery), firstBatteryIndex + 1);
-                    if (secondBatteryIndex > -1) {
-                        return firstBattery * 10 + secondBattery;
-                    }
+    private Optional<String> findLargestJoltage(String bank, int battery, int fromIndex) {
+        for (byte batteryValue = 9; batteryValue >= 0; --batteryValue) {
+            var batterStringValue = Byte.toString(batteryValue);
+            var batteryIndex = bank.indexOf(batterStringValue, fromIndex);
+            if (batteryIndex > -1) {
+                if (battery <= 1) {
+                    return Optional.of(batterStringValue);
+                }
+                var largestJoltage = findLargestJoltage(bank, battery - 1, batteryIndex + 1);
+                if (largestJoltage.isPresent()) {
+                    return largestJoltage.map(joltage -> batterStringValue + joltage);
                 }
             }
         }
-        throw new IllegalStateException(bank);
+        return Optional.empty();
     }
 }
