@@ -83,33 +83,22 @@ public class Solution extends PuzzleSolver<Long, Long> {
             }
             var fromId = Long.parseLong(matcher.group("fromId"));
             var toId = Long.parseLong(matcher.group("toId"));
-            freshIngredientIdRanges.add(Map.entry(fromId, toId));
-        }
+            var newFreshIngredientIdRange = Map.entry(fromId, toId);
 
-        var modified = true;
-        while (modified) {
-            modified = false;
-            List<Map.Entry<Long, Long>> freshIngredientIdRanges2 = new ArrayList<>();
-
-            for (var freshIngredientIdRange : freshIngredientIdRanges) {
-                for (var freshIngredientIdRange2 : freshIngredientIdRanges) {
-                    if (freshIngredientIdRange.equals(freshIngredientIdRange2)) {
-                        freshIngredientIdRanges2.add(freshIngredientIdRange2);
-                    } else if (freshIngredientIdRange2.getKey() <= freshIngredientIdRange.getKey() && freshIngredientIdRange2.getValue() >= freshIngredientIdRange.getKey()
-                            || freshIngredientIdRange2.getKey() <= freshIngredientIdRange.getValue() && freshIngredientIdRange2.getValue() >= freshIngredientIdRange.getValue()) {
-                        modified = true;
-                        freshIngredientIdRanges2.add(Map.entry(Math.min(freshIngredientIdRange2.getKey(), freshIngredientIdRange.getKey()), Math.max(freshIngredientIdRange2.getValue(), freshIngredientIdRange.getValue())));
-                    } else {
-                        freshIngredientIdRanges2.add(freshIngredientIdRange2);
-                    }
+            var freshIngredientIdRangesIterator = freshIngredientIdRanges.iterator();
+            while (freshIngredientIdRangesIterator.hasNext()) {
+                var freshIngredientIdRange = freshIngredientIdRangesIterator.next();
+                if (freshIngredientIdRange.getKey() <= newFreshIngredientIdRange.getKey() && freshIngredientIdRange.getValue() >= newFreshIngredientIdRange.getKey()
+                        || freshIngredientIdRange.getKey() <= newFreshIngredientIdRange.getValue() && freshIngredientIdRange.getValue() >= newFreshIngredientIdRange.getValue()) {
+                    newFreshIngredientIdRange = Map.entry(Math.min(freshIngredientIdRange.getKey(), newFreshIngredientIdRange.getKey()), Math.max(freshIngredientIdRange.getValue(), newFreshIngredientIdRange.getValue()));
+                    freshIngredientIdRangesIterator.remove();
                 }
             }
 
-            freshIngredientIdRanges = freshIngredientIdRanges2;
+            freshIngredientIdRanges.add(newFreshIngredientIdRange);
         }
 
-        return freshIngredientIdRanges
-                .stream()
+        return freshIngredientIdRanges.stream()
                 .mapToLong(freshIngredientIdRange -> freshIngredientIdRange.getValue() - freshIngredientIdRange.getKey() + 1)
                 .sum();
     }
