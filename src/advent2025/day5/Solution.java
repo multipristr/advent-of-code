@@ -38,7 +38,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of();
+        return List.of(14L);
     }
 
     @Override
@@ -72,6 +72,45 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<Map.Entry<Long, Long>> freshIngredientIdRanges = new ArrayList<>();
+
+        var linesIterator = lines.iterator();
+        while (linesIterator.hasNext()) {
+            var line = linesIterator.next();
+            var matcher = FRESH_INGREDIENT_ID_RANGE_PATTERN.matcher(line);
+            if (!matcher.find()) {
+                break;
+            }
+            var fromId = Long.parseLong(matcher.group("fromId"));
+            var toId = Long.parseLong(matcher.group("toId"));
+            freshIngredientIdRanges.add(Map.entry(fromId, toId));
+        }
+
+        var modified = true;
+        while (modified) {
+            modified = false;
+            List<Map.Entry<Long, Long>> freshIngredientIdRanges2 = new ArrayList<>();
+
+            for (var freshIngredientIdRange : freshIngredientIdRanges) {
+                for (var freshIngredientIdRange2 : freshIngredientIdRanges) {
+                    if (freshIngredientIdRange.equals(freshIngredientIdRange2)) {
+                        freshIngredientIdRanges2.add(freshIngredientIdRange2);
+                    } else if (freshIngredientIdRange2.getKey() <= freshIngredientIdRange.getKey() && freshIngredientIdRange2.getValue() >= freshIngredientIdRange.getKey()
+                            || freshIngredientIdRange2.getKey() <= freshIngredientIdRange.getValue() && freshIngredientIdRange2.getValue() >= freshIngredientIdRange.getValue()) {
+                        modified = true;
+                        freshIngredientIdRanges2.add(Map.entry(Math.min(freshIngredientIdRange2.getKey(), freshIngredientIdRange.getKey()), Math.max(freshIngredientIdRange2.getValue(), freshIngredientIdRange.getValue())));
+                    } else {
+                        freshIngredientIdRanges2.add(freshIngredientIdRange2);
+                    }
+                }
+            }
+
+            freshIngredientIdRanges = freshIngredientIdRanges2;
+        }
+
+        return freshIngredientIdRanges
+                .stream()
+                .mapToLong(freshIngredientIdRange -> freshIngredientIdRange.getValue() - freshIngredientIdRange.getKey() + 1)
+                .sum();
     }
 }
