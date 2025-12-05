@@ -22,6 +22,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 "10-14\n" +
                 "16-20\n" +
                 "12-18\n" +
+                "9-21\n" +
                 "\n" +
                 "1\n" +
                 "5\n" +
@@ -38,7 +39,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of(14L);
+        return List.of(16L);
     }
 
     @Override
@@ -91,6 +92,8 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 if (freshIngredientIdRange.getKey() <= newFreshIngredientIdRange.getKey() && freshIngredientIdRange.getValue() >= newFreshIngredientIdRange.getKey()
                         || freshIngredientIdRange.getKey() <= newFreshIngredientIdRange.getValue() && freshIngredientIdRange.getValue() >= newFreshIngredientIdRange.getValue()) {
                     newFreshIngredientIdRange = Map.entry(Math.min(freshIngredientIdRange.getKey(), newFreshIngredientIdRange.getKey()), Math.max(freshIngredientIdRange.getValue(), newFreshIngredientIdRange.getValue()));
+                    freshIngredientIdRangesIterator.remove();
+                } else if (freshIngredientIdRange.getKey() >= newFreshIngredientIdRange.getKey() && freshIngredientIdRange.getValue() <= newFreshIngredientIdRange.getValue()) {
                     freshIngredientIdRangesIterator.remove();
                 }
             }
