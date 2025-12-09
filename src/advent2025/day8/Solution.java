@@ -116,7 +116,6 @@ public class Solution extends PuzzleSolver<Integer, Long> {
                 .reduce(1, (a, b) -> a * b);
     }
 
-
     @Override
     public Long solvePartTwo(Stream<String> lines) {
         var junctionBoxes = lines.map(JunctionBox::new).collect(Collectors.toList());
