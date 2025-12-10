@@ -2,10 +2,15 @@ package src.advent2025.day10;
 
 import src.PuzzleSolver;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
@@ -30,22 +35,16 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of();
+        return List.of(33L);
     }
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
-        return lines.parallel()
-                .mapToLong(line -> {
+        return lines.mapToLong(line -> {
                     var matcher = MACHINE_PATTERN.matcher(line);
                     matcher.find();
                     var indicatorLightsInput = matcher.group("indicatorLights");
                     var buttonWiringSchematicsInput = matcher.group("buttonWiringSchematics");
-
-                    var indicatorLights = new boolean[indicatorLightsInput.length()];
-                    for (int i = 0; i < indicatorLightsInput.length(); i++) {
-                        indicatorLights[i] = indicatorLightsInput.charAt(i) == '#';
-                    }
 
                     List<int[]> buttonWiringSchematics = new ArrayList<>();
                     var buttonWiringSchematicMatcher = BUTTON_WIRING_SCHEMATIC_PATTERN.matcher(buttonWiringSchematicsInput);
@@ -57,12 +56,39 @@ public class Solution extends PuzzleSolver<Long, Long> {
                         buttonWiringSchematics.add(buttonWiringSchematic);
                     }
 
-                    return 0L;
+                    return calculateIndicatorLightsFewestButtonPresses(indicatorLightsInput.toCharArray(), buttonWiringSchematics);
                 })
                 .sum();
     }
 
-    private boolean isIndicatorLightsMatching(boolean[] expectedIndicatorLights, boolean[] indicatorLights) {
+    private long calculateIndicatorLightsFewestButtonPresses(char[] expectedIndicatorLights, List<int[]> buttonWiringSchematics) {
+        long buttonPresses = 1;
+        Set<String> closed = new HashSet<>();
+        var initialIndicatorLights = new char[expectedIndicatorLights.length];
+        Arrays.fill(initialIndicatorLights, '.');
+        Deque<char[]> open = new ArrayDeque<>(List.of(initialIndicatorLights));
+        for (; buttonPresses < Long.MAX_VALUE; ++buttonPresses) {
+            Deque<char[]> nextOpen = new ArrayDeque<>();
+            while (!open.isEmpty()) {
+                var indicatorLights = open.pollFirst();
+                for (var buttonWiringSchematic : buttonWiringSchematics) {
+                    var indicatorLightsCopy = Arrays.copyOf(indicatorLights, indicatorLights.length);
+                    for (var button : buttonWiringSchematic) {
+                        indicatorLightsCopy[button] = indicatorLights[button] == '.' ? '#' : '.';
+                    }
+                    if (isIndicatorLightsMatching(expectedIndicatorLights, indicatorLightsCopy)) {
+                        return buttonPresses;
+                    } else if (closed.add(new String(indicatorLightsCopy))) {
+                        nextOpen.add(indicatorLightsCopy);
+                    }
+                }
+            }
+            open = nextOpen;
+        }
+        throw new IllegalStateException('[' + new String(expectedIndicatorLights) + "] " + buttonPresses);
+    }
+
+    private boolean isIndicatorLightsMatching(char[] expectedIndicatorLights, char[] indicatorLights) {
         for (int i = 0; i < expectedIndicatorLights.length; i++) {
             if (indicatorLights[i] != expectedIndicatorLights[i]) {
                 return false;
@@ -73,6 +99,66 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return lines.parallel()
+                .mapToLong(line -> {
+                    var matcher = MACHINE_PATTERN.matcher(line);
+                    matcher.find();
+                    var buttonWiringSchematicsInput = matcher.group("buttonWiringSchematics");
+                    var joltageRequirementsInput = matcher.group("joltageRequirements");
+
+                    List<int[]> buttonWiringSchematics = new ArrayList<>();
+                    var buttonWiringSchematicMatcher = BUTTON_WIRING_SCHEMATIC_PATTERN.matcher(buttonWiringSchematicsInput);
+                    while (buttonWiringSchematicMatcher.find()) {
+                        var buttonWiringSchematicInput = buttonWiringSchematicMatcher.group("buttonWiringSchematic");
+                        var buttonWiringSchematic = Arrays.stream(buttonWiringSchematicInput.split(","))
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                        buttonWiringSchematics.add(buttonWiringSchematic);
+                    }
+
+                    var joltageRequirements = Arrays.stream(joltageRequirementsInput.split(","))
+                            .mapToLong(Long::parseLong)
+                            .toArray();
+
+                    return calculateJoltageLevelsFewestButtonPresses(joltageRequirements, buttonWiringSchematics);
+                })
+                .sum();
+    }
+
+    private long calculateJoltageLevelsFewestButtonPresses(long[] expectedJoltageLevels, List<int[]> buttonWiringSchematics) {
+        long buttonPresses = 1;
+        Set<String> closed = new HashSet<>();
+        var initialJoltageLevels = new long[expectedJoltageLevels.length];
+        Deque<long[]> open = new ArrayDeque<>(List.of(initialJoltageLevels));
+        for (; buttonPresses < Long.MAX_VALUE; ++buttonPresses) {
+            Deque<long[]> nextOpen = new ArrayDeque<>();
+            while (!open.isEmpty()) {
+                var joltageLevels = open.pollFirst();
+                for (var buttonWiringSchematic : buttonWiringSchematics) {
+                    var joltageLevelsCopy = Arrays.copyOf(joltageLevels, joltageLevels.length);
+                    for (var button : buttonWiringSchematic) {
+                        joltageLevelsCopy[button] = joltageLevels[button] + 1;
+                    }
+                    if (isJoltageLevelsMatching(expectedJoltageLevels, joltageLevelsCopy)) {
+                        return buttonPresses;
+                    }
+                    var joltage = Arrays.stream(joltageLevelsCopy).mapToObj(Long::toString).collect(Collectors.joining(","));
+                    if (closed.add(joltage)) {
+                        nextOpen.add(joltageLevelsCopy);
+                    }
+                }
+            }
+            open = nextOpen;
+        }
+        throw new IllegalStateException(buttonPresses + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
+    }
+
+    private boolean isJoltageLevelsMatching(long[] expectedJoltageLevels, long[] joltageLevels) {
+        for (int i = 0; i < expectedJoltageLevels.length; i++) {
+            if (joltageLevels[i] != expectedJoltageLevels[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
