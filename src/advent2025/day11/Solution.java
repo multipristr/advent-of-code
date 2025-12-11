@@ -41,6 +41,23 @@ public class Solution extends PuzzleSolver<Long, Long> {
     }
 
     @Override
+    public List<String> getExampleInput2() {
+        return List.of("svr: aaa bbb\n" +
+                "aaa: fft\n" +
+                "fft: ccc\n" +
+                "bbb: tty\n" +
+                "tty: ccc\n" +
+                "ccc: ddd eee\n" +
+                "ddd: hub\n" +
+                "hub: fff\n" +
+                "eee: dac\n" +
+                "dac: fff\n" +
+                "fff: ggg hhh\n" +
+                "ggg: out\n" +
+                "hhh: out");
+    }
+
+    @Override
     public List<Long> getExampleOutput2() {
         return List.of(2L);
     }
@@ -78,6 +95,32 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var deviceOutputs = lines.map(line -> {
+            var matcher = DEVICE_PATTERN.matcher(line);
+            matcher.find();
+            return matcher;
+        }).collect(Collectors.groupingBy(
+                matcher -> matcher.group("device"),
+                Collectors.flatMapping(
+                        matcher -> Arrays.stream(matcher.group("outputs").split("\\s")),
+                        Collectors.toList()
+                )
+        ));
+
+        Deque<String> open = new ArrayDeque<>(List.of("svr"));
+        Map<String, Long> paths = new HashMap<>();
+        Set<String> closed = new HashSet<>();
+        while (!open.isEmpty()) {
+            var device = open.pollFirst();
+            var devicePaths = paths.getOrDefault(device, 1L);
+            var outputs = deviceOutputs.getOrDefault(device, List.of());
+            for (var output : outputs) {
+                paths.merge(output, devicePaths, Long::sum);
+                if (closed.add(output)) {
+                    open.addLast(output);
+                }
+            }
+        }
+        return paths.get("out"); // should be higher than 10361394401906
     }
 }
