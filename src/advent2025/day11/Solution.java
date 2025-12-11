@@ -2,10 +2,20 @@ package src.advent2025.day11;
 
 import src.PuzzleSolver;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
+    private static final Pattern DEVICE_PATTERN = Pattern.compile("(?<device>\\w+): (?<outputs>[\\w\\s]+)");
 
     public static void main(String[] args) {
         new Solution().run();
@@ -13,22 +23,57 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public List<String> getExampleInput1() {
-        return List.of("");
+        return List.of("aaa: you hhh\n" +
+                "you: bbb ccc\n" +
+                "bbb: ddd eee\n" +
+                "ccc: ddd eee fff\n" +
+                "ddd: ggg\n" +
+                "eee: out\n" +
+                "fff: out\n" +
+                "ggg: out\n" +
+                "hhh: ccc fff iii\n" +
+                "iii: out");
     }
 
     @Override
     public List<Long> getExampleOutput1() {
-        return List.of();
+        return List.of(5L);
     }
 
     @Override
     public List<Long> getExampleOutput2() {
-        return List.of();
+        return List.of(2L);
     }
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var deviceOutputs = lines.map(line -> {
+            var matcher = DEVICE_PATTERN.matcher(line);
+            matcher.find();
+            return matcher;
+        }).collect(Collectors.groupingBy(
+                matcher -> matcher.group("device"),
+                Collectors.flatMapping(
+                        matcher -> Arrays.stream(matcher.group("outputs").split("\\s")),
+                        Collectors.toList()
+                )
+        ));
+
+        Deque<String> open = new ArrayDeque<>(List.of("you"));
+        Map<String, Long> paths = new HashMap<>();
+        Set<String> closed = new HashSet<>();
+        while (!open.isEmpty()) {
+            var device = open.pollFirst();
+            var devicePaths = paths.getOrDefault(device, 1L);
+            var outputs = deviceOutputs.getOrDefault(device, List.of());
+            for (var output : outputs) {
+                paths.merge(output, devicePaths, Long::sum);
+                if (closed.add(output)) {
+                    open.addLast(output);
+                }
+            }
+        }
+        return paths.get("out");
     }
 
     @Override
