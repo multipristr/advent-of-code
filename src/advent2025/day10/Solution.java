@@ -2,13 +2,7 @@ package src.advent2025.day10;
 
 import src.PuzzleSolver;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +61,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
         var initialIndicatorLights = new char[expectedIndicatorLights.length];
         Arrays.fill(initialIndicatorLights, '.');
         Deque<char[]> open = new ArrayDeque<>(List.of(initialIndicatorLights));
-        for (; buttonPresses < Long.MAX_VALUE; ++buttonPresses) {
+        for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
             Deque<char[]> nextOpen = new ArrayDeque<>();
             while (!open.isEmpty()) {
                 var indicatorLights = open.pollFirst();
@@ -85,7 +79,9 @@ public class Solution extends PuzzleSolver<Long, Long> {
             }
             open = nextOpen;
         }
-        throw new IllegalStateException('[' + new String(expectedIndicatorLights) + "] " + buttonPresses);
+        throw new IllegalStateException(buttonPresses
+                + ": [" + new String(expectedIndicatorLights) + "] " +
+                buttonWiringSchematics.stream().map(buttonWiringSchematic -> Arrays.stream(buttonWiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" ")));
     }
 
     private boolean isIndicatorLightsMatching(char[] expectedIndicatorLights, char[] indicatorLights) {
@@ -130,16 +126,24 @@ public class Solution extends PuzzleSolver<Long, Long> {
         Set<String> closed = new HashSet<>();
         var initialJoltageLevels = new long[expectedJoltageLevels.length];
         Deque<long[]> open = new ArrayDeque<>(List.of(initialJoltageLevels));
-        for (; buttonPresses < Long.MAX_VALUE; ++buttonPresses) {
+        for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
             Deque<long[]> nextOpen = new ArrayDeque<>();
             while (!open.isEmpty()) {
                 var joltageLevels = open.pollFirst();
+                outerLoop:
                 for (var buttonWiringSchematic : buttonWiringSchematics) {
                     var joltageLevelsCopy = Arrays.copyOf(joltageLevels, joltageLevels.length);
                     for (var button : buttonWiringSchematic) {
-                        joltageLevelsCopy[button] = joltageLevels[button] + 1;
+                        var nextJoltageLevel = joltageLevels[button] + 1;
+                        if (nextJoltageLevel > expectedJoltageLevels[button]) {
+                            continue outerLoop;
+                        }
+                        joltageLevelsCopy[button] = nextJoltageLevel;
                     }
                     if (isJoltageLevelsMatching(expectedJoltageLevels, joltageLevelsCopy)) {
+                        System.out.println(buttonPresses + ": "
+                                + buttonWiringSchematics.stream().map(wiringSchematic -> Arrays.stream(wiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" "))
+                                + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
                         return buttonPresses;
                     }
                     var joltage = Arrays.stream(joltageLevelsCopy).mapToObj(Long::toString).collect(Collectors.joining(","));
@@ -150,7 +154,9 @@ public class Solution extends PuzzleSolver<Long, Long> {
             }
             open = nextOpen;
         }
-        throw new IllegalStateException(buttonPresses + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
+        throw new IllegalStateException(buttonPresses + ": "
+                + buttonWiringSchematics.stream().map(wiringSchematic -> Arrays.stream(wiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" "))
+                + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
     }
 
     private boolean isJoltageLevelsMatching(long[] expectedJoltageLevels, long[] joltageLevels) {
