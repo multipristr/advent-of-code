@@ -2,7 +2,13 @@ package src.advent2025.day10;
 
 import src.PuzzleSolver;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,7 +70,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
         for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
             Deque<char[]> nextOpen = new ArrayDeque<>();
             while (!open.isEmpty()) {
-                var indicatorLights = open.pollFirst();
+                var indicatorLights = open.removeFirst();
                 for (var buttonWiringSchematic : buttonWiringSchematics) {
                     var indicatorLightsCopy = Arrays.copyOf(indicatorLights, indicatorLights.length);
                     for (var button : buttonWiringSchematic) {
@@ -129,7 +135,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
         for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
             Deque<long[]> nextOpen = new ArrayDeque<>();
             while (!open.isEmpty()) {
-                var joltageLevels = open.pollFirst();
+                var joltageLevels = open.removeFirst();
                 outerLoop:
                 for (var buttonWiringSchematic : buttonWiringSchematics) {
                     var joltageLevelsCopy = Arrays.copyOf(joltageLevels, joltageLevels.length);

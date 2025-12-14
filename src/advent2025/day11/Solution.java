@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,7 +81,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
         Map<String, Long> paths = new HashMap<>();
         Set<String> closed = new HashSet<>();
         while (!open.isEmpty()) {
-            var device = open.pollFirst();
+            var device = open.removeFirst();
             var devicePaths = paths.getOrDefault(device, 1L);
             var outputs = deviceOutputs.getOrDefault(device, List.of());
             for (var output : outputs) {
@@ -107,20 +108,40 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 )
         ));
 
-        Deque<String> open = new ArrayDeque<>(List.of("svr"));
+        Deque<Map.Entry<String, UUID>> open = new ArrayDeque<>(List.of(Map.entry("svr", UUID.randomUUID())));
         Map<String, Long> paths = new HashMap<>();
-        Set<String> closed = new HashSet<>();
+        Set<Map.Entry<String, UUID>> closed = new HashSet<>(Set.of(open.getFirst()));
+        Map<UUID, Set<String>> pathRemainingToVisit = new HashMap<>(Map.of(open.getFirst().getValue(), Set.of("fft", "dac")));
         while (!open.isEmpty()) {
-            var device = open.pollFirst();
-            var devicePaths = paths.getOrDefault(device, 1L);
-            var outputs = deviceOutputs.getOrDefault(device, List.of());
-            for (var output : outputs) {
-                paths.merge(output, devicePaths, Long::sum);
-                if (closed.add(output)) {
-                    open.addLast(output);
+            var devicePath = open.removeFirst();
+            var remainingToVisit = pathRemainingToVisit.get(devicePath.getValue());
+            var outputs = deviceOutputs.getOrDefault(devicePath.getKey(), List.of());
+            var outputIterator = outputs.iterator();
+            if (outputIterator.hasNext()) {
+                var output = outputIterator.next();
+                Set<String> remaining = new HashSet<>(remainingToVisit);
+                remaining.remove(output);
+                if (remaining.isEmpty()) {
+                    paths.merge(output, 1L, Long::sum);
+                }
+                pathRemainingToVisit.put(devicePath.getValue(), remaining);
+                if (closed.add(Map.entry(output, devicePath.getValue()))) {
+                    open.addLast(Map.entry(output, devicePath.getValue()));
                 }
             }
+            while (outputIterator.hasNext()) {
+                var output = outputIterator.next();
+                Set<String> remaining = new HashSet<>(remainingToVisit);
+                remaining.remove(output);
+                if (remaining.isEmpty()) {
+                    paths.merge(output, 1L, Long::sum);
+                }
+                var pathId = UUID.randomUUID();
+                pathRemainingToVisit.put(pathId, remaining);
+                open.addLast(Map.entry(output, pathId));
+            }
         }
-        return paths.get("out"); // should be higher than 10361394401906
+        return paths.get("out");
     }
+
 }
