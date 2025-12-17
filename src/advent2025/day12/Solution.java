@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
-    private static final Pattern REGION_PATTERN = Pattern.compile("(?<width>\\d+)x(?<length>\\d+): (?<presents>[\\d,\\s]+)");
+    private static final Pattern REGION_PATTERN = Pattern.compile("(?<width>\\d+)x(?<length>\\d+): (?<shapeQuantities>[\\d,\\s]+)");
 
     public static void main(String[] args) {
         new Solution().run();
@@ -91,20 +90,18 @@ public class Solution extends PuzzleSolver<Long, Long> {
                     var width = Integer.parseInt(regionMatcher.group("width"));
                     var length = Integer.parseInt(regionMatcher.group("length"));
                     var region = new boolean[length][width];
-                    var shapeQuantities = regionMatcher.group("presents").split("\\s");
-                    for (int shape = 0; shape < shapeQuantities.length; shape++) {
-                        for (long quantity = 0; quantity < Long.parseLong(shapeQuantities[shape]); quantity++) {
-                            if (!canFitPresentInRegion(region, presentShapes[shape])) {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
+
+                    var shapeQuantitiesInput = regionMatcher.group("shapeQuantities").split("\\s");
+                    var shapeQuantities = Arrays.stream(shapeQuantitiesInput)
+                            .mapToLong(Long::parseLong)
+                            .toArray();
+
+                    return canAllPresentsFitInRegion(presentShapes, region, shapeQuantities);
                 })
                 .count();
     }
 
-    private boolean canFitPresentInRegion(boolean[][] region, boolean[][] present) {
+    private boolean canAllPresentsFitInRegion(boolean[][][] presents, boolean[][] region, long[] presentQuantities) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
