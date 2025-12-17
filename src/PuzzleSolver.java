@@ -69,7 +69,7 @@ public abstract class PuzzleSolver<O1, O2> {
 
     public Stream<String> getInput1() {
         try {
-            return Files.lines(Paths.get(".").toAbsolutePath().resolve(getClass().getPackageName().replaceAll("\\.", "/")).resolve("input.txt"));
+            return Files.lines(Paths.get(getClass().getPackageName().replaceAll("\\.", "/"), "input.txt").toAbsolutePath());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

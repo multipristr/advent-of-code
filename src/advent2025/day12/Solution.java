@@ -2,10 +2,15 @@ package src.advent2025.day12;
 
 import src.PuzzleSolver;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
+    private static final Pattern REGION_PATTERN = Pattern.compile("(?<width>\\d+)x(?<length>\\d+): (?<presents>[\\d,\\s]+)");
 
     public static void main(String[] args) {
         new Solution().run();
@@ -60,6 +65,46 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartOne(Stream<String> lines) {
+        var inputParts = lines.collect(Collectors.joining("\n")).split("\\R{2,}");
+
+        var presentShapes = new boolean[inputParts.length - 1][][];
+        for (int shapeIndex = 0; shapeIndex < inputParts.length - 1; shapeIndex++) {
+            var shapeLines = inputParts[shapeIndex].split("\\R");
+            var presentShape = new boolean[shapeLines.length - 1][];
+            for (int shapeLine = 1; shapeLine < shapeLines.length; shapeLine++) {
+                var line = shapeLines[shapeLine];
+                var presentShapeLine = new boolean[line.length()];
+                for (int column = 0; column < line.length(); column++) {
+                    if (line.charAt(column) == '#') {
+                        presentShapeLine[column] = true;
+                    }
+                }
+                presentShape[shapeLine - 1] = presentShapeLine;
+            }
+            presentShapes[shapeIndex] = presentShape;
+        }
+
+        return inputParts[inputParts.length - 1].lines()
+                .map(REGION_PATTERN::matcher)
+                .filter(regionMatcher -> {
+                    regionMatcher.find();
+                    var width = Integer.parseInt(regionMatcher.group("width"));
+                    var length = Integer.parseInt(regionMatcher.group("length"));
+                    var region = new boolean[length][width];
+                    var shapeQuantities = regionMatcher.group("presents").split("\\s");
+                    for (int shape = 0; shape < shapeQuantities.length; shape++) {
+                        for (long quantity = 0; quantity < Long.parseLong(shapeQuantities[shape]); quantity++) {
+                            if (!canFitPresentInRegion(region, presentShapes[shape])) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                })
+                .count();
+    }
+
+    private boolean canFitPresentInRegion(boolean[][] region, boolean[][] present) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
