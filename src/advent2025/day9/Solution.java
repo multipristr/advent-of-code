@@ -2,12 +2,9 @@ package src.advent2025.day9;
 
 import src.PuzzleSolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,128 +54,58 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     @Override
     public Long solvePartTwo(Stream<String> lines) {
-        List<Map.Entry<Long, Long>> redTiles = new ArrayList<>();
-        Map<Long, Map.Entry<Long, Long>> columnRanges = new HashMap<>();
-        Map<Long, Map.Entry<Long, Long>> rowRanges = new HashMap<>();
-        Map<Long, Set<Long>> connections = new HashMap<>();
-        Long lastRow = null;
-        Long lastColumn = null;
+        var redTiles = lines.map(line -> line.split(","))
+                .map(coordinates -> Map.entry(Long.parseLong(coordinates[0]), Long.parseLong(coordinates[1])))
+                .collect(Collectors.toList());
 
-        var linesIterator = lines.map(line -> line.split(",")).iterator();
-        while (linesIterator.hasNext()) {
-            var coordinates = linesIterator.next();
-            var column = Long.parseLong(coordinates[0]);
-            var row = Long.parseLong(coordinates[1]);
-            redTiles.add(Map.entry(column, row));
-
-            if (lastColumn != null) {
-                for (long c = Math.min(lastColumn, column); c <= Math.max(lastColumn, column); c++) {
-                    for (long r = Math.min(lastRow, row); r <= Math.max(lastRow, row); r++) {
-                        connections.computeIfAbsent(c, k -> new HashSet<>()).add(r);
-                        columnRanges.merge(r, Map.entry(c, c), (a, b) -> Map.entry(Math.min(a.getKey(), b.getKey()), Math.max(a.getValue(), b.getValue())));
-                        rowRanges.merge(c, Map.entry(r, r), (a, b) -> Map.entry(Math.min(a.getKey(), b.getKey()), Math.max(a.getValue(), b.getValue())));
-                    }
-                }
-            }
-            lastColumn = column;
-            lastRow = row;
-        }
-        var firstRedCorner = redTiles.get(0);
-        for (long c = Math.min(lastColumn, firstRedCorner.getKey()); c <= Math.max(lastColumn, firstRedCorner.getKey()); c++) {
-            for (long r = Math.min(lastRow, firstRedCorner.getValue()); r <= Math.max(lastRow, firstRedCorner.getValue()); r++) {
-                connections.computeIfAbsent(c, k -> new HashSet<>()).add(r);
-                columnRanges.merge(r, Map.entry(c, c), (a, b) -> Map.entry(Math.min(a.getKey(), b.getKey()), Math.max(a.getValue(), b.getValue())));
-                rowRanges.merge(c, Map.entry(r, r), (a, b) -> Map.entry(Math.min(a.getKey(), b.getKey()), Math.max(a.getValue(), b.getValue())));
-            }
-        }
-
-        long largestArea = Long.MIN_VALUE;
+        long largestGreenRedTilesArea = Long.MIN_VALUE;
         for (int i = 0; i < redTiles.size(); i++) {
             var redTile1 = redTiles.get(i);
             for (int j = i + 1; j < redTiles.size(); j++) {
                 var redTile2 = redTiles.get(j);
                 var rectangleArea = calculateRectangleArea(redTile1, redTile2);
-                if (rectangleArea > largestArea && isUsingOnlyRedGreenTiles(connections, rowRanges, columnRanges, redTile1, redTile2)) {
-                    largestArea = rectangleArea;
+                if (rectangleArea > largestGreenRedTilesArea && isUsingOnlyRedGreenTiles(redTiles, redTile1, i, redTile2, j)) {
+                    largestGreenRedTilesArea = rectangleArea;
                 }
             }
         }
-        return largestArea; // should be less than 3358922490
+        return largestGreenRedTilesArea;
     }
 
-    private boolean isUsingOnlyRedGreenTiles(Map<Long, Set<Long>> connections,
-                                             Map<Long, Map.Entry<Long, Long>> rowRanges, Map<Long, Map.Entry<Long, Long>> columnRanges,
-                                             Map.Entry<Long, Long> corner1, Map.Entry<Long, Long> corner2) {
-        var topLeftCorner = Map.entry(Math.min(corner1.getKey(), corner2.getKey()), Math.min(corner1.getValue(), corner2.getValue()));
-        var topRightCorner = Map.entry(Math.min(corner1.getKey(), corner2.getKey()), Math.max(corner1.getValue(), corner2.getValue()));
-        var bottomLeftCorner = Map.entry(Math.max(corner1.getKey(), corner2.getKey()), Math.min(corner1.getValue(), corner2.getValue()));
-        var bottomRightCorner = Map.entry(Math.max(corner1.getKey(), corner2.getKey()), Math.max(corner1.getValue(), corner2.getValue()));
-
-        return isCornerInside(connections, rowRanges, columnRanges, topLeftCorner)
-                && isCornerInside(connections, rowRanges, columnRanges, topRightCorner)
-                && isCornerInside(connections, rowRanges, columnRanges, bottomLeftCorner)
-                && isCornerInside(connections, rowRanges, columnRanges, bottomRightCorner);
-    }
-
-    private boolean isCornerInside(Map<Long, Set<Long>> connections,
-                                   Map<Long, Map.Entry<Long, Long>> rowRanges, Map<Long, Map.Entry<Long, Long>> columnRanges,
-                                   Map.Entry<Long, Long> corner) {
-        if (connections.getOrDefault(corner.getKey(), Set.of()).contains(corner.getValue())) {
-            return true;
-        }
-        return isCornerInsideColumn(connections, columnRanges, corner, -1)
-                && isCornerInsideColumn(connections, columnRanges, corner, 1)
-                && isCornerInsideRow(connections, rowRanges, corner, -1)
-                && isCornerInsideRow(connections, rowRanges, corner, 1);
-    }
-
-    private boolean isCornerInsideColumn(Map<Long, Set<Long>> connections, Map<Long, Map.Entry<Long, Long>> columnRanges,
-                                         Map.Entry<Long, Long> corner, int columnDirection) {
-        long intersections = 0;
-        var intersectionStart = false;
-        var intersectionEnd = false;
-        var row = corner.getValue();
-        var columnRange = columnRanges.get(row);
-        for (var column = corner.getKey(); columnRange.getKey() <= column && column <= columnRange.getValue(); column += columnDirection) {
-            if (connections.getOrDefault(column, Set.of()).contains(row)) {
-                intersectionEnd = true;
+    private boolean isUsingOnlyRedGreenTiles(List<Map.Entry<Long, Long>> redTiles, Map.Entry<Long, Long> corner1, int corner1Index, Map.Entry<Long, Long> corner2, int corner2Index) {
+        Predicate<Map.Entry<Long, Long>> corner1Check = redTile -> redTile.getValue() <= Math.max(corner1.getValue(), corner2.getValue()) && redTile.getValue() > Math.min(corner1.getValue(), corner2.getValue());
+        Predicate<Map.Entry<Long, Long>> corner2Check = redTile -> redTile.getValue() <= Math.max(corner1.getValue(), corner2.getValue()) && redTile.getValue() > Math.min(corner1.getValue(), corner2.getValue());
+        if (corner1.getValue() <= corner2.getValue()) {
+            if (corner1.getKey() >= corner2.getKey()) {
+                corner1Check = corner1Check.and(redTile -> redTile.getKey() < corner1.getKey());
+                corner2Check = corner2Check.and(redTile -> redTile.getKey() > corner2.getKey());
             } else {
-                if (intersectionStart && intersectionEnd) {
-                    intersections++;
-                }
-                intersectionStart = true;
-                intersectionEnd = false;
+                corner1Check = corner1Check.and(redTile -> redTile.getKey() < corner2.getKey());
+                corner2Check = corner2Check.and(redTile -> redTile.getKey() > corner1.getKey());
             }
-        }
-        if (intersectionStart && intersectionEnd) {
-            intersections++;
-        }
-        return (intersections & 1L) != 0L;
-    }
-
-    private boolean isCornerInsideRow(Map<Long, Set<Long>> connections, Map<Long, Map.Entry<Long, Long>> rowRanges,
-                                      Map.Entry<Long, Long> corner, int rowDirection) {
-        long intersections = 0;
-        var intersectionStart = false;
-        var intersectionEnd = false;
-        var column = corner.getKey();
-        var rowRange = rowRanges.get(column);
-        var columnConnections = connections.getOrDefault(column, Set.of());
-        for (var row = corner.getValue(); rowRange.getKey() <= row && row <= rowRange.getValue(); row += rowDirection) {
-            if (columnConnections.contains(row)) {
-                intersectionEnd = true;
+        } else {
+            if (corner1.getKey() >= corner2.getKey()) {
+                corner1Check = corner1Check.and(redTile -> redTile.getKey() > corner2.getKey());
+                corner2Check = corner2Check.and(redTile -> redTile.getKey() < corner1.getKey());
             } else {
-                if (intersectionStart && intersectionEnd) {
-                    intersections++;
-                }
-                intersectionStart = true;
-                intersectionEnd = false;
+                corner1Check = corner1Check.and(redTile -> redTile.getKey() > corner1.getKey());
+                corner2Check = corner2Check.and(redTile -> redTile.getKey() < corner2.getKey());
             }
         }
-        if (intersectionStart && intersectionEnd) {
-            intersections++;
+
+        for (int i = corner1Index + 1; i < corner2Index; i++) {
+            var redTile = redTiles.get(i);
+            if (corner1Check.test(redTile)) {
+                return false;
+            }
         }
-        return (intersections & 1L) != 0L;
+        for (int i = corner2Index + 1 >= redTiles.size() ? 0 : corner2Index + 1; i > corner2Index || i < corner1Index; i = (i + 1) % redTiles.size()) {
+            var redTile = redTiles.get(i);
+            if (corner2Check.test(redTile)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private long calculateRectangleArea(Map.Entry<Long, Long> corner1, Map.Entry<Long, Long> corner2) {
