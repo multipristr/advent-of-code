@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution extends PuzzleSolver<Long, Long> {
@@ -67,6 +68,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
     public Long solvePartOne(Stream<String> lines) {
         var inputParts = lines.collect(Collectors.joining("\n")).split("\\R{2,}");
 
+        var presentVolumes = new long[inputParts.length - 1];
         var presentShapes = new boolean[inputParts.length - 1][][];
         for (int shapeIndex = 0; shapeIndex < inputParts.length - 1; shapeIndex++) {
             var shapeLines = inputParts[shapeIndex].split("\\R");
@@ -76,6 +78,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 var presentShapeLine = new boolean[line.length()];
                 for (int column = 0; column < line.length(); column++) {
                     if (line.charAt(column) == '#') {
+                        ++presentVolumes[shapeIndex];
                         presentShapeLine[column] = true;
                     }
                 }
@@ -87,25 +90,26 @@ public class Solution extends PuzzleSolver<Long, Long> {
         var shapeVariants = generateShapeVariants(presentShapes);
 
         return inputParts[inputParts.length - 1].lines().parallel()
-                .map(REGION_PATTERN::matcher)
-                .filter(regionMatcher -> {
+                .filter(line -> {
+                    var regionMatcher = REGION_PATTERN.matcher(line);
                     regionMatcher.find();
+
                     var width = Integer.parseInt(regionMatcher.group("width"));
                     var length = Integer.parseInt(regionMatcher.group("length"));
-                    var region = new boolean[length][width];
 
                     var shapeQuantitiesInput = regionMatcher.group("shapeQuantities").split("\\s");
                     var shapeQuantities = Arrays.stream(shapeQuantitiesInput)
                             .mapToLong(Long::parseLong)
                             .toArray();
 
-                    boolean b = canAllPresentsFitInRegion(shapeVariants, region, shapeQuantities);
-                    if (b) {
-                        System.out.println("✅ " + width + "x" + length + ": " + String.join(" ", shapeQuantitiesInput));
-                    } else {
-                        System.out.println("❌ " + width + "x" + length + ": " + String.join(" ", shapeQuantitiesInput));
+                    var regionVolume = width * length;
+                    var requiredVolume = IntStream.range(0, shapeQuantities.length)
+                            .mapToLong(i -> shapeQuantities[i] * presentVolumes[i])
+                            .sum();
+                    if (regionVolume < requiredVolume) {
+                        return false;
                     }
-                    return b;
+                    return canAllPresentsFitInRegion(shapeVariants, new boolean[length][width], shapeQuantities);
                 })
                 .count();
     }
@@ -204,21 +208,25 @@ public class Solution extends PuzzleSolver<Long, Long> {
 
     private boolean[][] flipHorizontally(boolean[][] shape) {
         var rows = shape.length;
-        var columns = shape[0].length;
-        var flipped = new boolean[rows][columns];
+        var flipped = new boolean[rows][];
         for (int r = 0; r < rows; r++) {
+            var columns = shape[r].length;
+            var flipRow = new boolean[columns];
+            var shapeRow = shape[r];
             for (int c = 0; c < columns; c++) {
-                flipped[r][c] = shape[r][columns - 1 - c];
+                flipRow[c] = shapeRow[columns - 1 - c];
             }
+            flipped[r] = flipRow;
         }
         return flipped;
     }
 
     private boolean[][] flipVertically(boolean[][] shape) {
         var rows = shape.length;
-        var columns = shape[0].length;
-        var flipped = new boolean[rows][columns];
+        var flipped = new boolean[rows][];
         for (int r = 0; r < rows; r++) {
+            var columns = shape[r].length;
+            flipped[r] = new boolean[columns];
             System.arraycopy(shape[rows - 1 - r], 0, flipped[r], 0, columns);
         }
         return flipped;
@@ -229,8 +237,9 @@ public class Solution extends PuzzleSolver<Long, Long> {
         var columns = shape[0].length;
         var rotated = new boolean[columns][rows];
         for (int r = 0; r < rows; r++) {
+            var shapeRow = shape[r];
             for (int c = 0; c < columns; c++) {
-                rotated[c][rows - 1 - r] = shape[r][c];
+                rotated[c][rows - 1 - r] = shapeRow[c];
             }
         }
         return rotated;
