@@ -4,6 +4,7 @@ import src.PuzzleSolver;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,7 +109,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 )
         ));
 
-        var open = new ArrayDeque<>(List.of(new Path("svr")));
+        var open = new ArrayDeque<>(List.of(new Path("svr", "dac", "fft")));
         Map<Path, Long> paths = new HashMap<>();
         var closed = new HashSet<>(Set.of(open.getFirst()));
         while (!open.isEmpty()) {
@@ -125,18 +126,18 @@ public class Solution extends PuzzleSolver<Long, Long> {
                 }
             }
         }
-        return paths.get(new Path("out", Set.of()));
+        return paths.get(new Path("out"));
     }
 
     private static final class Path {
         private final String device;
-        private final Set<String> remainingProblematicDevices;
+        private final Collection<String> remainingProblematicDevices;
 
-        Path(String device) {
-            this(device, Set.of("dac", "fft"));
+        Path(String device, String... remainingProblematicDevices) {
+            this(device, Set.of(remainingProblematicDevices));
         }
 
-        public Path(String device, Set<String> remainingProblematicDevices) {
+        Path(String device, Collection<String> remainingProblematicDevices) {
             this.remainingProblematicDevices = remainingProblematicDevices;
             this.device = device;
         }

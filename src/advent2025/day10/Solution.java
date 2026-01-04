@@ -62,12 +62,11 @@ public class Solution extends PuzzleSolver<Long, Long> {
     }
 
     private long calculateIndicatorLightsFewestButtonPresses(char[] expectedIndicatorLights, List<int[]> buttonWiringSchematics) {
-        long buttonPresses = 1;
         Set<String> closed = new HashSet<>();
         var initialIndicatorLights = new char[expectedIndicatorLights.length];
         Arrays.fill(initialIndicatorLights, '.');
         Deque<char[]> open = new ArrayDeque<>(List.of(initialIndicatorLights));
-        for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
+        for (long buttonPresses = 1; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
             Deque<char[]> nextOpen = new ArrayDeque<>();
             while (!open.isEmpty()) {
                 var indicatorLights = open.removeFirst();
@@ -85,8 +84,7 @@ public class Solution extends PuzzleSolver<Long, Long> {
             }
             open = nextOpen;
         }
-        throw new IllegalStateException(buttonPresses
-                + ": [" + new String(expectedIndicatorLights) + "] " +
+        throw new IllegalStateException('[' + new String(expectedIndicatorLights) + "] " +
                 buttonWiringSchematics.stream().map(buttonWiringSchematic -> Arrays.stream(buttonWiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" ")));
     }
 
@@ -122,47 +120,50 @@ public class Solution extends PuzzleSolver<Long, Long> {
                             .mapToLong(Long::parseLong)
                             .toArray();
 
-                    return calculateJoltageLevelsFewestButtonPresses(joltageRequirements, buttonWiringSchematics);
+                    var buttonPresses = calculateJoltageLevelsFewestButtonPresses(joltageRequirements, buttonWiringSchematics, new HashMap<>(), new long[joltageRequirements.length]);
+                    System.out.println(buttonPresses + ": "
+                            + buttonWiringSchematics.stream().map(wiringSchematic -> Arrays.stream(wiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" "))
+                            + " {" + Arrays.stream(joltageRequirements).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
+                    return buttonPresses;
                 })
                 .sum();
     }
 
-    private long calculateJoltageLevelsFewestButtonPresses(long[] expectedJoltageLevels, List<int[]> buttonWiringSchematics) {
-        long buttonPresses = 1;
-        Set<String> closed = new HashSet<>();
-        var initialJoltageLevels = new long[expectedJoltageLevels.length];
-        Deque<long[]> open = new ArrayDeque<>(List.of(initialJoltageLevels));
-        for (; buttonPresses < Long.MAX_VALUE && !open.isEmpty(); ++buttonPresses) {
-            Deque<long[]> nextOpen = new ArrayDeque<>();
-            while (!open.isEmpty()) {
-                var joltageLevels = open.removeFirst();
-                outerLoop:
-                for (var buttonWiringSchematic : buttonWiringSchematics) {
-                    var joltageLevelsCopy = Arrays.copyOf(joltageLevels, joltageLevels.length);
-                    for (var button : buttonWiringSchematic) {
-                        var nextJoltageLevel = joltageLevels[button] + 1;
-                        if (nextJoltageLevel > expectedJoltageLevels[button]) {
-                            continue outerLoop;
-                        }
-                        joltageLevelsCopy[button] = nextJoltageLevel;
+    private long calculateJoltageLevelsFewestButtonPresses(long[] expectedJoltageLevels, List<int[]> buttonWiringSchematics, Map<String, Long> memory, long[] joltageLevels) {
+        long buttonPresses = Integer.MAX_VALUE;
+
+        outerLoop:
+        for (var buttonWiringSchematic : buttonWiringSchematics) {
+            for (int i = 0; i < buttonWiringSchematic.length; i++) {
+                var button = buttonWiringSchematic[i];
+                var nextJoltageLevel = joltageLevels[button] + 1;
+                if (nextJoltageLevel > expectedJoltageLevels[button]) {
+                    for (int j = 0; j < i; j++) {
+                        --joltageLevels[buttonWiringSchematic[j]];
                     }
-                    if (isJoltageLevelsMatching(expectedJoltageLevels, joltageLevelsCopy)) {
-                        System.out.println(buttonPresses + ": "
-                                + buttonWiringSchematics.stream().map(wiringSchematic -> Arrays.stream(wiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" "))
-                                + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
-                        return buttonPresses;
-                    }
-                    var joltage = Arrays.stream(joltageLevelsCopy).mapToObj(Long::toString).collect(Collectors.joining(","));
-                    if (closed.add(joltage)) {
-                        nextOpen.add(joltageLevelsCopy);
-                    }
+                    continue outerLoop;
                 }
+                joltageLevels[button] = nextJoltageLevel;
             }
-            open = nextOpen;
+
+            var joltage = Arrays.stream(joltageLevels).mapToObj(Long::toString).collect(Collectors.joining(","));
+            var saved = memory.get(joltage);
+            if (saved == null) {
+                if (isJoltageLevelsMatching(expectedJoltageLevels, joltageLevels)) {
+                    saved = 0L;
+                } else {
+                    saved = calculateJoltageLevelsFewestButtonPresses(expectedJoltageLevels, buttonWiringSchematics, memory, joltageLevels);
+                }
+                memory.put(joltage, saved);
+            }
+            buttonPresses = Math.min(buttonPresses, 1 + saved);
+
+            for (var button : buttonWiringSchematic) {
+                --joltageLevels[button];
+            }
         }
-        throw new IllegalStateException(buttonPresses + ": "
-                + buttonWiringSchematics.stream().map(wiringSchematic -> Arrays.stream(wiringSchematic).mapToObj(Integer::toString).collect(Collectors.joining(",", "(", ")"))).collect(Collectors.joining(" "))
-                + " {" + Arrays.stream(expectedJoltageLevels).mapToObj(Long::toString).collect(Collectors.joining(",")) + '}');
+
+        return buttonPresses;
     }
 
     private boolean isJoltageLevelsMatching(long[] expectedJoltageLevels, long[] joltageLevels) {
