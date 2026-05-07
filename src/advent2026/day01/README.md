@@ -1,0 +1,1 @@
+[Day 1 puzzle description](https://adventofcode.com/2026/day/1)

@@ -1,0 +1,1 @@
+[Day 8 puzzle description](https://adventofcode.com/2026/day/8)

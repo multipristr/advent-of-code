@@ -1,0 +1,1 @@
+[Day 7 puzzle description](https://adventofcode.com/2026/day/7)
